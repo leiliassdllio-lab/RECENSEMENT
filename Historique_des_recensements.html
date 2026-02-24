@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historique des Recensements</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+  body { margin:0; padding:0; font-family: Arial, sans-serif; }
+  #map { height: 100vh; width: 100%; }
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+  import L from "https://unpkg.com/leaflet/dist/leaflet.js";
+
+  // --- Config Firebase ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
+    authDomain: "herisson-f80ba.firebaseapp.com",
+    projectId: "herisson-f80ba",
+    storageBucket: "herisson-f80ba.firebasestorage.app",
+    messagingSenderId: "142270421417",
+    appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
+  };
+
+  // --- Init Firebase ---
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // --- Carte ---
+  const map = L.map('map').setView([50.8467, 4.3525], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // --- Récupération des recensements depuis Firestore ---
+  async function loadRecensements() {
+    const querySnapshot = await getDocs(collection(db, "recensements"));
+
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      if(data.latitude && data.longitude){
+        const marker = L.circleMarker([data.latitude, data.longitude], {
+          color: 'red',
+          radius: 6,
+          fillOpacity: 0.8
+        }).addTo(map);
+
+        const popupContent = `
+          <b>Date:</b> ${data.date}<br>
+          <b>Observation:</b> ${data.methode}<br>
+          ${data.notes ? `<b>Notes:</b> ${data.notes}` : ''}
+        `;
+        marker.bindPopup(popupContent);
+      }
+    });
+  }
+
+  loadRecensements();
+</script>
+
+</body>
+</html>
