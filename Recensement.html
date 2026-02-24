@@ -160,7 +160,7 @@ photoInput.addEventListener('change', function(){
 
 // --- Soumission formulaire vers Firestore ---
 const form = document.getElementById('recensementForm');
-form.addEventListener('submit', async e=>{
+form.addEventListener('submit', async e => {
   e.preventDefault();
 
   const recensement = {
@@ -178,11 +178,13 @@ form.addEventListener('submit', async e=>{
 
   try {
     await addDoc(collection(db, "recensements"), recensement);
-    alert("Recensement enregistré dans Firestore !");
 
+    // Reset du formulaire
     form.reset();
     previewDiv.innerHTML = "";
     if(marker) marker.setLatLng(map.getCenter());
+
+    // Redirection vers la page de confirmation / remerciements
     window.location.href = "confirmation.html";
   } catch (error) {
     console.error("Erreur lors de l'enregistrement :", error);
