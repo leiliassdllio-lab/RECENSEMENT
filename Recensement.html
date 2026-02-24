@@ -94,106 +94,101 @@
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- 🔹 Script Firebase + Formulaire complet -->
+<!-- 🔹 Firebase + Formulaire -->
 <script type="module">
-  // --- Imports Firebase ---
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-  // --- Config Firebase ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
-    authDomain: "herisson-f80ba.firebaseapp.com",
-    projectId: "herisson-f80ba",
-    storageBucket: "herisson-f80ba.firebasestorage.app",
-    messagingSenderId: "142270421417",
-    appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
+// --- Config Firebase ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
+  authDomain: "herisson-f80ba.firebaseapp.com",
+  projectId: "herisson-f80ba",
+  storageBucket: "herisson-f80ba.firebasestorage.app",
+  messagingSenderId: "142270421417",
+  appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
+};
+
+// --- Initialisation Firebase ---
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- Pré-remplir la date ---
+const dateInput = document.getElementById('date');
+const today = new Date();
+dateInput.value = today.toISOString().slice(0,10);
+
+// --- Affichage année dans footer ---
+document.getElementById("year").textContent = today.getFullYear();
+
+// --- Carte et géolocalisation ---
+const map = L.map('map').setView([50.8467, 4.3525], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+let marker;
+function updateLieu(lat, lon){ document.getElementById('lieu').value = `Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}`; }
+
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    map.setView([lat, lon], 15);
+
+    marker = L.marker([lat, lon], {draggable:true}).addTo(map)
+      .bindPopup("Votre position actuelle. Déplacez le marqueur si nécessaire.").openPopup();
+
+    updateLieu(lat, lon);
+
+    marker.on('dragend', e=>{
+      const p = e.target.getLatLng();
+      updateLieu(p.lat, p.lng);
+    });
+  }, err=>{ alert("Impossible de récupérer votre position : " + err.message); });
+}
+
+// --- Prévisualisation image ---
+const photoInput = document.getElementById('photoUpload');
+const previewDiv = document.getElementById('preview');
+photoInput.addEventListener('change', function(){
+  const file = this.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e => previewDiv.innerHTML = `<img src="${e.target.result}">`;
+    reader.readAsDataURL(file);
+  }
+});
+
+// --- Soumission formulaire vers Firestore ---
+const form = document.getElementById('recensementForm');
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+
+  const recensement = {
+    lieu: form.lieu.value,
+    date: form.date.value,
+    methode: form.methode.value,
+    notes: form.notes.value
   };
 
-  // --- Initialisation Firebase ---
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // --- Pré-remplir la date ---
-  const dateInput = document.getElementById('date');
-  const today = new Date();
-  const yyyy = today.getFullYear();
-  const mm = String(today.getMonth() + 1).padStart(2, '0');
-  const dd = String(today.getDate()).padStart(2, '0');
-  dateInput.value = `${yyyy}-${mm}-${dd}`;
-
-  // --- Carte et géolocalisation ---
-  document.getElementById("year").textContent = yyyy;
-
-  const map = L.map('map').setView([50.8467, 4.3525], 13);
-  L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-    attribution: '&copy; OpenStreetMap contributors'
-  }).addTo(map);
-
-  let marker;
-  function updateLieu(lat, lon){ document.getElementById('lieu').value = `Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}`; }
-
-  if(navigator.geolocation){
-    navigator.geolocation.getCurrentPosition(pos=>{
-      const lat = pos.coords.latitude;
-      const lon = pos.coords.longitude;
-      map.setView([lat, lon], 15);
-
-      marker = L.marker([lat, lon], {draggable:true}).addTo(map)
-        .bindPopup("Votre position actuelle. Déplacez le marqueur si nécessaire.").openPopup();
-
-      updateLieu(lat, lon);
-
-      marker.on('dragend', e=>{
-        const p = e.target.getLatLng();
-        updateLieu(p.lat, p.lng);
-      });
-    }, err=>{ alert("Impossible de récupérer votre position : " + err.message); });
+  if(marker){
+    const p = marker.getLatLng();
+    recensement.latitude = p.lat;
+    recensement.longitude = p.lng;
   }
 
-  // --- Prévisualisation image ---
-  const photoInput = document.getElementById('photoUpload');
-  const previewDiv = document.getElementById('preview');
-  photoInput.addEventListener('change', function(){
-    const file = this.files[0];
-    if(file){
-      const reader = new FileReader();
-      reader.onload = e => previewDiv.innerHTML = `<img src="${e.target.result}">`;
-      reader.readAsDataURL(file);
-    }
-  });
+  try {
+    await addDoc(collection(db, "recensements"), recensement);
+    alert("Recensement enregistré dans Firestore !");
 
-  // --- Soumission formulaire vers Firestore ---
-  const form = document.getElementById('recensementForm');
-  form.addEventListener('submit', async e=>{
-    e.preventDefault();
-
-    const recensement = {
-      lieu: form.lieu.value,
-      date: form.date.value,
-      methode: form.methode.value,
-      notes: form.notes.value
-    };
-
-    if(marker){
-      const p = marker.getLatLng();
-      recensement.latitude = p.lat;
-      recensement.longitude = p.lng;
-    }
-
-    try {
-      await addDoc(collection(db, "recensements"), recensement);
-      alert("Recensement enregistré dans Firestore !");
-
-      form.reset();
-      previewDiv.innerHTML = "";
-      if(marker) marker.setLatLng(map.getCenter());
-      window.location.href = "confirmation.html";
-    } catch (error) {
-      console.error("Erreur lors de l'enregistrement :", error);
-      alert("Impossible d'enregistrer le recensement. Vérifiez la console.");
-    }
-  });
+    form.reset();
+    previewDiv.innerHTML = "";
+    if(marker) marker.setLatLng(map.getCenter());
+    window.location.href = "confirmation.html";
+  } catch (error) {
+    console.error("Erreur lors de l'enregistrement :", error);
+    alert("Impossible d'enregistrer le recensement. Vérifiez la console.");
+  }
+});
 </script>
 
 </body>
