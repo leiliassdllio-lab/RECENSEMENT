@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Hérisson – Team hérisson</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; }
+    .container { max-width: 600px; margin: 20px auto; padding: 10px; }
+    .btn { padding: 10px 15px; font-size: 16px; cursor: pointer; border: none; border-radius: 5px; }
+    #answers button { width: 100%; text-align: left; }
+    .correct { background-color: #4CAF50; color: white; }
+    .wrong { background-color: #F44336; color: white; }
+    #progress-container { background-color: #ddd; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+    #progress-bar { width: 0%; height: 20px; background-color: #4CAF50; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="container">
+      <a href="main.html" class="btn">Retour à l'accueil</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="quiz-container">
+      <div id="progress-container">
+        <div id="progress-bar"></div>
+      </div>
+      <h2 id="question"></h2>
+      <div id="answers"></div>
+      <p id="feedback"></p>
+    </div>
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span> – Team hérisson</p>
+  </footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+
+const quiz = [
+  {question:"Le hérisson est principalement :",answers:["Herbivore","Carnivore insectivore","Omnivore strict","Granivore"],correct:1},
+  {question:"Le hérisson est surtout actif :",answers:["Le matin","L'après-midi","La nuit","En permanence"],correct:2},
+  {question:"Combien de piquants possède un hérisson adulte ?",answers:["500","1500","5000 à 7000","20000"],correct:2},
+  {question:"Le hérisson hiberne :",answers:["En été","En automne","En hiver","Toute l'année"],correct:2},
+  {question:"Principal danger routier :",answers:["Vélos","Voitures","Bus","Motos"],correct:1},
+  {question:"Famille :",answers:["Rongeurs","Insectivores","Mustélidés","Reptiles"],correct:1},
+  {question:"Il se défend en :",answers:["Mordant","Fuyant","Se roulant en boule","Criant"],correct:2},
+  {question:"Durée de vie moyenne :",answers:["1 an","3 à 5 ans","10 ans","20 ans"],correct:1},
+  {question:"Le hérisson peut nager :",answers:["Non","Oui","Seulement bébé","Jamais en nature"],correct:1},
+  {question:"Il a un excellent :",answers:["Vue","Odorat","Ouïe","Goût"],correct:1},
+  {question:"Il mange :",answers:["Escargots","Herbe","Pain","Riz"],correct:0},
+  {question:"Un bébé s'appelle :",answers:["Hérissonneau","Piquant","Petit hérisson","Rat sauvage"],correct:0},
+  {question:"Il est protégé dans plusieurs pays :",answers:["Oui","Non","Seulement Afrique","Seulement Asie"],correct:0},
+  {question:"Distance parcourue par nuit :",answers:["100m","1km","Plusieurs km","50km"],correct:2},
+  {question:"Les piquants sont faits de :",answers:["Os","Kératine","Fer","Cartilage"],correct:1},
+  {question:"Il est sensible aux :",answers:["Ombres","Pesticides","Vent","Pluie légère"],correct:1},
+  {question:"Habitat principal :",answers:["Désert","Jardins et haies","Mer","Montagne neigeuse"],correct:1},
+  {question:"Il est solitaire :",answers:["Oui","Non","Toujours groupe","Seulement hiver"],correct:0},
+  {question:"Prédateur naturel :",answers:["Renard","Lapin","Poulet","Taupe"],correct:0},
+  {question:"Il aide à :",answers:["Augmenter insectes","Contrôler insectes","Manger plantes","Polliniser"],correct:1}
+];
+
+let currentQuestion = 0;
+let score = 0;
+let selectedAnswer = null;
+
+const questionEl = document.getElementById("question");
+const answersEl = document.getElementById("answers");
+const feedbackEl = document.getElementById("feedback");
+const progressBar = document.getElementById("progress-bar");
+
+function loadQuestion() {
+  feedbackEl.textContent = "";
+  selectedAnswer = null;
+  const q = quiz[currentQuestion];
+  questionEl.textContent = `Question ${currentQuestion+1} / ${quiz.length} : ${q.question}`;
+  answersEl.innerHTML = "";
+
+  q.answers.forEach((answer,index)=>{
+    const btn = document.createElement("button");
+    btn.textContent = answer;
+    btn.classList.add("btn");
+    btn.style.display="block";
+    btn.style.margin="10px 0";
+    btn.onclick = () => {
+      if(selectedAnswer!==null) return; // Empêche de changer après clic
+      selectedAnswer = index;
+
+      // Coloration
+      q.answers.forEach((a,i)=>{
+        const button = answersEl.children[i];
+        if(i === q.correct) button.classList.add("correct");
+        else if(i === selectedAnswer) button.classList.add("wrong");
+      });
+
+      // Mettre à jour score
+      if(selectedAnswer === q.correct) score++;
+
+      // Passage automatique à la question suivante
+      setTimeout(()=>{
+        currentQuestion++;
+        if(currentQuestion < quiz.length){
+          loadQuestion();
+          updateProgress();
+        } else {
+          finishQuiz();
+        }
+      }, 1000);
+    };
+    answersEl.appendChild(btn);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const percent = ((currentQuestion)/quiz.length)*100;
+  progressBar.style.width = percent + "%";
+}
+
+function finishQuiz(){
+  questionEl.textContent="Quiz terminé !";
+  answersEl.innerHTML="";
+  feedbackEl.textContent=`Votre score : ${score} / ${quiz.length}`;
+  progressBar.style.width = "100%";
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>

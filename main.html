@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hérisson – Projets</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* --- Header avec image de fond --- */
+    header.hero {
+      position: relative;
+      width: 100%;
+      height: 60vh;
+      background-image: url('fond.jpg');
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+    }
+
+    header.hero .hero-overlay {
+      background: rgba(0,0,0,0.4); /* couche sombre pour contraste texte */
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    header.hero h1 {
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+      margin: 0 0 20px 0;
+      font-size: 2em;
+    }
+
+    header.hero .subtitle {
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+
+    header.hero .btn {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    header.hero .btn:hover {
+      background-color: #43a047;
+    }
+
+    /* --- Général --- */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px 0;
+    }
+
+    h2 {
+      color: #4CAF50;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card {
+      background-color: #f7f9f7;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      padding: 20px;
+      width: 250px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px 0;
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="hero">
+    <div class="hero-overlay">
+      <h1>État des données et stratégie de science participative pour la conservation du hérisson en Wallonie</h1>
+      <p class="subtitle">Étudiants · Projets environnement · Science & terrain</p>
+      <a href="#projets" class="btn">Voir notre projet</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- À propos -->
+    <section id="about">
+      <h2>À propos</h2>
+      <p>Qui sommes-nous : Nous sommes un groupe de 6 étudiants en bachelier de bioingénieurie à l’Université libre de Bruxelles. Notre projet consiste à identifier les lacunes de données en Wallonie sur le hérisson d’Europe (Erinaceus europaeus) et à proposer et développer des pistes et outils concrets d’amélioration pour renforcer la conservation de l’espèce. Ce projet nous tient à cœur car, en tant que futures scientifiques, nous pensons qu’il est important de s’intéresser à la biodiversité qui nous entoure et d’en prendre soin. 
+      Qui sont les hérissons : En Belgique, le hérisson présent est le Erinaceus europaeus, aussi appelé hérisson d’Europe. Il s’agit d’un petit mammifère insectivore nocturne, reconnaissable à ses piquants et fréquent dans les jardins, parcs et milieux agricoles.
+      Espèce protégée, il joue un rôle écologique important en régulant les populations d’invertébrés.
+      Pourquoi leur population diminue-t-elle : Les hérissons sont sur la liste rouge de l’UICN, ils passent de “préoccupation mineure” à “quasi menacé”. En effet, la population du Erinaceus europaeus diminue principalement à cause de la fragmentation des habitats (urbanisation, routes, clôtures imperméables) qui limite ses déplacements. La mortalité routière est une cause majeure. L’usage de pesticides réduit aussi ses ressources alimentaires (insectes, invertébrés). Enfin, les robots tondeuses nocturnes, les jardins trop “propres” et la perte de sites d’hibernation aggravent le déclin.
+      Quels sont nos objectifs : Nous voudrions sensibiliser un maximum de personnes de tout âge et motiver les citoyens à s’intéresser davantage aux hérissons et à leur conservation. Nous voudrions également comprendre pourquoi en Wallonie les données sont insuffisantes (état des populations), comparé à la Flandres.
+      </p>
+    </section>
+
+    <!-- Projets / Sections -->
+    <section id="projets">
+      <h2>Nos Rubriques</h2>
+      <div class="cards">
+        <a href="Recensement.html" class="card-link">
+          <div class="card">
+            <img src="recensement.jpg" alt="Recensement">
+            <h3>Recensement</h3>
+            <p>Participez à la collecte des observations de hérissons.</p>
+          </div>
+        </a>
+
+        <a href="2.html" class="card-link">
+          <div class="card">
+            <img src="quizz.jpg" alt="Quizz">
+            <h3>Quizz</h3>
+            <p>Testez vos connaissances sur les hérissons et leur habitat.</p>
+          </div>
+        </a>
+
+        <a href="3.html" class="card-link">
+          <div class="card">
+            <img src="cartographie.jpg" alt="Cartographie">
+            <h3>Cartographie</h3>
+            <p>Visualisez les données collectées sur la carte.</p>
+          </div>
+        </a>
+
+        <a href="4.html" class="card-link">
+          <div class="card">
+            <img src="conseils.jpg" alt="Conseils">
+            <h3>Conseils</h3>
+            <p>Guide pour observer et protéger les hérissons.</p>
+          </div>
+        </a>
+
+        <a href="5.html" class="card-link">
+          <div class="card">
+            <img src="partenaires.jpg" alt="Partenaires">
+            <h3>Partenaires</h3>
+            <p>Nos partenaires scientifiques et associatifs.</p>
+          </div>
+        </a>
+
+        <a href="6.html" class="card-link">
+          <div class="card">
+            <img src="qui_sommes_nous.jpg" alt="Qui sommes-nous">
+            <h3>Qui sommes-nous</h3>
+            <p>Découvrez notre équipe et notre démarche.</p>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+      <h2>Contact</h2>
+      <p>
+        📧 <a href="mailto:projet_herisson@email.com">projet_herisson@email.com</a><br>
+        💻 GitHub : <a href="https://github.com/xxxxxxxxxxxxx-hub" target="_blank">xxxxxxxxx-hub</a>
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© <span id="year"></span> – Team hérisson</p>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,194 @@
+/* Reset léger */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  color: #111;
+  background: #f7f7f7;
+}
+
+/* Layout */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Hero avec image de fond et overlay */
+.hero {
+    position: relative;                 /* nécessaire pour l'overlay */
+    background-image: url('fond.jpg');  /* chemin vers ton image */
+    background-size: cover;             /* l'image couvre tout le header */
+    background-position: center;        /* centrer l'image */
+    background-repeat: no-repeat;       /* pas de répétition */
+    color: white;                       /* texte en blanc pour contraste */
+    padding: 80px 20px;
+    text-align: center;
+}
+
+/* Overlay semi-transparent derrière le texte */
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* noir semi-transparent */
+    z-index: 0;                     /* derrière le texte */
+}
+
+/* Conteneur du texte devant l'overlay */
+.hero .container {
+    position: relative;
+    z-index: 1; /* texte devant l'overlay et l'image */
+}
+
+.hero h1 {
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  opacity: 0.8;
+  margin-bottom: 25px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: 8px;
+  background: white;
+  color: #111;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* Sections */
+section {
+  margin-bottom: 60px;
+}
+
+h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.container p {
+  text-align: justify;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.card-link {
+  display: block;        /* Le lien prend toute la card */
+  text-decoration: none; /* Supprime le soulignement */
+  color: inherit;        /* Le texte garde sa couleur normale */
+}
+
+.card-link .card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-link:hover .card {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  cursor: pointer;       /* Montre que c’est cliquable */
+}
+
+.card h3 {
+  margin-bottom: 10px;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+/* Questionnaire – Recensement hérissons */
+#recensement {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+#recensement form {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+#recensement p {
+  font-weight: 500;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+/* Champs de formulaire */
+#recensement input,
+#recensement select,
+#recensement textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+#recensement textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Focus (quand on clique dans un champ) */
+#recensement input:focus,
+#recensement select:focus,
+#recensement textarea:focus {
+  outline: none;
+  border-color: #111;
+}
+
+/* Bouton */
+#recensement button {
+  margin-top: 25px;
+  padding: 14px 22px;
+  border-radius: 10px;
+  border: none;
+  background: #111;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+#recensement button:hover {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+/* Message de confirmation */
+#confirmation {
+  background: #eef7ee;
+  border-left: 5px solid #4caf50;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 25px;
+}

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recense un Hérisson</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f9f7;
+    margin:0; padding:0;
+  }
+  header, footer {
+    background-color: #4CAF50;
+    color:white;
+    text-align:center;
+    padding:10px 0;
+  }
+  .container {
+    width:90%;
+    max-width:800px;
+    margin:20px auto;
+    background-color:white;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  h2 {
+    text-align:center;
+    color:#4CAF50;
+    margin-bottom:20px;
+  }
+  form p {
+    margin:15px 0 5px;
+    font-weight:bold;
+  }
+  input, select, textarea, button {
+    width:100%;
+    padding:10px;
+    border-radius:5px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+  }
+  button {
+    background-color:#4CAF50;
+    color:white;
+    font-weight:bold;
+    border:none;
+    cursor:pointer;
+    margin-top:15px;
+  }
+  #map { height:300px; border-radius:10px; margin-bottom:20px; }
+  .icon-label {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:normal;
+  }
+  .icon-label span { font-size:1.5em; }
+
+  /* décorations arbres */
+  .tree {
+    position:absolute;
+    font-size:2em;
+    opacity:0.4;
+  }
+  .tree1 { top:10px; left:10px; }
+  .tree2 { bottom:10px; right:20px; }
+  .tree3 { top:50px; right:50px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🦔 Recense un Hérisson</h1>
+  <div class="container">
+      <a href="main.html" class="btn">Retour à l'accueil</a>
+    </div>
+</header>
+
+<div class="container">
+ 
+  <!-- Arbres décoratifs -->
+  <div class="tree tree1">🌳</div>
+  <div class="tree tree2">🌲</div>
+  <div class="tree tree3">🌳</div>
+
+
+  <h2>Localisation & Observation</h2>
+
+  <!-- Carte -->
+  <div id="map"></div>
+
+  <form id="recensementForm" name="recensement-herissons">
+    
+    <p class="icon-label"><span>📍</span> Où avez-vous vu le hérisson ?</p>
+    <input type="text" name="lieu" id="lieu" placeholder="Adresse ou lieu précis" required>
+
+    <p class="icon-label"><span>📅</span> Quand l’avez-vous observé ?</p>
+    <input type="date" name="date" required>
+
+    <p class="icon-label"><span>🔍</span> Comment l’avez-vous vu ?</p>
+    <select name="methode" required>
+      <option value="">--Sélectionnez--</option>
+      <option value="observatoire">Observation directe</option>
+      <option value="camera">Caméra / piège photo</option>
+      <option value="autre">Autre</option>
+    </select>
+
+    <p class="icon-label"><span>📷</span> Ajouter une image / prendre une photo</p>
+    <label for="photoUpload" style="display:flex; flex-direction:column; align-items:center; border:2px dashed #4CAF50; padding:15px; border-radius:10px; cursor:pointer;">
+      <span style="font-size:2em;">📸</span>
+      <span>Cliquer pour choisir ou prendre une photo</span>
+    </label>
+    <input type="file" id="photoUpload" accept="image/*" capture="environment" style="display:none;">
+    <div id="preview" style="margin-top:10px;"></div>
+
+    <p class="icon-label"><span>📝</span> Notes supplémentaires</p>
+    <textarea name="notes" placeholder="Ajoutez vos remarques"></textarea>
+
+    <button type="submit">Envoyer</button>
+  </form>
+</div>
+
+<footer>
+  © <span id="year"></span> – Team Hérisson
+</footer>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  // Afficher l'année
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // Carte et géolocalisation
+  const map = L.map('map').setView([50.8467, 4.3525], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  if(navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(position => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      map.setView([lat, lon], 15);
+      L.marker([lat, lon]).addTo(map).bindPopup("Votre position actuelle").openPopup();
+      document.getElementById('lieu').value = `Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}`;
+    });
+  }
+
+  // Prévisualisation image
+  const photoInput = document.getElementById('photoUpload');
+  const preview = document.getElementById('preview');
+  photoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = e => preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">`;
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
+</body>
+</html>

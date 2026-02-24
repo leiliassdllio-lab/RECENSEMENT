@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>À propos – Team Hérisson</title>
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f7f9f7;
+    margin:0; padding:0;
+  }
+  header, footer {
+    background-color: #4CAF50;
+    color:white;
+    text-align:center;
+    padding:10px 0;
+  }
+  .container {
+    width:90%;
+    max-width:900px;
+    margin:20px auto;
+    background-color:white;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  h1, h2 {
+    text-align:center;
+    color:#4CAF50;
+  }
+  p { line-height:1.6; }
+  .team {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:20px;
+    margin-top:20px;
+  }
+  .member {
+    flex:1 1 200px;
+    max-width:200px;
+    text-align:center;
+    padding:10px;
+    border-radius:10px;
+    background-color:#e6f0e6;
+    box-shadow:0 1px 4px rgba(0,0,0,0.2);
+  }
+  .member img {
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    object-fit:cover;
+    margin-bottom:10px;
+  }
+  .decor {
+    position:absolute;
+    font-size:2em;
+    opacity:0.3;
+  }
+  .decor1 { top:5px; left:10px; }
+  .decor2 { bottom:10px; right:15px; }
+  .decor3 { top:60px; right:40px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;">
+    <span style="font-size:2em;">🦔</span>
+    <h1 style="margin:0; color:white;">Qui sommes-nous ?</h1>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Décorations arbres -->
+  <div class="decor decor1">🌳</div>
+  <div class="decor decor2">🌲</div>
+  <div class="decor decor3">🌳</div>
+
+  <h2>Notre mission</h2>
+  <p>Nous sommes un groupe de 6 étudiants en 3ème année de bioingénieur à l’ULB, passionnés par la faune urbaine et la protection de la biodiversité. 🧪🦔 Notre projet « Hérisson » a pour objectif de rendre le recensement des hérissons facile, rapide et accessible à tous. Contrairement aux autres sites de recensement, nous voulions créer une plateforme simple et ludique, afin que chaque citoyen puisse participer et contribuer à la protection de ces animaux.</p>
+
+  <h2>Nos valeurs</h2>
+  <p>
+Chez <strong>Team Hérisson</strong>, nous sommes guidés par plusieurs valeurs fondamentales qui orientent chacune de nos actions. Le <strong>respect de la faune</strong> est primordial : chaque hérisson mérite protection et considération, et nous veillons à ce que notre projet n'interfère jamais avec leur habitat naturel. Nous portons un fort <strong>engagement écologique</strong>, car chaque donnée collectée permet de mieux comprendre la biodiversité urbaine et de sensibiliser la population à la préservation de la nature. La <strong>collaboration et l'ouverture</strong> sont au cœur de notre démarche : nous encourageons la participation citoyenne, convaincus que plus d'observateurs signifient des données plus précises et utiles pour la science. Nous croyons également en l’<strong>accessibilité</strong> de notre plateforme : elle doit être simple et ludique afin que chacun, quel que soit son âge ou son expérience, puisse participer au recensement. La <strong>rigueur scientifique</strong> est essentielle : toutes les observations sont organisées de manière fiable pour être exploitables par des biologistes et chercheurs. Enfin, nous valorisons la <strong>sensibilisation citoyenne</strong> : chaque participant devient un acteur du changement, contribuant à une meilleure compréhension et protection des hérissons dans leur environnement.
+  </p>
+
+  <h2>Notre vision</h2>
+  <p>Nous rêvons d’une communauté engagée, où chacun peut contribuer à la protection des hérissons et de leur habitat. Nous souhaitons que les jeunes générations se familiarisent avec la biodiversité urbaine et que chaque citoyen se sente acteur de la préservation de la nature. En rendant le recensement accessible et ludique, nous espérons inspirer d’autres projets citoyens et scientifiques qui combinent technologie, nature et participation active.</p>
+
+  <h2>Notre équipe</h2>
+  <div class="team">
+    <div class="member">
+      <img src="https://via.placeholder.com/100" alt="Théo">
+      <h3>Théo</h3>
+      <p>Coordinateur & Observateur terrain</p>
+    </div>
+    <div class="member">
+      <img src="https://via.placeholder.com/100" alt="Larissa">
+      <h3>Larissa</h3>
+      <p>Biologiste & spécialiste comportement</p>
+    </div>
+    <div class="member">
+      <img src="https://via.placeholder.com/100" alt="Manal">
+      <h3>Manal</h3>
+      <p>Développeur web & cartes interactives</p>
+    </div>
+    <div class="member">
+      <img src="https://via.placeholder.com/100" alt="Axelle">
+      <h3>Axelle</h3>
+      <p>Communication & sensibilisation</p>
+    </div>
+    <div class="member">
+      <img src="https://via.placeholder.com/100" alt="Célina">
+      <h3>Célina</h3>
+      <p>Graphisme & design ludique</p>
+    </div>
+    <div class="member">
+      <img src="https://via.placeholder.com/100" alt="Iliassou">
+      <h3>Iliassou</h3>
+      <p>Analyse de données & statistiques</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © <span id="year"></span> – Team Hérisson
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
