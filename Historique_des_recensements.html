@@ -5,19 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Historique des Recensements</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 <style>
   body { margin:0; padding:0; font-family: Arial, sans-serif; }
-  #map { height: 100vh; width: 100%; }
+  #map { height: 90vh; width: 100%; }
+  #controls { padding:10px; text-align:center; background:#f7f9f7; }
+  select { padding:5px 10px; border-radius:5px; border:1px solid #ccc; }
 </style>
 </head>
 <body>
 
+<div id="controls">
+  Afficher les recensements : 
+  <select id="regionFilter">
+    <option value="all">Belgique entière</option>
+    <option value="wallonie">Wallonie</option>
+    <option value="flandre">Flandre</option>
+  </select>
+</div>
 <div id="map"></div>
+
+<!-- Leaflet & MarkerCluster JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
   import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-  import L from "https://unpkg.com/leaflet/dist/leaflet.js";
 
   // --- Config Firebase ---
   const firebaseConfig = {
@@ -29,41 +44,79 @@
     appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
   };
 
-  // --- Init Firebase ---
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
   // --- Carte ---
-  const map = L.map('map').setView([50.8467, 4.3525], 13);
+  const belgiqueBounds = [[49.5, 2.5], [51.6, 6.4]];
+  const map = L.map('map', {
+    maxBounds: belgiqueBounds,
+    maxBoundsViscosity: 1.0,
+    minZoom: 7,
+    maxZoom: 12
+  }).setView([50.8467, 4.3525], 8);
+
   L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // --- Récupération des recensements depuis Firestore ---
+  // --- Polygones approximatifs des régions ---
+  const wallonieBounds = [[49.5, 4.5],[50.5, 6.4]]; // SW & NE approx
+  const flandreBounds = [[50.5, 2.5],[51.6, 5.0]];
+
+  function isInside(lat, lon, bounds) {
+    return lat >= bounds[0][0] && lat <= bounds[1][0] && lon >= bounds[0][1] && lon <= bounds[1][1];
+  }
+
+  // --- Marker Cluster ---
+  const markers = L.markerClusterGroup();
+  map.addLayer(markers);
+
+  let allRecensements = [];
+
   async function loadRecensements() {
     const querySnapshot = await getDocs(collection(db, "recensements"));
-
     querySnapshot.forEach(doc => {
       const data = doc.data();
       if(data.latitude && data.longitude){
-        const marker = L.circleMarker([data.latitude, data.longitude], {
-          color: 'red',
-          radius: 6,
-          fillOpacity: 0.8
-        }).addTo(map);
-
-        const popupContent = `
-          <b>Date:</b> ${data.date}<br>
-          <b>Observation:</b> ${data.methode}<br>
-          ${data.notes ? `<b>Notes:</b> ${data.notes}` : ''}
-        `;
-        marker.bindPopup(popupContent);
+        allRecensements.push(data);
       }
+    });
+    displayMarkers('all');
+  }
+
+  function displayMarkers(region) {
+    markers.clearLayers();
+    let filtered = allRecensements;
+
+    if(region === 'wallonie'){
+      filtered = allRecensements.filter(d => isInside(d.latitude, d.longitude, wallonieBounds));
+    } else if(region === 'flandre'){
+      filtered = allRecensements.filter(d => isInside(d.latitude, d.longitude, flandreBounds));
+    }
+
+    filtered.forEach(data => {
+      const marker = L.circleMarker([data.latitude, data.longitude], {
+        color: 'red',
+        radius: 6,
+        fillOpacity: 0.8
+      });
+      const popupContent = `
+        <b>Date:</b> ${data.date}<br>
+        <b>Observation:</b> ${data.methode}<br>
+        ${data.notes ? `<b>Notes:</b> ${data.notes}` : ''}
+      `;
+      marker.bindPopup(popupContent);
+      markers.addLayer(marker);
     });
   }
 
-  loadRecensements();
-</script>
+  document.getElementById('regionFilter').addEventListener('change', e=>{
+    displayMarkers(e.target.value);
+  });
 
+  loadRecensements();
+
+</script>
 </body>
 </html>
