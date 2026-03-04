@@ -37,26 +37,26 @@ header { background:#4CAF50; padding:15px; text-align:center; color:white; }
   <div class="quiz-cards">
     <div class="quiz-card" onclick="selectQuiz('scientifique')">
       <h3>🔬 Scientifique</h3>
-      <p>Questions sur la biologie et caractéristiques des hérissons.</p>
-      <p>Questions : 0</p>
+      <p>Questions sur la biologie et les caractéristiques des hérissons.</p>
+      <p>Questions : 20</p>
       <div class="score-bar-container"><div id="score-bar-scientifique" class="score-bar"></div></div>
     </div>
     <div class="quiz-card" onclick="selectQuiz('comportement')">
       <h3>🦔 Comportement</h3>
       <p>Que faire face à un hérisson vivant, malade ou mort ?</p>
-      <p>Questions : 5</p>
+      <p>Questions : 20</p>
       <div class="score-bar-container"><div id="score-bar-comportement" class="score-bar"></div></div>
     </div>
     <div class="quiz-card" onclick="selectQuiz('ecologie')">
       <h3>🌳 Écologie</h3>
       <p>Impact environnemental et habitats des hérissons.</p>
-      <p>Questions : 0</p>
+      <p>Questions : 20</p>
       <div class="score-bar-container"><div id="score-bar-ecologie" class="score-bar"></div></div>
     </div>
     <div class="quiz-card" onclick="selectQuiz('sante')">
       <h3>💉 Santé</h3>
       <p>Maladies, risques et soins des hérissons.</p>
-      <p>Questions : 0</p>
+      <p>Questions : 20</p>
       <div class="score-bar-container"><div id="score-bar-sante" class="score-bar"></div></div>
     </div>
   </div>
@@ -77,140 +77,100 @@ header { background:#4CAF50; padding:15px; text-align:center; color:white; }
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// Quiz exemple : Comportement validé
+// QUESTIONS REFORMULÉES
 const quizzes = {
-  scientifique:[],
-  comportement:[
-    {
-      question: "Que devez-vous faire si vous trouvez un hérisson adulte blessé sur la route ?",
-      answers: [
-        "Le laisser et continuer votre chemin",
-        "Le ramasser et le déposer dans un jardin à proximité",
-        "Le prendre et contacter un centre de soins pour animaux sauvages",
-        "Le nourrir avec du pain et du lait"
-      ],
-      correct: 2
-    },
-    {
-      question: "Vous trouvez un bébé hérisson seul dans votre jardin. Quelle est la bonne réaction ?",
-      answers: [
-        "Le mettre dans votre maison avec vos animaux domestiques",
-        "Le laisser là où il est car sa mère est probablement à proximité",
-        "Le nourrir avec du lait de vache",
-        "Le placer directement dans un bac à eau pour qu'il survive"
-      ],
-      correct: 1
-    },
-    {
-      question: "Un hérisson mort est trouvé dans le jardin. Que faire ?",
-      answers: [
-        "Le jeter à la poubelle avec les déchets ménagers",
-        "L’enterrer loin des zones fréquentées par les humains et animaux domestiques",
-        "Le laisser sur place sans précaution",
-        "Le mettre dans votre jardin comme décoration"
-      ],
-      correct: 1
-    },
-    {
-      question: "Quel comportement est normal chez un hérisson que vous observez la nuit ?",
-      answers: [
-        "Il reste immobile au centre du jardin",
-        "Il se déplace lentement et fouille le sol pour trouver des insectes",
-        "Il aboie ou grogne comme un chien",
-        "Il reste en boule sans se nourrir toute la nuit"
-      ],
-      correct: 1
-    },
-    {
-      question: "Un hérisson est malade ou faible. Quelle est la bonne manière de l’aider ?",
-      answers: [
-        "Le nourrir uniquement avec du lait de vache",
-        "Le transporter délicatement dans une boîte et contacter un centre de soins pour hérissons",
-        "Le laisser se débrouiller, les hérissons se rétablissent seuls",
-        "Le mettre avec vos animaux domestiques pour le protéger"
-      ],
-      correct: 1
-    }
+  scientifique:[
+    {question:"Le hérisson est principalement :", answers:["Herbivore","Carnivore insectivore","Omnivore strict","Granivore"], correct:1},
+    {question:"Combien de piquants possède un hérisson adulte ?", answers:["500","1500","5000 à 7000","20000"], correct:2},
+    {question:"La durée de vie moyenne d’un hérisson sauvage est de :", answers:["1 an","3 à 5 ans","10 ans","20 ans"], correct:1},
+    {question:"Les piquants du hérisson sont composés de :", answers:["Os","Kératine","Fer","Cartilage"], correct:1},
+    {question:"Le hérisson hiberne :", answers:["En été","En automne","En hiver","Toute l'année"], correct:2},
+    {question:"Quelle est sa principale activité nocturne ?", answers:["Chercher des insectes","Dormir","Se laver","Se cacher des oiseaux"], correct:0},
+    {question:"Un bébé hérisson s'appelle :", answers:["Hérissonneau","Piquant","Petit hérisson","Rat sauvage"], correct:0},
+    {question:"Le hérisson a un excellent :", answers:["Odorat","Vue","Goût","Équilibre"], correct:0},
+    {question:"Il est protégé par la loi dans :", answers:["Plusieurs pays","Seulement Afrique","Seulement Asie","Aucun pays"], correct:0},
+    {question:"La famille du hérisson est :", answers:["Rongeurs","Insectivores","Mustélidés","Reptiles"], correct:1},
+    {question:"Il est principalement solitaire :", answers:["Oui","Non","Toujours en groupe","Seulement hiver"], correct:0},
+    {question:"Quel prédateur naturel attaque le hérisson ?", answers:["Renard","Lapin","Poulet","Taupe"], correct:0},
+    {question:"Le hérisson contribue à :", answers:["Contrôler les populations d’insectes","Polliniser","Augmenter les herbes","Manger des plantes"], correct:0},
+    {question:"Distance parcourue par nuit :", answers:["100 m","1 km","Plusieurs km","50 km"], correct:2},
+    {question:"Le hérisson peut nager :", answers:["Non","Oui","Seulement bébé","Jamais en nature"], correct:1},
+    {question:"Habitat principal :", answers:["Désert","Jardins et haies","Mer","Montagne enneigée"], correct:1},
+    {question:"Le hérisson se défend en :", answers:["Mordant","Se roulant en boule","Criant","Fuyant"], correct:1},
+    {question:"Le hérisson est sensible aux :", answers:["Ombres","Pesticides","Vent","Pluie légère"], correct:1},
+    {question:"L’espèce d’Europe est appelée :", answers:["Erinaceus europaeus","Atelerix albiventris","Hemiechinus","Paraechinus"], correct:0},
+    {question:"Le hérisson est actif :", answers:["Le matin","L'après-midi","La nuit","En permanence"], correct:2}
   ],
-  ecologie:[],
-  sante:[]
+  comportement:[
+    {question:"Que devez-vous faire si vous trouvez un hérisson adulte blessé sur la route ?", answers:["Le laisser et continuer votre chemin","Le déposer dans un jardin à proximité","Le transporter au centre de soins","Le nourrir avec du pain et du lait"], correct:2},
+    {question:"Vous trouvez un bébé hérisson seul dans votre jardin. Quelle est la bonne réaction ?", answers:["Le mettre dans votre maison","Le laisser là où il est","Le nourrir avec du lait de vache","Le placer dans l'eau"], correct:1},
+    {question:"Un hérisson mort est trouvé dans le jardin. Que faire ?", answers:["Le jeter à la poubelle","L’enterrer loin des zones fréquentées","Le laisser sur place","Le mettre dans votre jardin comme décoration"], correct:1},
+    {question:"Quel comportement est normal la nuit ?", answers:["Il reste immobile","Il fouille le sol à la recherche d’insectes","Il aboie","Il reste en boule toute la nuit"], correct:1},
+    {question:"Hérisson malade ou faible ?", answers:["Le nourrir avec lait","Le transporter au centre de soins","Le laisser se débrouiller","Le mettre avec vos animaux"], correct:1},
+    {question:"Si un hérisson refuse de manger le soir ?", answers:["C’est normal, il se cache","Il est malade","Il est mort","Il est stressé par les chiens"], correct:0},
+    {question:"Que faire en présence d’un hérisson agressif ?", answers:["L’attaquer","Le laisser tranquille","Le nourrir","Le caresser"], correct:1},
+    {question:"Comment manipuler un hérisson ?", answers:["Avec les mains nues","Avec des gants","Avec une laisse","Avec un filet"], correct:1},
+    {question:"Un hérisson en boule est :", answers:["Fâché","En alerte et défense","Endormi","Malade"], correct:1},
+    {question:"Quand le relâcher après soin ?", answers:["Immédiatement dans la nature","Après guérison et conditions sûres","Dans votre jardin","Jamais"], correct:1},
+    {question:"Que faire s’il y a plusieurs bébés ?", answers:["Les séparer","Les laisser ensemble","Les nourrir","Les transporter"], correct:1},
+    {question:"Le hérisson et les animaux domestiques ?", answers:["Bien ensemble","Peut être dangereux","Toujours éviter","Peut partager la nourriture"], correct:2},
+    {question:"Nourriture adaptée ?", answers:["Lait de vache","Croquettes pour chat ou nourriture insectivore","Pain","Riz"], correct:1},
+    {question:"Le hérisson dans votre jardin ?", answers:["Le chasser","Laisser librement","Le nourrir à tout prix","Le enfermer"], correct:1},
+    {question:"Bébé séparé de sa mère ?", answers:["Le nourrir immédiatement","Contacter un centre spécialisé","Le laisser seul","Le mettre avec un chat"], correct:1},
+    {question:"Hérisson blessé par véhicule ?", answers:["Le ramasser seul","Contacter centre de soins","Le laisser sur place","Le enterrer"], correct:1},
+    {question:"Si hibernation proche ?", answers:["Le réveiller","Le laisser dormir","Le nourrir","Le déplacer"], correct:1},
+    {question:"En cas de pluie forte ?", answers:["L’abriter","Le laisser","Le transporter","Le mettre à l’eau"], correct:0},
+    {question:"Si jardin sécurisé ?", answers:["Le nourrir","Laisser libre","Le enfermer","L’attacher"], correct:1},
+    {question:"Interaction avec enfants ?", answers:["Le laisser manipuler","Surveiller et expliquer","Ne jamais montrer","L’ignorer"], correct:1}
+  ],
+  ecologie:[
+    {question:"Quel est l'habitat préféré des hérissons ?", answers:["Déserts","Jardins, haies et prairies","Mer","Montagne enneigée"], correct:1},
+    {question:"Les hérissons mangent principalement :", answers:["Insectes et invertébrés","Plantes","Fruits","Petits mammifères"], correct:0},
+    {question:"La fragmentation des habitats entraîne :", answers:["Population stable","Déclin et isolement","Augmentation","Aucune conséquence"], correct:1},
+    {question:"Les routes provoquent :", answers:["Mort routière fréquente","Aide à dispersion","Aucune conséquence","Augmentation des habitats"], correct:0},
+    {question:"Les pesticides impactent :", answers:["La reproduction","La nourriture et santé","La couleur du pelage","Le comportement nocturne"], correct:1},
+    {question:"Les jardins trop propres :", answers:["Favorisent la survie","Limitent les ressources et abris","N’ont pas d’impact","Sont idéaux"], correct:1},
+    {question:"Hedgehog Street est :", answers:["Organisation pour hérissons","Marque de jardin","Parc animalier","Jeu vidéo"], correct:0},
+    {question:"La densité de population en Flandres est :", answers:["Plus faible qu’en Wallonie","Plus élevée","Égale","Inconnue"], correct:1},
+    {question:"Les haies permettent :", answers:["Protection et passage","Aucun rôle","Alimentation","Reproduction seulement"], correct:0},
+    {question:"Les robots tondeuses nocturnes :", answers:["Aident","Menacent","N’ont pas d’effet","Nourrissent"], correct:1},
+    {question:"Urbanisation rapide entraîne :", answers:["Isolement","Plus d’alimentation","Plus de reproduction","Population stable"], correct:0},
+    {question:"Pollution lumineuse nuit à :", answers:["Vision nocturne","Odorat","Goût","Piquants"], correct:0},
+    {question:"Les hérissons sont :", answers:["Insectivores","Carnivores","Omnivores","Herbivores"], correct:0},
+    {question:"Ils contribuent à :", answers:["Contrôle des insectes","Pollinisation","Augmentation de mauvaises herbes","Aucune fonction"], correct:0},
+    {question:"Sur la liste rouge de l’UICN ?", answers:["Oui, quasi menacé","Non","Oui, vulnérable","Non, préoccupation mineure"], correct:0},
+    {question:"Migration saisonnière ?", answers:["Non, ils restent local","Oui, longues distances","Oui, parfois 500 km","Non, ils hibernent"], correct:0},
+    {question:"Biodiversité favorise :", answers:["Survie des hérissons","Risque accru","Maladie","Aucun impact"], correct:0},
+    {question:"Connectivité des habitats permet :", answers:["Déplacement sécurisé","Isolement","Réduction nourriture","Augmentation prédateurs"], correct:0},
+    {question:"Fragmentation végétale entraîne :", answers:["Isolement génétique","Plus de nourriture","Plus de reproduction","Population stable"], correct:0},
+    {question:"Mortalité due aux routes ?", answers:["Élevée","Faible","Nulle","Inconnue"], correct:0}
+  ],
+  sante:[
+    {question:"Les hérissons peuvent être porteurs de parasites ?", answers:["Oui, puces et tiques","Non","Seulement virus","Seulement bactéries"], correct:0},
+    {question:"Ils peuvent souffrir de maladies respiratoires ?", answers:["Oui","Non","Seulement froid","Jamais"], correct:0},
+    {question:"Il est dangereux de leur donner du lait de vache ?", answers:["Oui, cause diarrhée","Non","Ils adorent","Aucune conséquence"], correct:0},
+    {question:"Protéger les hérissons des chiens et chats ?", answers:["Oui, surtout malades ou bébés","Non","Seulement adultes","Peu importe"], correct:0},
+    {question:"Un hérisson blessé doit :", answers:["Être conduit à un centre de soins","Rester à l’extérieur","Être nourri avec lait","Être caressé"], correct:0},
+    {question:"Ils peuvent être sensibles aux pesticides ?", answers:["Oui, impact alimentaire","Non","Seulement aux herbicides","Aucun effet"], correct:0},
+    {question:"Les blessures de hérissons nécessitent :", answers:["Nettoyage et soins par pro","Rien","Baignez-les","Exposer au soleil"], correct:0},
+    {question:"Bébé hérisson sans mère ?", answers:["Contacter centre spécialisé","Le nourrir seul","Le laisser seul","Le mettre avec chat"], correct:0},
+    {question:"Hibernation peut être perturbée par :", answers:["Température trop basse ou jardin dérangé","Rien","Chaleur","Humidité seule"], correct:0},
+    {question:"Ils ont besoin de :", answers:["Abris, nourriture et sécurité","Seulement nourriture","Seulement eau","Aucun soin"], correct:0},
+    {question:"Maladies courantes :", answers:["Parasites intestinaux et cutanés","Grippe","Choléra","Aucune"], correct:0},
+    {question:"Contact avec humains ?", answers:["Limiter pour stress et infections","Toujours possible","Sans problème","Ils aiment"], correct:0},
+    {question:"Soins vétérinaires ?", answers:["Indispensables pour blessures","Inutiles","Seulement pour virus","Seulement pour adultes"], correct:0},
+    {question:"Alimentation adaptée :", answers:["Croquettes pour chat/nourriture insectivore","Pain","Riz","Herbe"], correct:0},
+    {question:"Hydratation importante ?", answers:["Oui, eau fraîche","Non","Seulement pluie","Lait de vache"], correct:0},
+    {question:"Ne pas nourrir avec :", answers:["Lait de vache, pain, chocolat","Insectes","Croquettes adaptées","Fruits"], correct:0},
+    {question:"Transporter un hérisson ?", answers:["Avec gants et boîte ventilée","Main nue","Sac plastique","Jamais"], correct:0},
+    {question:"Les hibernations perturbées peuvent causer :", answers:["Mort ou stress","Rien","Plus d’appétit","Augmentation reproduction"], correct:0},
+    {question:"Interactions avec autres animaux ?", answers:["Limiter stress","Toujours ensemble","Laisser faire","Aucun impact"], correct:0},
+    {question:"Observation sans toucher ?", answers:["Oui, pour sécurité et stress minimum","Toujours toucher","Jamais observer","Toujours nourrir"], correct:0}
+  ]
 };
 
 let currentQuiz = null;
 let currentQuestion = 0;
 let score = 0;
 
-function selectQuiz(name){
-  currentQuiz = quizzes[name];
-  currentQuestion=0;
-  score=0;
-  document.querySelector(".quiz-cards").style.display="none";
-  document.getElementById("quiz-container").style.display="block";
-  loadQuestion();
-  updateProgress();
-}
-
-function backToSelection(){
-  document.querySelector(".quiz-cards").style.display="flex";
-  document.getElementById("quiz-container").style.display="none";
-}
-
-const questionEl = document.getElementById("question");
-const answersEl = document.getElementById("answers");
-const feedbackEl = document.getElementById("feedback");
-const progressBar = document.getElementById("progress-bar");
-
-function loadQuestion(){
-  feedbackEl.textContent="";
-  answersEl.innerHTML="";
-  if(currentQuiz.length===0){
-    questionEl.textContent="Pas encore de questions dans ce quiz.";
-    return;
-  }
-  const q=currentQuiz[currentQuestion];
-  questionEl.textContent=`Question ${currentQuestion+1} / ${currentQuiz.length} : ${q.question}`;
-  q.answers.forEach((ans,i)=>{
-    const btn=document.createElement("button");
-    btn.textContent=ans;
-    btn.onclick=()=>{checkAnswer(i);};
-    answersEl.appendChild(btn);
-  });
-  updateProgress();
-}
-
-function checkAnswer(i){
-  const q=currentQuiz[currentQuestion];
-  if(i===q.correct) score++;
-  Array.from(answersEl.children).forEach((btn,index)=>{
-    if(index===q.correct) btn.classList.add("correct");
-    else if(index===i) btn.classList.add("wrong");
-  });
-  currentQuestion++;
-  setTimeout(()=>{
-    if(currentQuestion<currentQuiz.length) loadQuestion();
-    else finishQuiz();
-  },800);
-}
-
-function updateProgress(){
-  const percent=(currentQuestion/currentQuiz.length)*100;
-  progressBar.style.width=percent+"%";
-}
-
-function finishQuiz(){
-  questionEl.textContent="Quiz terminé !";
-  answersEl.innerHTML="";
-  feedbackEl.textContent=`Score : ${score} / ${currentQuiz.length}`;
-  progressBar.style.width="100%";
-  const keys=["scientifique","comportement","ecologie","sante"];
-  keys.forEach(k=>{
-    if(currentQuiz===quizzes[k]){
-      const bar=document.getElementById("score-bar-"+k);
-      bar.style.width=(currentQuiz.length?score/currentQuiz.length*100:0)+"%";
-    }
-  });
-}
-</script>
-
-</body>
-</html>
+function select
