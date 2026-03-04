@@ -4,21 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quiz Hérisson – Team hérisson</title>
-<link rel="stylesheet" href="style.css">
 <style>
 body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f0f6f0; }
 header { background:#4CAF50; padding:10px; text-align:center; color:white; }
 .container { max-width: 900px; margin: 20px auto; padding: 10px; }
 .quiz-cards { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
 .quiz-card {
-  background:#e8f5e9;
-  border-radius:10px;
-  padding:15px;
-  width:250px;
-  text-align:center;
-  cursor:pointer;
-  box-shadow:0 2px 8px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
+  background:#e8f5e9; border-radius:10px; padding:15px; width:250px; text-align:center;
+  cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.2); transition: transform 0.2s;
 }
 .quiz-card:hover { transform: translateY(-5px); }
 .quiz-card h3 { margin-top:0; }
@@ -45,25 +38,25 @@ header { background:#4CAF50; padding:10px; text-align:center; color:white; }
     <div class="quiz-card" onclick="selectQuiz('scientifique')">
       <h3>🔬 Scientifique</h3>
       <p>Questions sur la biologie et caractéristiques des hérissons.</p>
-      <p>Questions : 20</p>
+      <p>Questions : 0</p>
       <div class="score-bar-container"><div id="score-bar-scientifique" class="score-bar"></div></div>
     </div>
     <div class="quiz-card" onclick="selectQuiz('comportement')">
       <h3>🦔 Comportement</h3>
       <p>Que faire face à un hérisson vivant, malade ou mort ?</p>
-      <p>Questions : 20</p>
+      <p>Questions : 0</p>
       <div class="score-bar-container"><div id="score-bar-comportement" class="score-bar"></div></div>
     </div>
     <div class="quiz-card" onclick="selectQuiz('ecologie')">
       <h3>🌳 Écologie</h3>
       <p>Impact environnemental et habitats des hérissons.</p>
-      <p>Questions : 15</p>
+      <p>Questions : 0</p>
       <div class="score-bar-container"><div id="score-bar-ecologie" class="score-bar"></div></div>
     </div>
     <div class="quiz-card" onclick="selectQuiz('sante')">
       <h3>💉 Santé</h3>
       <p>Maladies, risques et soins des hérissons.</p>
-      <p>Questions : 15</p>
+      <p>Questions : 0</p>
       <div class="score-bar-container"><div id="score-bar-sante" class="score-bar"></div></div>
     </div>
   </div>
@@ -84,85 +77,12 @@ header { background:#4CAF50; padding:10px; text-align:center; color:white; }
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
 
+// Structure vide pour ajouter questions validées plus tard
 const quizzes = {
-  scientifique:[
-    {question:"Le hérisson est principalement :",answers:["Herbivore","Carnivore insectivore","Omnivore strict","Granivore"],correct:1},
-    {question:"Le hérisson hiberne :",answers:["En été","En automne","En hiver","Toute l'année"],correct:2},
-    {question:"Combien de piquants possède un hérisson adulte ?",answers:["500","1500","5000 à 7000","20000"],correct:2},
-    {question:"Famille :",answers:["Rongeurs","Insectivores","Mustélidés","Reptiles"],correct:1},
-    {question:"Durée de vie moyenne :",answers:["1 an","3 à 5 ans","10 ans","20 ans"],correct:1},
-    {question:"Le hérisson peut nager :",answers:["Non","Oui","Seulement bébé","Jamais en nature"],correct:1},
-    {question:"Il a un excellent :",answers:["Vue","Odorat","Ouïe","Goût"],correct:1},
-    {question:"Les piquants sont faits de :",answers:["Os","Kératine","Fer","Cartilage"],correct:1},
-    {question:"Habitat principal :",answers:["Désert","Jardins et haies","Mer","Montagne neigeuse"],correct:1},
-    {question:"Il est solitaire :",answers:["Oui","Non","Toujours groupe","Seulement hiver"],correct:0},
-    {question:"Prédateur naturel :",answers:["Renard","Lapin","Poulet","Taupe"],correct:0},
-    {question:"Il aide à :",answers:["Augmenter insectes","Contrôler insectes","Manger plantes","Polliniser"],correct:1},
-    {question:"Distance parcourue par nuit :",answers:["100m","1km","Plusieurs km","50km"],correct:2},
-    {question:"Il mange :",answers:["Escargots","Herbe","Pain","Riz"],correct:0},
-    {question:"Un bébé s'appelle :",answers:["Hérissonneau","Piquant","Petit hérisson","Rat sauvage"],correct:0},
-    {question:"Il est protégé dans plusieurs pays :",answers:["Oui","Non","Seulement Afrique","Seulement Asie"],correct:0},
-    {question:"Il est sensible aux :",answers:["Ombres","Pesticides","Vent","Pluie légère"],correct:1},
-    {question:"Il se défend en :",answers:["Mordant","Fuyant","Se roulant en boule","Criant"],correct:2},
-    {question:"Principal danger routier :",answers:["Vélos","Voitures","Bus","Motos"],correct:1},
-    {question:"Le hérisson est surtout actif :",answers:["Le matin","L'après-midi","La nuit","En permanence"],correct:2}
-  ],
-  comportement:[
-    {question:"Que faire si on trouve un bébé hérisson ?",answers:["Le laisser dans le nid","L’emmener à l’animalerie","Laver et nourrir à la maison","Le jeter"],correct:0},
-    {question:"Que faire si un hérisson est malade ?",answers:["L’ignorer","Contacter un centre de soins","Le nourrir avec du pain","Le mettre dans la cage"],correct:1},
-    {question:"Que faire si un hérisson est mort ?",answers:["Enterrer loin des maisons","Le laisser","Le mettre dans un sac plastique","Le jeter dans la rivière"],correct:0},
-    {question:"Comment manipuler un hérisson ?",answers:["Avec les mains nues","Avec des gants","Avec une corde","Jamais"],correct:1},
-    {question:"Que faire si un hérisson est piégé ?",answers:["Laisser","Libérer doucement","Taper dessus","Nourrir avec croquettes"],correct:1},
-    {question:"Peut-on nourrir un hérisson avec du lait ?",answers:["Oui","Non, lait de vache = danger","Seulement bébé","Jamais"],correct:1},
-    {question:"Un hérisson blessé doit :",answers:["Être soigné par centre","Soigné maison","Ignoré","Nourrir"],correct:0},
-    {question:"Bébé hérisson trouvé dehors :",answers:["Ramasser","Regarder et laisser","Mettre au chaud","Laisser à la mère"],correct:3},
-    {question:"Hérisson agressif :",answers:["Fuir","Tenter de le caresser","Parler doucement","Laisser seul"],correct:3},
-    {question:"Hérisson apeuré :",answers:["Bouger vite","Rester calme","Hurler","Toucher"],correct:1},
-    {question:"Hérisson malade mange :",answers:["Rien","Insectes","Pain","Fruits"],correct:1},
-    {question:"Bébé trouvé la nuit :",answers:["Prendre","Observer","Mettre au chaud","Nourrir"],correct:1},
-    {question:"Peut-on mettre un hérisson dans un sac ?",answers:["Oui","Non","Seulement transport court","Jamais"],correct:1},
-    {question:"Hérisson piqué par chien :",answers:["Soigner maison","Appeler vétérinaire","Ignorer","Mettre dans cage"],correct:1},
-    {question:"Bébé à protéger :",answers:["Mettre à l'intérieur","Laisser dans nid","Amener animalerie","Jeter"],correct:1},
-    {question:"Que faire si on croise un hérisson en ville ?",answers:["Ignorer","Observer","Tenter capture","Nourrir"],correct:1},
-    {question:"Que faire en hiver ?",answers:["Le nourrir","Laisser","Ramasser","Mettre au chaud"],correct:1},
-    {question:"Réactions face aux prédateurs ?",answers:["Protéger","Ignorer","Fuir","Crier"],correct:2},
-    {question:"Que faire si le hérisson est malade ?",answers:["Soigner maison","Appeler centre soins","Jeter","Ignorer"],correct:1},
-    {question:"Comment aider les hérissons ?",answers:["Créer haies","Nourrir","Jeter déchets","Tuer insectes"],correct:0}
-  ],
-  ecologie:[
-    {question:"Habitat naturel :",answers:["Jardins","Désert","Océan","Forêt"],correct:3},
-    {question:"Prédateur naturel :",answers:["Renard","Chouette","Lapin","Taupe"],correct:1},
-    {question:"Impact des pesticides ?",answers:["Augmentation insectes","Diminution insectes","Aucun effet","Protège hérisson"],correct:1},
-    {question:"Pollution lumineuse :",answers:["Aide","Nuit perturbée","Aucun effet","Aide reproduction"],correct:1},
-    {question:"Fragmentation habitat :",answers:["Aucun","Limite déplacements","Aide","Protége"],correct:1},
-    {question:"Vitesse déplacement :",answers:["10 m","1 km","2 km","5 km"],correct:2},
-    {question:"Hérisson et jardinage :",answers:["Nourrir","Créer haies","Nettoyer trop","Jamais"],correct:1},
-    {question:"Écologie urbaine :",answers:["Nuisible","Protégé","Indifférent","Favorise"],correct:1},
-    {question:"Rôle dans l’écosystème :",answers:["Augmente insectes","Régule insectes","Rien","Pollinise"],correct:1},
-    {question:"Habitat préféré :",answers:["Forêts et haies","Désert","Mer","Montagne"],correct:0},
-    {question:"Nuit vs jour :",answers:["Actif jour","Actif nuit","Toujours actif","Dormeur"],correct:1},
-    {question:"Interaction avec humains :",answers:["Ignorer","Approche douce","Agression","Toujours fuir"],correct:1},
-    {question:"Climat préféré :",answers:["Humide","Sec","Tropical","Aride"],correct:0},
-    {question:"Alimentation :",answers:["Plantes","Insectes","Pain","Herbe"],correct:1},
-    {question:"Bébé hérisson survie :",answers:["Mère","Aléatoire","Humain","Animaux domestiques"],correct:0}
-  ],
-  sante:[
-    {question:"Hérisson peut attraper :",answers:["Grippe","Coryza","Peste","Chien"],correct:1},
-    {question:"Maladies courantes :",answers:["Aucun","Coryza","Diabète","Rhume"],correct:1},
-    {question:"Vaccins nécessaires ?",answers:["Oui","Non","Selon pays","Toujours"],correct:2},
-    {question:"Blessure superficielle :",answers:["Nettoyer","Ignorer","Appeler vétérinaire","Jeter"],correct:0},
-    {question:"Bébé malade :",answers:["Soigner maison","Appeler centre soins","Ignorer","Nourrir pain"],correct:1},
-    {question:"Hérisson et chiens :",answers:["Danger","Pas de danger","Amis","Jamais"],correct:0},
-    {question:"Hérisson et chats :",answers:["Danger","Pas de danger","Amis","Jamais"],correct:0},
-    {question:"Hygiène nécessaire ?",answers:["Oui","Non","Peu importe","Selon situation"],correct:0},
-    {question:"Surveillance hiver ?",answers:["Oui","Non","Peu","Toujours"],correct:0},
-    {question:"Nourriture adaptée ?",answers:["Insectes","Pain","Lait","Herbes"],correct:0},
-    {question:"Besoins eau ?",answers:["Oui","Non","Peu","Jamais"],correct:0},
-    {question:"Survie bébé :",answers:["Mère","Humain","Aléatoire","Animaux"],correct:0},
-    {question:"Réactions aux maladies ?",answers:["Soigner","Ignorer","Nourrir","Jeter"],correct:0},
-    {question:"Signes faiblesse ?",answers:["Rien","Léthargie","Maladie","Agressif"],correct:2},
-    {question:"Bébé trouvé :",answers:["Ramasser","Laisser","Mettre au chaud","Nourrir"],correct:2}
-  ]
+  scientifique:[],
+  comportement:[],
+  ecologie:[],
+  sante:[]
 };
 
 let currentQuiz = null;
@@ -192,6 +112,10 @@ const progressBar = document.getElementById("progress-bar");
 function loadQuestion(){
   feedbackEl.textContent="";
   answersEl.innerHTML="";
+  if(currentQuiz.length===0){
+    questionEl.textContent="Pas encore de questions dans ce quiz.";
+    return;
+  }
   const q=currentQuiz[currentQuestion];
   questionEl.textContent=`Question ${currentQuestion+1} / ${currentQuiz.length} : ${q.question}`;
   q.answers.forEach((ans,i)=>{
@@ -232,10 +156,11 @@ function finishQuiz(){
   keys.forEach(k=>{
     if(currentQuiz===quizzes[k]){
       const bar=document.getElementById("score-bar-"+k);
-      bar.style.width=(score/currentQuiz.length*100)+"%";
+      bar.style.width=(currentQuiz.length?score/currentQuiz.length*100:0)+"%";
     }
   });
 }
 </script>
+
 </body>
 </html>
