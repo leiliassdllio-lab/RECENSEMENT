@@ -3,54 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connexion / Inscription – Team Hérisson</title>
-<link rel="stylesheet" href="style.css" />
+<title>Connexion – Hérisson</title>
 <style>
-  body { font-family: Arial, sans-serif; margin:0; padding:0; background-color: #f7f9f7; }
-  header, footer { background-color: #4CAF50; color:white; text-align:center; padding:15px 0; }
-  header h1 { margin:0; font-size:1.8em; }
-  .container { width:90%; max-width:500px; margin:30px auto; background:white; border-radius:10px; padding:30px; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
-  h2 { color:#4CAF50; text-align:center; margin-bottom:20px; }
-  form { display:flex; flex-direction:column; gap:15px; }
-  input { padding:10px; border-radius:5px; border:1px solid #ccc; width:100%; box-sizing:border-box; }
-  button { padding:10px; border:none; border-radius:5px; background-color:#4CAF50; color:white; font-weight:bold; cursor:pointer; transition:0.3s; }
-  button:hover { background-color:#43a047; }
-  .divider { text-align:center; margin:20px 0; font-weight:bold; color:#777; position:relative; }
-  .divider::before, .divider::after { content:""; position:absolute; top:50%; width:40%; height:1px; background:#ccc; }
-  .divider::before { left:0; }
-  .divider::after { right:0; }
-  a { color:#4CAF50; text-decoration:none; font-weight:bold; text-align:center; display:block; margin-top:10px; }
+body { font-family: Arial,sans-serif; background:#f7f9f7; margin:0; padding:0; }
+header, footer { background:#4CAF50; color:white; text-align:center; padding:10px 0; }
+.container { max-width:400px; margin:50px auto; background:white; padding:20px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+h2 { text-align:center; color:#4CAF50; margin-bottom:20px; }
+input, button { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
+button { background:#4CAF50; color:white; border:none; font-weight:bold; cursor:pointer; transition:0.3s; }
+button:hover { background:#43a047; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🦔 Team Hérisson</h1>
-</header>
+<header><h1>🦔 Connexion / Inscription</h1></header>
 
 <div class="container">
-  <h2>Créer un compte</h2>
-  <form id="signupForm">
-    <input type="email" id="email" placeholder="Email" required>
-    <input type="password" id="password" placeholder="Mot de passe" required>
-    <button type="submit">S'inscrire</button>
-  </form>
-
-  <div class="divider">OU</div>
-
   <h2>Se connecter</h2>
-  <form id="loginForm">
-    <input type="email" id="loginEmail" placeholder="Email" required>
-    <input type="password" id="loginPassword" placeholder="Mot de passe" required>
-    <button type="submit">Se connecter</button>
-  </form>
+  <input type="email" id="loginEmail" placeholder="Email">
+  <input type="password" id="loginPassword" placeholder="Mot de passe">
+  <button id="loginBtn">Se connecter</button>
 
-  <a href="index.html">← Retour à l'accueil</a>
+  <h2>Créer un compte</h2>
+  <input type="email" id="signupEmail" placeholder="Email">
+  <input type="password" id="signupPassword" placeholder="Mot de passe">
+  <button id="signupBtn">Créer un compte</button>
 </div>
 
-<footer>
-  © <span id="year"></span> – Team Hérisson
-</footer>
+<footer>© <span id="year"></span> – Team Hérisson</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
@@ -58,46 +38,40 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } f
 
 // --- Config Firebase ---
 const firebaseConfig = {
-  apiKey: "TON_API_KEY",
-  authDomain: "TON_PROJECT.firebaseapp.com",
-  projectId: "TON_PROJECT_ID",
-  storageBucket: "TON_PROJECT.appspot.com",
-  messagingSenderId: "TON_SENDER_ID",
-  appId: "TON_APP_ID"
+  apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
+  authDomain: "herisson-f80ba.firebaseapp.com",
+  projectId: "herisson-f80ba",
+  storageBucket: "herisson-f80ba.firebasestorage.app",
+  messagingSenderId: "142270421417",
+  appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// --- Affichage année ---
+// Affichage année
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// --- Création de compte ---
-document.getElementById("signupForm").addEventListener("submit", e=>{
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      alert("Compte créé !");
-      window.location.href = "Recensement.html";
-    })
-    .catch(err => alert(err.message));
+// --- Création compte ---
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    alert("Compte créé avec succès !");
+    window.location.href = "Recensement.html";
+  } catch(e) { alert(e.message); }
 });
 
 // --- Connexion ---
-document.getElementById("loginForm").addEventListener("submit", e=>{
-  e.preventDefault();
+document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      alert("Connecté !");
-      window.location.href = "Recensement.html";
-    })
-    .catch(err => alert(err.message));
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Connecté !");
+    window.location.href = "Recensement.html";
+  } catch(e) { alert(e.message); }
 });
 </script>
 
