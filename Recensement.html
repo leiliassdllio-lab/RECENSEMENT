@@ -95,9 +95,12 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <!-- 🔹 Firebase + Formulaire -->
+<!-- ... ton HTML reste inchangé jusqu'au script ... -->
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js"; // 🔹 import Auth
 
 // --- Config Firebase ---
 const firebaseConfig = {
@@ -112,6 +115,17 @@ const firebaseConfig = {
 // --- Initialisation Firebase ---
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app); // 🔹 Auth
+
+// 🔹 Vérifier si l’utilisateur est connecté
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    // Rediriger vers login si pas connecté
+    window.location.href = "login.html";
+  } else {
+    console.log("Utilisateur connecté :", user.uid);
+  }
+});
 
 // --- Pré-remplir la date ---
 const dateInput = document.getElementById('date');
@@ -163,7 +177,9 @@ const form = document.getElementById('recensementForm');
 form.addEventListener('submit', async e => {
   e.preventDefault();
 
+  // 🔹 inclure UID de l’utilisateur
   const recensement = {
+    uid: auth.currentUser.uid, // 🔹 l’UID
     lieu: form.lieu.value,
     date: form.date.value,
     methode: form.methode.value,
