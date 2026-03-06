@@ -51,7 +51,7 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -86,11 +86,21 @@ const showSignup = document.getElementById("showSignup");
 const showLogin = document.getElementById("showLogin");
 
 // Switch affichage
-showSignup.addEventListener("click", ()=>{ loginDiv.classList.add("hidden"); signupDiv.classList.remove("hidden"); });
-showLogin.addEventListener("click", ()=>{ signupDiv.classList.add("hidden"); loginDiv.classList.remove("hidden"); });
+showSignup.addEventListener("click", ()=>{
+  loginDiv.classList.add("hidden");
+  signupDiv.classList.remove("hidden");
+});
+showLogin.addEventListener("click", ()=>{
+  signupDiv.classList.add("hidden");
+  loginDiv.classList.remove("hidden");
+});
 
 // Redirection si déjà connecté
-onAuthStateChanged(auth, user => { if(user) window.location.href="recensement.html"; });
+onAuthStateChanged(auth, user => {
+  if(user){
+    setTimeout(()=>{ window.location.href="recensement.html"; }, 50);
+  }
+});
 
 // Récupérer email via username
 async function getEmailFromUsername(username){
@@ -108,16 +118,16 @@ loginBtn.addEventListener("click", async ()=>{
     const email = identifier.includes("@") ? identifier : await getEmailFromUsername(identifier);
     if(!email){ loginError.textContent="Nom d'utilisateur introuvable"; return; }
     await signInWithEmailAndPassword(auth,email,loginPass.value);
-    window.location.href = "recensement.html";
-  }catch(e){ loginError.textContent = e.message; }
+    // redirection gérée par onAuthStateChanged
+  }catch(e){ loginError.textContent=e.message; }
 });
 
-// Connexion Google
+// Google Sign-In
 googleBtn.addEventListener("click", async ()=>{
   loginError.textContent="";
   try {
     await signInWithPopup(auth, provider);
-    window.location.href="recensement.html";
+    // redirection gérée par onAuthStateChanged
   } catch(e){ loginError.textContent=e.message; }
 });
 
@@ -130,15 +140,10 @@ createBtn.addEventListener("click", async ()=>{
     const password = signupPass.value.trim();
     if(!username || !email || !password){ signupError.textContent="Tous les champs sont requis"; return; }
 
-    // Créer compte Auth
     const userCredential = await createUserWithEmailAndPassword(auth,email,password);
     const uid = userCredential.user.uid;
-
-    // Stocker username dans Firestore
     await setDoc(doc(db,"users",uid),{ uid, email, username });
-
-    // Redirection après création
-    window.location.href="recensement.html";
+    // redirection gérée par onAuthStateChanged
   }catch(e){ signupError.textContent=e.message; }
 });
 </script>
