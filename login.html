@@ -10,39 +10,42 @@ body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f7f9f7; d
 h1 { color:#4CAF50; margin-bottom:20px; }
 input { width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
 button { width:100%; padding:10px; border:none; border-radius:5px; margin-top:10px; font-weight:bold; cursor:pointer; transition:0.3s; }
-#loginBtn, #signupBtn { background-color:#4CAF50; color:white; }
-#loginBtn:hover, #signupBtn:hover { background-color:#43a047; }
-#googleBtn { background-color:#4285F4; color:white; margin-top:15px; }
+button:hover { opacity:0.9; }
+#loginBtn, #createBtn { background-color:#4CAF50; color:white; }
+#googleBtn { background-color:#4285F4; color:white; margin-top:10px; }
 #googleBtn:hover { background-color:#357ae8; }
 p { font-size:0.9em; margin-top:12px; }
-.error { color:red; margin-top:10px; font-weight:bold; }
-#signupForm { display:none; margin-top:15px; text-align:left; }
+a { cursor:pointer; color:#4CAF50; text-decoration:none; }
+.error { color:red; margin-top:10px; font-size:0.9em; }
+.hidden { display:none; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Connexion</h1>
 
   <!-- Connexion -->
-  <div id="loginForm">
-    <input type="text" id="userIdentifier" placeholder="Nom d’utilisateur ou email" required>
-    <input type="password" id="password" placeholder="Mot de passe" required>
+  <div id="loginDiv">
+    <h1>Connexion</h1>
+    <input type="text" id="loginUser" placeholder="Nom d’utilisateur / Email">
+    <input type="password" id="loginPass" placeholder="Mot de passe">
     <button id="loginBtn">Se connecter</button>
     <button id="googleBtn">Se connecter avec Google</button>
-    <p style="text-align:center;">Pas encore de compte ? <a href="#" id="showSignup">Créer un compte</a></p>
-    <div class="error" id="errorMsg"></div>
+    <p>Pas encore de compte ? <a id="showSignup">Créer un compte</a></p>
+    <div class="error" id="loginError"></div>
   </div>
 
   <!-- Création compte -->
-  <div id="signupForm">
-    <input type="text" id="signupUsername" placeholder="Nom d’utilisateur" required>
-    <input type="email" id="signupEmail" placeholder="Email" required>
-    <input type="password" id="signupPassword" placeholder="Mot de passe" required>
-    <button id="signupBtn">Créer votre compte</button>
-    <p style="text-align:center;">Déjà un compte ? <a href="#" id="showLogin">Se connecter</a></p>
+  <div id="signupDiv" class="hidden">
+    <h1>Créer un compte</h1>
+    <input type="text" id="signupUser" placeholder="Nom d’utilisateur">
+    <input type="email" id="signupEmail" placeholder="Email">
+    <input type="password" id="signupPass" placeholder="Mot de passe">
+    <button id="createBtn">Créer votre compte</button>
+    <p>Déjà un compte ? <a id="showLogin">Se connecter</a></p>
     <div class="error" id="signupError"></div>
   </div>
+
 </div>
 
 <script type="module">
@@ -50,7 +53,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebas
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { getFirestore, collection, doc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-// Config Firebase
+// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
   authDomain: "herisson-f80ba.firebaseapp.com",
@@ -65,40 +68,29 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Formulaires et éléments
-const loginForm = document.getElementById("loginForm");
-const signupForm = document.getElementById("signupForm");
-const userInput = document.getElementById("userIdentifier");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const googleBtn = document.getElementById("googleBtn");
-const showSignup = document.getElementById("showSignup");
-const showLogin = document.getElementById("showLogin");
-const errorMsg = document.getElementById("errorMsg");
-const signupUsername = document.getElementById("signupUsername");
+// Elements
+const loginDiv = document.getElementById("loginDiv");
+const signupDiv = document.getElementById("signupDiv");
+const loginUser = document.getElementById("loginUser");
+const loginPass = document.getElementById("loginPass");
+const signupUser = document.getElementById("signupUser");
 const signupEmail = document.getElementById("signupEmail");
-const signupPassword = document.getElementById("signupPassword");
-const signupBtn = document.getElementById("signupBtn");
+const signupPass = document.getElementById("signupPass");
+const loginError = document.getElementById("loginError");
 const signupError = document.getElementById("signupError");
 
+const loginBtn = document.getElementById("loginBtn");
+const googleBtn = document.getElementById("googleBtn");
+const createBtn = document.getElementById("createBtn");
+const showSignup = document.getElementById("showSignup");
+const showLogin = document.getElementById("showLogin");
+
+// Switch affichage
+showSignup.addEventListener("click", ()=>{ loginDiv.classList.add("hidden"); signupDiv.classList.remove("hidden"); });
+showLogin.addEventListener("click", ()=>{ signupDiv.classList.add("hidden"); loginDiv.classList.remove("hidden"); });
+
 // Redirection si déjà connecté
-onAuthStateChanged(auth, user => {
-  if(user) window.location.href = "recensement.html";
-});
-
-// Afficher formulaire création compte
-showSignup.addEventListener("click", e => {
-  e.preventDefault();
-  loginForm.style.display = "none";
-  signupForm.style.display = "block";
-});
-
-// Afficher formulaire connexion
-showLogin.addEventListener("click", e => {
-  e.preventDefault();
-  signupForm.style.display = "none";
-  loginForm.style.display = "block";
-});
+onAuthStateChanged(auth, user => { if(user) window.location.href="recensement.html"; });
 
 // Récupérer email via username
 async function getEmailFromUsername(username){
@@ -109,43 +101,47 @@ async function getEmailFromUsername(username){
 }
 
 // Connexion
-loginBtn.addEventListener("click", async () => {
-  errorMsg.textContent = "";
-  try {
-    let identifier = userInput.value.trim();
-    let email = identifier.includes("@") ? identifier : await getEmailFromUsername(identifier);
-    if(!email){ errorMsg.textContent="Nom d'utilisateur introuvable"; return; }
-    await signInWithEmailAndPassword(auth,email,passwordInput.value);
-    window.location.href = "recensement.html"; // redirection après connexion
-  } catch(e){ errorMsg.textContent = e.message; }
+loginBtn.addEventListener("click", async ()=>{
+  loginError.textContent="";
+  try{
+    const identifier = loginUser.value.trim();
+    const email = identifier.includes("@") ? identifier : await getEmailFromUsername(identifier);
+    if(!email){ loginError.textContent="Nom d'utilisateur introuvable"; return; }
+    await signInWithEmailAndPassword(auth,email,loginPass.value);
+    window.location.href = "recensement.html";
+  }catch(e){ loginError.textContent = e.message; }
 });
 
 // Connexion Google
-googleBtn.addEventListener("click", async () => {
-  try { await signInWithPopup(auth, provider); window.location.href="recensement.html"; }
-  catch(e){ errorMsg.textContent=e.message; }
+googleBtn.addEventListener("click", async ()=>{
+  loginError.textContent="";
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href="recensement.html";
+  } catch(e){ loginError.textContent=e.message; }
 });
 
 // Création compte
-signupBtn.addEventListener("click", async () => {
-  signupError.textContent = "";
-  try {
-    const username = signupUsername.value.trim();
+createBtn.addEventListener("click", async ()=>{
+  signupError.textContent="";
+  try{
+    const username = signupUser.value.trim();
     const email = signupEmail.value.trim();
-    const password = signupPassword.value.trim();
+    const password = signupPass.value.trim();
     if(!username || !email || !password){ signupError.textContent="Tous les champs sont requis"; return; }
 
-    // Créer le compte Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Créer compte Auth
+    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
     const uid = userCredential.user.uid;
 
     // Stocker username dans Firestore
     await setDoc(doc(db,"users",uid),{ uid, email, username });
 
     // Redirection après création
-    window.location.href = "recensement.html";
-  } catch(e){ signupError.textContent = e.message; }
+    window.location.href="recensement.html";
+  }catch(e){ signupError.textContent=e.message; }
 });
 </script>
+
 </body>
 </html>
