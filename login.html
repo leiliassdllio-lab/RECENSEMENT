@@ -51,9 +51,9 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, query, where, getDocs, collection } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-// Firebase config
+// --- Firebase config ---
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
   authDomain: "herisson-f80ba.firebaseapp.com",
@@ -63,12 +63,13 @@ const firebaseConfig = {
   appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
 };
 
+// --- Initialisation ---
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Elements
+// --- Elements ---
 const loginDiv = document.getElementById("loginDiv");
 const signupDiv = document.getElementById("signupDiv");
 const loginUser = document.getElementById("loginUser");
@@ -85,24 +86,14 @@ const createBtn = document.getElementById("createBtn");
 const showSignup = document.getElementById("showSignup");
 const showLogin = document.getElementById("showLogin");
 
-// Switch affichage
-showSignup.addEventListener("click", ()=>{
-  loginDiv.classList.add("hidden");
-  signupDiv.classList.remove("hidden");
-});
-showLogin.addEventListener("click", ()=>{
-  signupDiv.classList.add("hidden");
-  loginDiv.classList.remove("hidden");
-});
+// --- Switch affichage ---
+showSignup.addEventListener("click", ()=>{ loginDiv.classList.add("hidden"); signupDiv.classList.remove("hidden"); });
+showLogin.addEventListener("click", ()=>{ signupDiv.classList.add("hidden"); loginDiv.classList.remove("hidden"); });
 
-// Redirection si déjà connecté
-onAuthStateChanged(auth, user => {
-  if(user){
-    setTimeout(()=>{ window.location.href="recensement.html"; }, 50);
-  }
-});
+// --- Redirection si déjà connecté ---
+onAuthStateChanged(auth, user => { if(user) window.location.href = "recensement.html"; });
 
-// Récupérer email via username
+// --- Récupérer email via username ---
 async function getEmailFromUsername(username){
   const q = query(collection(db,"users"), where("username","==",username));
   const snapshot = await getDocs(q);
@@ -110,7 +101,7 @@ async function getEmailFromUsername(username){
   return null;
 }
 
-// Connexion
+// --- Connexion email/password ---
 loginBtn.addEventListener("click", async ()=>{
   loginError.textContent="";
   try{
@@ -118,20 +109,20 @@ loginBtn.addEventListener("click", async ()=>{
     const email = identifier.includes("@") ? identifier : await getEmailFromUsername(identifier);
     if(!email){ loginError.textContent="Nom d'utilisateur introuvable"; return; }
     await signInWithEmailAndPassword(auth,email,loginPass.value);
-    // redirection gérée par onAuthStateChanged
+    window.location.href = "recensement.html"; // redirection directe après succès
   }catch(e){ loginError.textContent=e.message; }
 });
 
-// Google Sign-In
+// --- Google Sign-In ---
 googleBtn.addEventListener("click", async ()=>{
   loginError.textContent="";
-  try {
+  try{
     await signInWithPopup(auth, provider);
-    // redirection gérée par onAuthStateChanged
-  } catch(e){ loginError.textContent=e.message; }
+    window.location.href = "recensement.html"; // redirection directe après succès
+  }catch(e){ loginError.textContent=e.message; }
 });
 
-// Création compte
+// --- Création compte ---
 createBtn.addEventListener("click", async ()=>{
   signupError.textContent="";
   try{
@@ -143,7 +134,8 @@ createBtn.addEventListener("click", async ()=>{
     const userCredential = await createUserWithEmailAndPassword(auth,email,password);
     const uid = userCredential.user.uid;
     await setDoc(doc(db,"users",uid),{ uid, email, username });
-    // redirection gérée par onAuthStateChanged
+
+    window.location.href = "recensement.html"; // redirection directe après création
   }catch(e){ signupError.textContent=e.message; }
 });
 </script>
