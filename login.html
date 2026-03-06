@@ -22,11 +22,6 @@ button:hover { background:#43a047; }
 .tree2 { bottom:10px; right:20px; }
 .tree3 { top:50px; right:50px; }
 #preview img { max-width:100%; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2); margin-top:10px; }
-.faq-container { background:#e8f5e9; border-left:5px solid #4CAF50; padding:15px 20px; margin-top:25px; border-radius:8px; }
-.faq-container h2 { font-size:1.3em; color:#2e7d32; text-align:left; margin-bottom:10px; }
-.faq-container ul { list-style:none; padding-left:0; }
-.faq-container li { margin-bottom:10px; font-size:1em; }
-.faq-container li span { margin-right:8px; }
 #logoutBtn { background:#d32f2f; margin-bottom:20px; }
 #logoutBtn:hover { background:#b71c1c; }
 </style>
@@ -50,20 +45,20 @@ button:hover { background:#43a047; }
 
 <form id="recensementForm">
   <p class="icon-label"><span>📍</span> Où avez-vous vu le hérisson ?</p>
-  <input type="text" name="lieu" id="lieu" placeholder="Adresse ou lieu précis" required>
+  <input type="text" id="lieu" required>
 
   <p class="icon-label"><span>📅</span> Quand l’avez-vous observé ?</p>
-  <input type="date" name="date" id="date" required>
+  <input type="date" id="date" required>
 
   <p class="icon-label"><span>🔍</span> Comment l’avez-vous vu ?</p>
-  <select name="methode" required>
+  <select id="methode" required>
     <option value="">--Sélectionnez--</option>
     <option value="observatoire">Observation directe</option>
     <option value="camera">Caméra / piège photo</option>
     <option value="autre">Autre</option>
   </select>
 
-  <p class="icon-label"><span>📷</span> Ajouter une image / prendre une photo</p>
+  <p class="icon-label"><span>📷</span> Ajouter une image</p>
   <label for="photoUpload" style="display:flex; flex-direction:column; align-items:center; border:2px dashed #4CAF50; padding:15px; border-radius:10px; cursor:pointer;">
     <span style="font-size:2em;">📸</span>
     <span>Cliquer pour choisir ou prendre une photo</span>
@@ -72,26 +67,13 @@ button:hover { background:#43a047; }
   <div id="preview"></div>
 
   <p class="icon-label"><span>📝</span> Notes supplémentaires</p>
-  <textarea name="notes" placeholder="Ajoutez vos remarques"></textarea>
+  <textarea id="notes" placeholder="Ajoutez vos remarques"></textarea>
 
   <button type="submit">Envoyer</button>
 </form>
-
-<div class="faq-container">
-<h2>💡 Conseils pour observer les hérissons</h2>
-<ul>
-<li><span>🦔</span> Observez les hérissons de préférence au crépuscule ou la nuit.</li>
-<li><span>🔇</span> Évitez de faire du bruit ou d’allumer une lumière forte.</li>
-<li><span>📷</span> Si vous prenez une photo, utilisez le flash avec précaution.</li>
-<li><span>🏡</span> Respectez l’habitat naturel et ne dérangez pas les hérissons.</li>
-<li><span>📝</span> Notez toujours la localisation exacte et la date de votre observation.</li>
-</ul>
-</div>
 </div>
 
-<footer>
-© <span id="year"></span> – Team Hérisson
-</footer>
+<footer>© <span id="year"></span> – Team Hérisson</footer>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script type="module">
@@ -118,76 +100,68 @@ logoutBtn.addEventListener("click", async () => {
   window.location.href = "login.html";
 });
 
-// Vérification connexion
+// 🔹 ATTENTION : attendre que l'état Auth soit chargé avant toute action
 onAuthStateChanged(auth, user => {
-  if(!user) window.location.href = "login.html";
+  if(!user) {
+    // Redirection seulement après confirmation que l'utilisateur n'est pas connecté
+    setTimeout(() => window.location.href="login.html", 100);
+  } else {
+    initPage(user);
+  }
 });
 
-// Date auto
-const dateInput = document.getElementById('date');
-const today = new Date();
-dateInput.value = today.toISOString().slice(0,10);
-document.getElementById("year").textContent = today.getFullYear();
+// Fonction pour initialiser la page après Auth
+function initPage(user){
+  // Date et année
+  const dateInput = document.getElementById('date');
+  const today = new Date();
+  dateInput.value = today.toISOString().slice(0,10);
+  document.getElementById("year").textContent = today.getFullYear();
 
-// Carte et géolocalisation
-const map = L.map('map').setView([50.8467,4.3525],13);
-L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+  // Carte et géolocalisation
+  const map = L.map('map').setView([50.8467,4.3525],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+  let marker;
+  function updateLieu(lat,lon){ document.getElementById('lieu').value=`Lat:${lat.toFixed(5)}, Lon:${lon.toFixed(5)}`; }
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const lat=pos.coords.latitude;
+      const lon=pos.coords.longitude;
+      map.setView([lat,lon],15);
+      marker=L.marker([lat,lon],{draggable:true}).addTo(map).bindPopup("Votre position actuelle").openPopup();
+      updateLieu(lat,lon);
+      marker.on('dragend', e=>{ const p=e.target.getLatLng(); updateLieu(p.lat,p.lng); });
+    }, err=>{ alert("Impossible de récupérer votre position : "+err.message); });
+  }
 
-let marker;
-function updateLieu(lat,lon){ document.getElementById('lieu').value = `Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}`; }
-if(navigator.geolocation){
-navigator.geolocation.getCurrentPosition(pos=>{
-  const lat = pos.coords.latitude;
-  const lon = pos.coords.longitude;
-  map.setView([lat, lon], 15);
-  marker = L.marker([lat, lon], {draggable:true}).addTo(map).bindPopup("Votre position actuelle. Déplacez le marqueur si nécessaire.").openPopup();
-  updateLieu(lat,lon);
-  marker.on('dragend', e=>{
-    const p = e.target.getLatLng();
-    updateLieu(p.lat,p.lng);
+  // Prévisualisation photo
+  const photoInput = document.getElementById('photoUpload');
+  const previewDiv = document.getElementById('preview');
+  photoInput.addEventListener('change', function(){
+    const file=this.files[0];
+    if(file){ const reader=new FileReader(); reader.onload=e=>previewDiv.innerHTML=`<img src="${e.target.result}">`; reader.readAsDataURL(file);}
   });
-}, err=>{ alert("Impossible de récupérer votre position : "+err.message); });
+
+  // Formulaire Firestore
+  const form=document.getElementById('recensementForm');
+  form.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const recensement={
+      uid: user.uid,
+      lieu: document.getElementById('lieu').value,
+      date: dateInput.value,
+      methode: document.getElementById('methode').value,
+      notes: document.getElementById('notes').value
+    };
+    if(marker){ const p=marker.getLatLng(); recensement.latitude=p.lat; recensement.longitude=p.lng; }
+    try{
+      await addDoc(collection(db,"recensements"), recensement);
+      form.reset(); previewDiv.innerHTML="";
+      if(marker) marker.setLatLng(map.getCenter());
+      window.location.href="confirmation.html";
+    }catch(err){ console.error(err); alert("Impossible d'enregistrer le recensement."); }
+  });
 }
-
-// Prévisualisation image
-const photoInput = document.getElementById('photoUpload');
-const previewDiv = document.getElementById('preview');
-photoInput.addEventListener('change', function(){
-  const file = this.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = e => previewDiv.innerHTML = `<img src="${e.target.result}">`;
-    reader.readAsDataURL(file);
-  }
-});
-
-// Formulaire Firestore
-const form = document.getElementById('recensementForm');
-form.addEventListener('submit', async e=>{
-  e.preventDefault();
-  const recensement = {
-    uid: auth.currentUser.uid,
-    lieu: form.lieu.value,
-    date: form.date.value,
-    methode: form.methode.value,
-    notes: form.notes.value
-  };
-  if(marker){
-    const p = marker.getLatLng();
-    recensement.latitude = p.lat;
-    recensement.longitude = p.lng;
-  }
-  try{
-    await addDoc(collection(db,"recensements"), recensement);
-    form.reset();
-    previewDiv.innerHTML="";
-    if(marker) marker.setLatLng(map.getCenter());
-    window.location.href="confirmation.html";
-  }catch(err){
-    console.error("Erreur :",err);
-    alert("Impossible d'enregistrer le recensement.");
-  }
-});
 </script>
 </body>
 </html>
