@@ -3,37 +3,83 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connexion – Hérisson</title>
+<title>Recense un Hérisson</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <style>
-body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f7f9f7; display:flex; justify-content:center; align-items:center; height:100vh; }
-.container { background:white; padding:30px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.2); width:90%; max-width:400px; text-align:center; }
-h1 { color:#4CAF50; margin-bottom:20px; }
-input { width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
-button { width:100%; padding:10px; border:none; border-radius:5px; margin-top:10px; font-weight:bold; cursor:pointer; transition:0.3s; }
-#loginBtn { background-color:#4CAF50; color:white; }
-#loginBtn:hover { background-color:#43a047; }
-#googleBtn { background-color:#4285F4; color:white; margin-top:15px; }
-#googleBtn:hover { background-color:#357ae8; }
-p { font-size:0.9em; margin-top:12px; }
-.error { color:red; margin-top:10px; }
+body { font-family:'Arial',sans-serif; background:#f7f9f7; margin:0; padding:0; }
+header, footer { background:#4CAF50; color:white; text-align:center; padding:10px 0; }
+.container { width:90%; max-width:800px; margin:20px auto; background:white; border-radius:10px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.2); position:relative; }
+h2 { text-align:center; color:#4CAF50; margin-bottom:20px; }
+form p { margin:15px 0 5px; font-weight:bold; }
+input, select, textarea, button { width:100%; padding:10px; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
+button { background:#4CAF50; color:white; font-weight:bold; border:none; cursor:pointer; margin-top:15px; transition:0.3s; }
+button:hover { background:#43a047; }
+#map { height:300px; border-radius:10px; margin-bottom:20px; }
+.icon-label { display:flex; align-items:center; gap:10px; font-weight:normal; }
+.icon-label span { font-size:1.5em; }
+.tree { position:absolute; font-size:2em; opacity:0.4; }
+.tree1 { top:10px; left:10px; }
+.tree2 { bottom:10px; right:20px; }
+.tree3 { top:50px; right:50px; }
+#preview img { max-width:100%; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2); margin-top:10px; }
+#logoutBtn { background:#d32f2f; margin-bottom:20px; }
+#logoutBtn:hover { background:#b71c1c; }
 </style>
 </head>
 <body>
 
+<header>
+<h1>🦔 Recense un Hérisson</h1>
 <div class="container">
-  <h1>Connexion</h1>
-  <input type="text" id="userIdentifier" placeholder="Nom d’utilisateur ou email" required>
-  <input type="password" id="password" placeholder="Mot de passe" required>
-  <button id="loginBtn">Se connecter</button>
-  <button id="googleBtn">Se connecter avec Google</button>
-  <p>Pas encore de compte ? <a href="#" id="signupLink">Créer un compte</a></p>
-  <div class="error" id="errorMsg"></div>
+  <button id="logoutBtn">Se déconnecter</button>
+</div>
+</header>
+
+<div class="container">
+<div class="tree tree1">🌳</div>
+<div class="tree tree2">🌲</div>
+<div class="tree tree3">🌳</div>
+
+<h2>Localisation & Observation</h2>
+<div id="map"></div>
+
+<form id="recensementForm">
+  <p class="icon-label"><span>📍</span> Où avez-vous vu le hérisson ?</p>
+  <input type="text" id="lieu" required>
+
+  <p class="icon-label"><span>📅</span> Quand l’avez-vous observé ?</p>
+  <input type="date" id="date" required>
+
+  <p class="icon-label"><span>🔍</span> Comment l’avez-vous vu ?</p>
+  <select id="methode" required>
+    <option value="">--Sélectionnez--</option>
+    <option value="observatoire">Observation directe</option>
+    <option value="camera">Caméra / piège photo</option>
+    <option value="autre">Autre</option>
+  </select>
+
+  <p class="icon-label"><span>📷</span> Ajouter une image</p>
+  <label for="photoUpload" style="display:flex; flex-direction:column; align-items:center; border:2px dashed #4CAF50; padding:15px; border-radius:10px; cursor:pointer;">
+    <span style="font-size:2em;">📸</span>
+    <span>Cliquer pour choisir ou prendre une photo</span>
+  </label>
+  <input type="file" id="photoUpload" accept="image/*" capture="environment" style="display:none;">
+  <div id="preview"></div>
+
+  <p class="icon-label"><span>📝</span> Notes supplémentaires</p>
+  <textarea id="notes" placeholder="Ajoutez vos remarques"></textarea>
+
+  <button type="submit">Envoyer</button>
+</form>
 </div>
 
+<footer>© <span id="year"></span> – Team Hérisson</footer>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
@@ -45,63 +91,77 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+const auth = getAuth(app);
 
-const userInput = document.getElementById("userIdentifier");
-const passwordInput = document.getElementById("password");
-const loginBtn = document.getElementById("loginBtn");
-const googleBtn = document.getElementById("googleBtn");
-const signupLink = document.getElementById("signupLink");
-const errorMsg = document.getElementById("errorMsg");
+let currentUsername = null;
 
-// Redirection si déjà connecté
-onAuthStateChanged(auth, user => { if(user) window.location.href="recensement.html"; });
+// 🔹 Redirection si non connecté et récupération du username
+onAuthStateChanged(auth, async user => {
+  if(!user) {
+    window.location.href = "login.html";
+  } else {
+    const userDoc = await getDoc(doc(db,"users",user.uid));
+    if(userDoc.exists()) currentUsername = userDoc.data().username;
+  }
+});
 
-// Fonction pour récupérer email via username si nécessaire
-async function getEmailFromUsername(username){
-  const q = query(collection(db,"users"), where("username","==",username));
-  const snapshot = await getDocs(q);
-  if(!snapshot.empty) return snapshot.docs[0].data().email;
-  return null;
+const logoutBtn = document.getElementById("logoutBtn");
+logoutBtn.addEventListener("click", async () => { await signOut(auth); window.location.href="login.html"; });
+
+// Date et année
+const dateInput = document.getElementById('date');
+const today = new Date();
+dateInput.value = today.toISOString().slice(0,10);
+document.getElementById("year").textContent = today.getFullYear();
+
+// Carte et géolocalisation
+const map = L.map('map').setView([50.8467,4.3525],13);
+L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',{ attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
+let marker;
+function updateLieu(lat,lon){ document.getElementById('lieu').value=`Lat:${lat.toFixed(5)}, Lon:${lon.toFixed(5)}`; }
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude;
+    const lon=pos.coords.longitude;
+    map.setView([lat,lon],15);
+    marker=L.marker([lat,lon],{draggable:true}).addTo(map).bindPopup("Votre position actuelle").openPopup();
+    updateLieu(lat,lon);
+    marker.on('dragend', e=>{ const p=e.target.getLatLng(); updateLieu(p.lat,p.lng); });
+  }, err=>{ alert("Impossible de récupérer votre position : "+err.message); });
 }
 
-// Connexion
-loginBtn.addEventListener("click", async ()=>{
-  errorMsg.textContent="";
-  try {
-    let identifier = userInput.value.trim();
-    let email = identifier.includes("@") ? identifier : await getEmailFromUsername(identifier);
-    if(!email){ errorMsg.textContent="Nom d'utilisateur introuvable"; return; }
-    await signInWithEmailAndPassword(auth,email,passwordInput.value);
-  } catch(e){ errorMsg.textContent=e.message; }
+// Prévisualisation photo
+const photoInput = document.getElementById('photoUpload');
+const previewDiv = document.getElementById('preview');
+photoInput.addEventListener('change', function(){
+  const file=this.files[0];
+  if(file){ const reader=new FileReader(); reader.onload=e=>previewDiv.innerHTML=`<img src="${e.target.result}">`; reader.readAsDataURL(file);}
 });
 
-// Connexion Google
-googleBtn.addEventListener("click", async ()=>{
-  errorMsg.textContent="";
-  try { await signInWithPopup(auth, provider); }
-  catch(e){ errorMsg.textContent=e.message; }
-});
-
-// Création de compte
-signupLink.addEventListener("click", async e=>{
+// Soumission formulaire vers Firestore
+const form=document.getElementById('recensementForm');
+form.addEventListener('submit', async e=>{
   e.preventDefault();
-  errorMsg.textContent="";
-  try {
-    const username = prompt("Choisissez un nom d'utilisateur unique :");
-    if(!username){ errorMsg.textContent="Nom d'utilisateur requis"; return; }
-    const identifier = userInput.value.trim();
-    if(!identifier.includes("@")){ errorMsg.textContent="Veuillez entrer un email valide pour la création"; return; }
-    // Créer compte Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, identifier, passwordInput.value);
-    const uid = userCredential.user.uid;
-    // Stocker le username dans Firestore
-    await setDoc(doc(db,"users",uid),{ uid, email: identifier, username });
-  } catch(e){ errorMsg.textContent=e.message; }
+  if(!auth.currentUser || !currentUsername) return window.location.href="login.html";
+
+  const recensement={
+    uid: auth.currentUser.uid,
+    username: currentUsername,
+    lieu: document.getElementById('lieu').value,
+    date: dateInput.value,
+    methode: document.getElementById('methode').value,
+    notes: document.getElementById('notes').value
+  };
+  if(marker){ const p=marker.getLatLng(); recensement.latitude=p.lat; recensement.longitude=p.lng; }
+
+  try{
+    await addDoc(collection(db,"recensements"), recensement);
+    form.reset(); previewDiv.innerHTML="";
+    if(marker) marker.setLatLng(map.getCenter());
+    window.location.href="confirmation.html";
+  }catch(err){ console.error(err); alert("Impossible d'enregistrer le recensement."); }
 });
 </script>
-
 </body>
 </html>
