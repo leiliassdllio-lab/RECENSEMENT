@@ -3,64 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recense un Hérisson</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<title>Connexion – Hérisson</title>
 <style>
-body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f7f9f7; }
-header, footer { background:#4CAF50; color:white; text-align:center; padding:10px 0; }
-.container { width:90%; max-width:800px; margin:20px auto; background:white; border-radius:10px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.2); position:relative; }
-h2 { text-align:center; color:#4CAF50; margin-bottom:20px; }
-input, select, textarea, button { width:100%; padding:10px; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; margin-bottom:10px; }
-button { background:#4CAF50; color:white; border:none; font-weight:bold; cursor:pointer; transition:0.3s; }
-button:hover { background:#43a047; }
-#map { height:300px; border-radius:10px; margin-bottom:20px; }
-#preview img { max-width:100%; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2); margin-top:10px; }
-.logoutBtn { background:#f44336; margin-top:15px; }
-.logoutBtn:hover { background:#d32f2f; }
+body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f7f9f7; display:flex; justify-content:center; align-items:center; height:100vh; }
+.container { background:white; padding:30px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.2); width:90%; max-width:400px; text-align:center; }
+h1 { color:#4CAF50; margin-bottom:20px; }
+input { width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
+button { width:100%; padding:10px; border:none; border-radius:5px; margin-top:10px; font-weight:bold; cursor:pointer; transition:0.3s; }
+#loginBtn { background-color:#4CAF50; color:white; }
+#loginBtn:hover { background-color:#43a047; }
+#googleBtn { background-color:#4285F4; color:white; margin-top:15px; }
+#googleBtn:hover { background-color:#357ae8; }
+p { font-size:0.9em; margin-top:12px; }
+.error { color:red; margin-top:10px; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🦔 Recense un Hérisson</h1>
-  <div class="container">
-    <button class="logoutBtn" id="logoutBtn">Déconnexion</button>
-    <a href="main.html" style="display:inline-block; margin-top:10px; color:white;">Retour à l'accueil</a>
-  </div>
-</header>
-
 <div class="container">
-  <h2>Localisation & Observation</h2>
-  <div id="map"></div>
-
-  <form id="recensementForm">
-    <input type="text" name="lieu" id="lieu" placeholder="Adresse ou lieu précis" required>
-    <input type="date" name="date" id="date" required>
-    <select name="methode" required>
-      <option value="">--Sélectionnez--</option>
-      <option value="observatoire">Observation directe</option>
-      <option value="camera">Caméra / piège photo</option>
-      <option value="autre">Autre</option>
-    </select>
-    <label for="photoUpload" style="border:2px dashed #4CAF50; padding:10px; display:block; cursor:pointer; text-align:center; margin-bottom:10px;">
-      📷 Ajouter une photo
-    </label>
-    <input type="file" id="photoUpload" accept="image/*" capture="environment" style="display:none;">
-    <div id="preview"></div>
-    <textarea name="notes" placeholder="Ajoutez vos remarques"></textarea>
-    <button type="submit">Envoyer</button>
-  </form>
+  <h1>Connexion</h1>
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Mot de passe" required>
+  <button id="loginBtn">Se connecter</button>
+  <button id="googleBtn">Se connecter avec Google</button>
+  <p>Pas encore de compte ? <a href="#" id="signupLink">Créer un compte</a></p>
+  <div class="error" id="errorMsg"></div>
 </div>
 
-<footer>
-  © <span id="year"></span> – Team Hérisson
-</footer>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
@@ -72,76 +44,52 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-const yearEl = document.getElementById("year");
-yearEl.textContent = new Date().getFullYear();
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const googleBtn = document.getElementById("googleBtn");
+const signupLink = document.getElementById("signupLink");
+const errorMsg = document.getElementById("errorMsg");
 
-const logoutBtn = document.getElementById("logoutBtn");
-logoutBtn.addEventListener("click", async () => { await signOut(auth); window.location.href="login.html"; });
-
-// Redirection si non connecté
+// Si déjà connecté, rediriger vers recensement
 onAuthStateChanged(auth, user => {
-  if(!user) window.location.href = "login.html";
+  if(user) window.location.href = "recensement.html";
 });
 
-// Pré-remplir date
-const dateInput = document.getElementById('date');
-dateInput.value = new Date().toISOString().slice(0,10);
-
-// Carte
-const map = L.map('map').setView([50.8467, 4.3525], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
-let marker;
-function updateLieu(lat, lon){ document.getElementById('lieu').value = `Lat:${lat.toFixed(5)},Lon:${lon.toFixed(5)}`; }
-
-if(navigator.geolocation){
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const lat=pos.coords.latitude, lon=pos.coords.longitude;
-    map.setView([lat, lon],15);
-    marker=L.marker([lat, lon], {draggable:true}).addTo(map).bindPopup("Votre position. Déplacez le marqueur si besoin.").openPopup();
-    updateLieu(lat, lon);
-    marker.on('dragend', e=>{ const p=e.target.getLatLng(); updateLieu(p.lat,p.lng); });
-  });
-}
-
-// Prévisualisation image
-const photoInput = document.getElementById('photoUpload');
-const previewDiv = document.getElementById('preview');
-photoInput.addEventListener('change', function(){
-  const file = this.files[0];
-  if(file){
-    const reader = new FileReader();
-    reader.onload = e => previewDiv.innerHTML = `<img src="${e.target.result}">`;
-    reader.readAsDataURL(file);
+// Connexion email/password
+loginBtn.addEventListener("click", async () => {
+  errorMsg.textContent = "";
+  try {
+    await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+  } catch(e) {
+    errorMsg.textContent = e.message;
   }
 });
 
-// Soumission formulaire
-const form = document.getElementById('recensementForm');
-form.addEventListener('submit', async e=>{
-  e.preventDefault();
-  const user = auth.currentUser;
-  if(!user){ alert("Vous devez être connecté"); return; }
-
-  const recensement = {
-    uid: user.uid,
-    email: user.email,
-    lieu: form.lieu.value,
-    date: form.date.value,
-    methode: form.methode.value,
-    notes: form.notes.value
-  };
-
-  if(marker){ const p=marker.getLatLng(); recensement.latitude=p.lat; recensement.longitude=p.lng; }
-
+// Connexion Google
+googleBtn.addEventListener("click", async () => {
+  errorMsg.textContent = "";
   try {
-    await addDoc(collection(db,"recensements"), recensement);
-    form.reset(); previewDiv.innerHTML=""; if(marker) marker.setLatLng(map.getCenter());
-    alert("Recensement enregistré !");
-  } catch(err){ console.error(err); alert("Erreur lors de l'enregistrement."); }
+    await signInWithPopup(auth, provider);
+  } catch(e) {
+    errorMsg.textContent = e.message;
+  }
+});
+
+// Création de compte
+signupLink.addEventListener("click", async (e) => {
+  e.preventDefault();
+  errorMsg.textContent = "";
+  try {
+    await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+  } catch(e) {
+    errorMsg.textContent = e.message;
+  }
 });
 </script>
+
 </body>
 </html>
