@@ -8,50 +8,38 @@
 body { font-family: Arial,sans-serif; margin:0; padding:0; background:#f7f9f7; display:flex; justify-content:center; align-items:center; height:100vh; }
 .container { background:white; padding:30px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.2); width:90%; max-width:400px; text-align:center; }
 h1 { color:#4CAF50; margin-bottom:20px; }
-input { width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; transition:0.3s; }
-input.error { border:2px solid #d32f2f; }
+input { width:100%; padding:10px; margin:8px 0; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
 button { width:100%; padding:10px; border:none; border-radius:5px; margin-top:10px; font-weight:bold; cursor:pointer; transition:0.3s; }
-#createBtn { background-color:#4CAF50; color:white; }
-#createBtn:hover { background-color:#43a047; }
-#loginBtn { background-color:#4285F4; color:white; }
-#loginBtn:hover { background-color:#357ae8; }
-.switchLink { font-size:0.9em; margin-top:12px; display:block; cursor:pointer; color:#4CAF50; text-decoration:underline; }
-.errorMsg { color:#d32f2f; font-size:0.9em; margin-top:5px; text-align:left; }
+#loginBtn { background-color:#4CAF50; color:white; }
+#loginBtn:hover { background-color:#43a047; }
+#googleBtn { background-color:#4285F4; color:white; margin-top:15px; }
+#googleBtn:hover { background-color:#357ae8; }
+p { font-size:0.9em; margin-top:12px; }
+.error { color:red; margin-top:10px; }
 </style>
 </head>
 <body>
 
-<!-- Création de compte -->
-<div class="container" id="createContainer">
-  <h1>Créer un compte</h1>
-  <input type="text" id="usernameCreate" placeholder="Nom d'utilisateur">
-  <div class="errorMsg" id="errorUsernameCreate"></div>
-  <input type="email" id="emailCreate" placeholder="Email">
-  <div class="errorMsg" id="errorEmailCreate"></div>
-  <input type="password" id="passwordCreate" placeholder="Mot de passe">
-  <div class="errorMsg" id="errorPasswordCreate"></div>
-  <button id="createBtn">Créer un compte</button>
-  <span class="switchLink" id="toLogin">Déjà un compte ? Connexion</span>
-  <div class="errorMsg" id="errorCreateGeneral"></div>
-</div>
+<div class="container">
+  <h1>Connexion / Création</h1>
 
-<!-- Connexion -->
-<div class="container" id="loginContainer" style="display:none;">
-  <h1>Connexion</h1>
-  <input type="text" id="userOrEmailLogin" placeholder="Nom d'utilisateur ou Email">
-  <div class="errorMsg" id="errorUserLogin"></div>
-  <input type="password" id="passwordLogin" placeholder="Mot de passe">
-  <div class="errorMsg" id="errorPasswordLogin"></div>
+  <!-- Identifiant (username ou email) -->
+  <input type="text" id="userIdentifier" placeholder="Nom d’utilisateur ou email" required>
+  <input type="password" id="password" placeholder="Mot de passe" required>
+
+  <!-- Boutons -->
   <button id="loginBtn">Se connecter</button>
-  <span class="switchLink" id="toCreate">Pas encore de compte ? Créer un compte</span>
-  <div class="errorMsg" id="errorLoginGeneral"></div>
+  <button id="googleBtn">Se connecter avec Google</button>
+  <p>Pas encore de compte ? <a href="#" id="signupLink">Créer un compte</a></p>
+  <div class="error" id="errorMsg"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, collection, doc, setDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, query, where, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
+// --- Config Firebase ---
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
   authDomain: "herisson-f80ba.firebaseapp.com",
@@ -62,90 +50,78 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
 
-// 🔹 Commutateurs affichage
-const createContainer = document.getElementById("createContainer");
-const loginContainer = document.getElementById("loginContainer");
-document.getElementById("toLogin").addEventListener("click", ()=>{ showLogin(); });
-document.getElementById("toCreate").addEventListener("click", ()=>{ showCreate(); });
+const userInput = document.getElementById("userIdentifier");
+const passwordInput = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const googleBtn = document.getElementById("googleBtn");
+const signupLink = document.getElementById("signupLink");
+const errorMsg = document.getElementById("errorMsg");
 
-function showLogin(){
-  createContainer.style.display="none";
-  loginContainer.style.display="block";
-  clearErrors();
+// 🔹 Redirection si déjà connecté
+onAuthStateChanged(auth, user => { if(user) window.location.href="recensement.html"; });
+
+// 🔹 Récupérer email depuis username
+async function getEmailFromUsername(username){
+  const q = query(collection(db,"users"), where("username","==",username));
+  const snapshot = await getDocs(q);
+  if(!snapshot.empty) return snapshot.docs[0].data().email;
+  return null;
 }
-function showCreate(){
-  loginContainer.style.display="none";
-  createContainer.style.display="block";
-  clearErrors();
+
+// 🔹 Récupérer username depuis uid
+async function getUsername(uid){
+  const userDoc = await getDoc(doc(db,"users",uid));
+  return userDoc.exists() ? userDoc.data().username : null;
 }
-
-// 🔹 Vérification si utilisateur déjà connecté
-onAuthStateChanged(auth,user=>{
-  if(user) window.location.href="recensement.html";
-});
-
-// 🔹 Création compte
-document.getElementById("createBtn").addEventListener("click", async ()=>{
-  clearErrors();
-  const username = document.getElementById("usernameCreate").value.trim();
-  const email = document.getElementById("emailCreate").value.trim();
-  const password = document.getElementById("passwordCreate").value;
-  let hasError = false;
-
-  if(!username){ setError("errorUsernameCreate","Nom requis"); hasError=true; }
-  if(!email){ setError("errorEmailCreate","Email requis"); hasError=true; }
-  if(!password){ setError("errorPasswordCreate","Mot de passe requis"); hasError=true; }
-  if(hasError) return;
-
-  try{
-    const userCredential = await createUserWithEmailAndPassword(auth,email,password);
-    const uid = userCredential.user.uid;
-    await setDoc(doc(db,"users",uid),{ username:username, email:email });
-    window.location.href="recensement.html";
-  }catch(e){
-    setError("errorCreateGeneral",e.message);
-  }
-});
 
 // 🔹 Connexion
-document.getElementById("loginBtn").addEventListener("click", async ()=>{
-  clearErrors();
-  const loginValue = document.getElementById("userOrEmailLogin").value.trim();
-  const password = document.getElementById("passwordLogin").value;
-  let hasError=false;
-  if(!loginValue){ setError("errorUserLogin","Nom ou Email requis"); hasError=true; }
-  if(!password){ setError("errorPasswordLogin","Mot de passe requis"); hasError=true; }
-  if(hasError) return;
-
+loginBtn.addEventListener("click", async ()=>{
+  errorMsg.textContent="";
   try{
-    let emailToUse = loginValue;
-    // Vérifier si loginValue est un username
-    const q = query(collection(db,"users"),where("username","==",loginValue));
-    const querySnapshot = await getDocs(q);
-    if(!querySnapshot.empty){ emailToUse = querySnapshot.docs[0].data().email; }
+    let identifier = userInput.value.trim();
+    let email = identifier.includes("@") ? identifier : await getEmailFromUsername(identifier);
+    if(!email){ errorMsg.textContent="Nom d'utilisateur introuvable"; return; }
 
-    await signInWithEmailAndPassword(auth,emailToUse,password);
-    window.location.href="recensement.html";
-  }catch(e){
-    setError("errorLoginGeneral","Nom ou mot de passe incorrect");
-    document.getElementById("userOrEmailLogin").classList.add("error");
-    document.getElementById("passwordLogin").classList.add("error");
-  }
+    const userCredential = await signInWithEmailAndPassword(auth,email,passwordInput.value);
+    const username = await getUsername(userCredential.user.uid);
+    localStorage.setItem("username", username || "");
+  }catch(e){ errorMsg.textContent=e.message; }
 });
 
-// 🔹 Helpers erreurs
-function setError(id,msg){
-  document.getElementById(id).textContent=msg;
-  const input = document.getElementById(id.replace("error","").replace(/^[A-Z]/,c=>c.toLowerCase()));
-  if(input) input.classList.add("error");
-}
-function clearErrors(){
-  document.querySelectorAll(".errorMsg").forEach(e=>e.textContent="");
-  document.querySelectorAll("input").forEach(e=>e.classList.remove("error"));
-}
+// 🔹 Connexion Google
+googleBtn.addEventListener("click", async ()=>{
+  errorMsg.textContent="";
+  try{
+    const userCredential = await signInWithPopup(auth, provider);
+    const uid = userCredential.user.uid;
+    const username = await getUsername(uid);
+    localStorage.setItem("username", username || "");
+  }catch(e){ errorMsg.textContent=e.message; }
+});
+
+// 🔹 Création de compte
+signupLink.addEventListener("click", async e=>{
+  e.preventDefault();
+  errorMsg.textContent="";
+  try{
+    const username = prompt("Choisissez un nom d'utilisateur unique :");
+    if(!username){ errorMsg.textContent="Nom d'utilisateur requis"; return; }
+
+    const identifier = userInput.value.trim();
+    if(!identifier.includes("@")){ errorMsg.textContent="Email requis pour la création"; return; }
+
+    const userCredential = await createUserWithEmailAndPassword(auth, identifier, passwordInput.value);
+    const uid = userCredential.user.uid;
+
+    // Stocker username dans Firestore
+    await setDoc(doc(db,"users",uid), { uid, email: identifier, username });
+    localStorage.setItem("username", username);
+  }catch(e){ errorMsg.textContent=e.message; }
+});
 </script>
 
 </body>
