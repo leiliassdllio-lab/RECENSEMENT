@@ -99,24 +99,23 @@ h2 {
   margin-bottom: 10px;
 }
 
-/* Texte dépliable dans les bulles */
-.text-collapse {
-  display: block;        /* important pour que max-height fonctionne */
-  max-height: 100px;     /* hauteur réduite */
-  overflow: hidden;
-  transition: max-height 0.3s ease;
+/* --- Texte caché pour Lire plus --- */
+.text-collapse .more-text {
+  display: none; /* texte caché initialement */
 }
-.text-collapse.expanded {
-  max-height: 1000px;    /* hauteur quand on clique sur Lire plus */
+
+/* --- Optionnel : style quand texte est affiché (si JS ajoute .expanded) --- */
+.text-collapse.expanded .more-text {
+  display: inline;
 }
+
+/* --- Style du lien Lire plus --- */
 .read-more-link {
+  cursor: pointer;
   color: #4CAF50;
   font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  display: inline-block; /* pour rester dans le flux du texte */
-  margin-top: 5px;
 }
+
 .read-more-link:hover {
   text-decoration: underline;
 }
