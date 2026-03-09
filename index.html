@@ -4,204 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hérisson – Projets</title>
-  <meta name="description" content="Participez à la protection du hérisson : cartographions, observons, conservons">
   <link rel="stylesheet" href="style.css">
-  <style>
-    /* --- Header hero --- */
-    .hero {
-      position: relative;
-      background-image: url('fond.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      height: 100vh; /* couvre tout l'écran */
-    }
-
-    .hero::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.4);
-      z-index: 1;
-    }
-
-    .hero .container {
-      position: relative;
-      z-index: 2;
-      padding: 20px;
-      max-width: 900px;
-      margin: 0 auto;
-      animation: fadeIn 1s ease-out;
-    }
-
-    .hero h1 {
-      font-size: 3rem;
-      margin-bottom: 15px;
-      text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
-    }
-
-    .subtitle {
-      opacity: 0.85;
-      margin-bottom: 30px;
-      font-size: 1.2rem;
-      text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
-    }
-
-    .btn {
-      display: inline-block;
-      padding: 14px 36px;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-    }
-
-    .btn:hover {
-      background-color: #45a049;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* --- Général --- */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      line-height: 1.6;
-      background: #f7f7f7;
-      color: #111;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 40px 0;
-    }
-
-    h2 {
-      color: #4CAF50;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    /* --- About section --- */
-    .about-bubbles {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .about-bubble {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      text-align: center;
-    }
-
-    .bubble-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
-
-    /* --- Texte Lire plus --- */
-    .text-collapse .more-text {
-      display: none;
-    }
-
-    .read-more-link {
-      cursor: pointer;
-      color: #4CAF50;
-      font-weight: bold;
-      display: inline-block;
-      margin-top: 5px;
-    }
-
-    .read-more-link:hover {
-      text-decoration: underline;
-    }
-
-    /* --- Cards --- */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .card-link {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .card {
-      background: #f7f9f7;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
-      text-align: center;
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-      cursor: pointer;
-    }
-
-    .card img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-
-    /* --- Contact --- */
-    #contact a {
-      color: #4CAF50;
-      text-decoration: none;
-    }
-
-    #contact a:hover {
-      text-decoration: underline;
-    }
-
-    /* --- Footer --- */
-    footer {
-      text-align: center;
-      padding: 15px 0;
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    /* --- Responsive --- */
-    @media (max-width: 768px) {
-      .hero h1 {
-        font-size: 2rem;
-      }
-      .subtitle {
-        font-size: 1rem;
-      }
-      .btn {
-        padding: 12px 28px;
-        font-size: 1rem;
-      }
-    }
-  </style>
 </head>
 <body>
 
@@ -215,7 +18,6 @@
   </header>
 
   <main class="container">
-
     <!-- À propos -->
     <section id="about">
       <h2>À propos</h2>
@@ -292,7 +94,6 @@
             <p>Participez à la collecte des observations de hérissons.</p>
           </div>
         </a>
-
         <a href="quizz.html" class="card-link">
           <div class="card">
             <img src="quizz.png" alt="Quizz">
@@ -300,7 +101,6 @@
             <p>Testez vos connaissances sur les hérissons et leur habitat.</p>
           </div>
         </a>
-
         <a href="Cartographie.html" class="card-link">
           <div class="card">
             <img src="Cartographie.png" alt="Cartographie">
@@ -308,28 +108,11 @@
             <p>Visualisez les données collectées sur la carte.</p>
           </div>
         </a>
-
         <a href="Conseils.html" class="card-link">
           <div class="card">
             <img src="Conseils.png" alt="Conseils">
             <h3>Conseils</h3>
             <p>Guide pour observer et protéger les hérissons.</p>
-          </div>
-        </a>
-
-        <a href="fiche_scientifique.html" class="card-link">
-          <div class="card">
-            <img src="fiche_scientifique.png" alt="Fiche scientifique">
-            <h3>Fiche Scientifique</h3>
-            <p>Identité et informations scientifiques sur le hérisson.</p>
-          </div>
-        </a>
-
-        <a href="6.html" class="card-link">
-          <div class="card">
-            <img src="qui_sommes_nous.jpg" alt="Qui sommes-nous">
-            <h3>Qui sommes-nous</h3>
-            <p>Découvrez notre équipe et notre démarche.</p>
           </div>
         </a>
       </div>
@@ -343,7 +126,6 @@
         💻 GitHub : <a href="https://github.com/xxxxxxxxxxxxx-hub" target="_blank">xxxxxxxxx-hub</a>
       </p>
     </section>
-
   </main>
 
   <!-- Footer -->
@@ -351,6 +133,7 @@
     <p>© <span id="year"></span> – Team hérisson</p>
   </footer>
 
+  <!-- JS -->
   <script>
     // Affiche l'année automatiquement
     document.getElementById("year").textContent = new Date().getFullYear();
@@ -358,15 +141,11 @@
     // Lire plus / Lire moins
     document.querySelectorAll('.read-more-link').forEach(link => {
       link.addEventListener('click', function () {
-        const moreText = this.previousElementSibling.querySelector('.more-text');
+        const p = this.previousElementSibling;
+        const moreText = p.querySelector('.more-text');
         if (!moreText) return;
-        if (moreText.style.display === 'inline') {
-          moreText.style.display = 'none';
-          this.textContent = 'Lire plus';
-        } else {
-          moreText.style.display = 'inline';
-          this.textContent = 'Lire moins';
-        }
+        p.classList.toggle('expanded');
+        this.textContent = p.classList.contains('expanded') ? 'Lire moins' : 'Lire plus';
       });
     });
   </script>
