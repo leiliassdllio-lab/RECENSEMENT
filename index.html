@@ -189,9 +189,14 @@
 <script>
 document.querySelectorAll('.read-more-link').forEach(link => {
   link.addEventListener('click', () => {
-    const p = link.previousElementSibling;
-    p.classList.toggle('expanded');
-    link.textContent = p.classList.contains('expanded') ? 'Lire moins' : 'Lire plus';
+    const moreText = link.previousElementSibling.querySelector('.more-text');
+    if (moreText.style.display === 'inline') {
+      moreText.style.display = 'none';
+      link.textContent = 'Lire plus';
+    } else {
+      moreText.style.display = 'inline';
+      link.textContent = 'Lire moins';
+    }
   });
 });
 </script>
