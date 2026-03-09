@@ -99,26 +99,28 @@ h2 {
   margin-bottom: 10px;
 }
 
-/* --- Texte dépliable dans les bulles --- */
+/* Texte dépliable dans les bulles */
 .text-collapse {
-  display: inline;        /* reste dans le flux du texte */
-  max-height: 3.6em;      /* environ 3 lignes */
+  display: block;        /* important pour que max-height fonctionne */
+  max-height: 100px;     /* hauteur réduite */
   overflow: hidden;
-  vertical-align: bottom;
   transition: max-height 0.3s ease;
 }
 .text-collapse.expanded {
-  max-height: 1000px;     /* texte déplié */
+  max-height: 1000px;    /* hauteur quand on clique sur Lire plus */
 }
 .read-more-link {
   color: #4CAF50;
   font-weight: bold;
   cursor: pointer;
   user-select: none;
+  display: inline-block; /* pour rester dans le flux du texte */
+  margin-top: 5px;
 }
 .read-more-link:hover {
   text-decoration: underline;
 }
+
 
 /* --- Cards --- */
 .cards {
