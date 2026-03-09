@@ -119,6 +119,23 @@
       margin-bottom: 10px;
     }
 
+    /* --- Texte Lire plus --- */
+    .text-collapse .more-text {
+      display: none;
+    }
+
+    .read-more-link {
+      cursor: pointer;
+      color: #4CAF50;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 5px;
+    }
+
+    .read-more-link:hover {
+      text-decoration: underline;
+    }
+
     /* --- Cards --- */
     .cards {
       display: grid;
@@ -186,20 +203,6 @@
     }
   </style>
 </head>
-<script>
-document.querySelectorAll('.read-more-link').forEach(link => {
-  link.addEventListener('click', () => {
-    const moreText = link.previousElementSibling.querySelector('.more-text');
-    if (moreText.style.display === 'inline') {
-      moreText.style.display = 'none';
-      link.textContent = 'Lire plus';
-    } else {
-      moreText.style.display = 'inline';
-      link.textContent = 'Lire moins';
-    }
-  });
-});
-</script>
 <body>
 
   <!-- Header hero -->
@@ -217,6 +220,7 @@ document.querySelectorAll('.read-more-link').forEach(link => {
     <section id="about">
       <h2>À propos</h2>
       <div class="about-bubbles">
+
         <div class="about-bubble">
           <div class="bubble-icon">🦔</div>
           <h3>Qui sommes-nous ?</h3>
@@ -229,7 +233,7 @@ document.querySelectorAll('.read-more-link').forEach(link => {
               à la biodiversité qui nous entoure et d’en prendre soin.
             </span>
           </p>
-          <span class="read-more-link"> Lire plus</span>
+          <span class="read-more-link">Lire plus</span>
         </div>
 
         <div class="about-bubble">
@@ -238,12 +242,12 @@ document.querySelectorAll('.read-more-link').forEach(link => {
           <p class="text-collapse">
             En Belgique, le hérisson présent est l’Erinaceus europaeus, aussi appelé hérisson d’Europe...
             <span class="more-text">
-            Il s’agit d’un petit mammifère insectivore nocturne, reconnaissable à ses piquants et fréquent
-            dans les jardins, parcs et milieux agricoles. Espèce protégée, il joue un rôle écologique important
-            en régulant les populations d’invertébrés.
+              Il s’agit d’un petit mammifère insectivore nocturne, reconnaissable à ses piquants et fréquent
+              dans les jardins, parcs et milieux agricoles. Espèce protégée, il joue un rôle écologique important
+              en régulant les populations d’invertébrés.
             </span>
           </p>
-          <span class="read-more-link"> Lire plus</span>
+          <span class="read-more-link">Lire plus</span>
         </div>
 
         <div class="about-bubble">
@@ -252,13 +256,13 @@ document.querySelectorAll('.read-more-link').forEach(link => {
           <p class="text-collapse">
             Les hérissons sont sur la liste rouge de l’UICN : ils passent de “préoccupation mineure” à “quasi menacé”...
             <span class="more-text">
-            La population d’Erinaceus europaeus diminue principalement à cause de la fragmentation des habitats
-            (urbanisation, routes, clôtures imperméables) qui limite ses déplacements. La mortalité routière est une cause majeure.
-            L’usage de pesticides réduit aussi ses ressources alimentaires (insectes, invertébrés). Enfin, les robots tondeuses nocturnes,
-            les jardins trop “propres” et la perte de sites d’hibernation aggravent le déclin.
+              La population d’Erinaceus europaeus diminue principalement à cause de la fragmentation des habitats
+              (urbanisation, routes, clôtures imperméables) qui limite ses déplacements. La mortalité routière est une cause majeure.
+              L’usage de pesticides réduit aussi ses ressources alimentaires (insectes, invertébrés). Enfin, les robots tondeuses nocturnes,
+              les jardins trop “propres” et la perte de sites d’hibernation aggravent le déclin.
             </span>
           </p>
-          <span class="read-more-link"> Lire plus</span>
+          <span class="read-more-link">Lire plus</span>
         </div>
 
         <div class="about-bubble">
@@ -267,12 +271,13 @@ document.querySelectorAll('.read-more-link').forEach(link => {
           <p class="text-collapse">
             Nous voudrions sensibiliser un maximum de personnes de tout âge et motiver les citoyens à s’intéresser davantage...
             <span class="more-text">
-            aux hérissons et à leur conservation. Nous voudrions également comprendre pourquoi en Wallonie les données sont insuffisantes
-            (état des populations), comparé à la Flandres.
+              aux hérissons et à leur conservation. Nous voudrions également comprendre pourquoi en Wallonie les données sont insuffisantes
+              (état des populations), comparé à la Flandres.
             </span>
           </p>
-          <span class="read-more-link"> Lire plus</span>
+          <span class="read-more-link">Lire plus</span>
         </div>
+
       </div>
     </section>
 
@@ -347,7 +352,23 @@ document.querySelectorAll('.read-more-link').forEach(link => {
   </footer>
 
   <script>
+    // Affiche l'année automatiquement
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Lire plus / Lire moins
+    document.querySelectorAll('.read-more-link').forEach(link => {
+      link.addEventListener('click', function () {
+        const moreText = this.previousElementSibling.querySelector('.more-text');
+        if (!moreText) return;
+        if (moreText.style.display === 'inline') {
+          moreText.style.display = 'none';
+          this.textContent = 'Lire plus';
+        } else {
+          moreText.style.display = 'inline';
+          this.textContent = 'Lire moins';
+        }
+      });
+    });
   </script>
 
 </body>
