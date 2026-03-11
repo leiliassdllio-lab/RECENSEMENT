@@ -1,13 +1,18 @@
 html{ scroll-behavior:smooth; }
 
-/* --- Général --- */
 body{
-  font-family:Arial,sans-serif;
-  margin:0;
-  padding:0;
+  font-family:'Arial',sans-serif;
+  margin:0; padding:0;
   line-height:1.6;
-  background:#f7f7f7;
+  background:#f7f9f7;
   color:#111;
+}
+
+header, footer{
+  background:#4CAF50;
+  color:white;
+  text-align:center;
+  padding:10px 0;
 }
 
 .container{
@@ -23,79 +28,51 @@ h2{
   margin-bottom:20px;
 }
 
-/* --- CARTES ÉTAT HÉRISSON --- */
-.choice-grid{
-  display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-top:10px;
-  pointer-events:auto;
-}
-
-.choice-card{
-  width:100px; height:100px;
-  border:2px solid #ccc; border-radius:12px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  cursor:pointer; transition:all 0.3s;
-  position: relative;
-  pointer-events:auto;
-  z-index:100; /* permet de rester au-dessus des arbres */
-  background:white;
-}
-
-.choice-card img, .choice-card > div{
-  pointer-events:none; /* l'image et le texte ne bloquent pas le clic */
-}
-
-.choice-card.selected-main { border-color:#2196F3; background:rgba(33,150,243,0.1); }
-.choice-card.selected-sub { border-color:#4CAF50; background:rgba(76,175,80,0.1); }
-
-/* Arbres derrière */
-.tree{
-  position:absolute;
-  font-size:2em;
-  opacity:0.4;
-  z-index:1; /* derrière les cartes */
-}
+.tree{ position:absolute; font-size:2em; opacity:0.4; }
 .tree1{ top:10px; left:10px; }
 .tree2{ bottom:10px; right:20px; }
 .tree3{ top:50px; right:50px; }
 
-/* Prévisualisation image */
-#preview img{
-  max-width:100%;
-  border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,0.2);
-  margin-top:10px;
-}
-/* ========================= */
-/* EFFET SÉLECTION FLUIDE CARTES ÉTAT ET SOUS-ÉTAT */
-/* ========================= */
+#map{ height:300px; border-radius:10px; margin-bottom:20px; }
 
-.choice-card {
-  transition: all 0.3s ease; /* déjà existant mais on le renforce */
+input, select, textarea, button{
+  width:100%; padding:10px; border-radius:5px; border:1px solid #ccc; box-sizing:border-box;
 }
+button{ background:#4CAF50; color:white; font-weight:bold; border:none; cursor:pointer; margin-top:15px; transition:0.3s; }
+button:hover{ background:#43a047; }
+
+#logoutBtn{ background:#d32f2f; margin-bottom:20px; }
+#logoutBtn:hover{ background:#b71c1c; }
+
+.icon-label{ display:flex; align-items:center; gap:10px; font-weight:normal; }
+.icon-label span{ font-size:1.5em; }
+
+#preview img{ max-width:100%; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2); margin-top:10px; }
+
+.choice-grid{
+  display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-top:10px;
+}
+
+.choice-card{
+  width:100px; height:100px; border:2px solid #ccc; border-radius:12px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  cursor:pointer; transition: all 0.3s ease; position: relative; pointer-events:auto;
+  background:white; z-index:10;
+}
+
+.choice-card img,
+.choice-card > div{ pointer-events:none; }
 
 .choice-card.selected-main,
-.choice-card.selected-sub {
-  transform: scale(1.05); /* léger zoom */
-  box-shadow: 0 6px 15px rgba(0,0,0,0.2); /* ombre douce */
-}
+.choice-card.selected-sub{ transform: scale(1.05); box-shadow:0 6px 15px rgba(0,0,0,0.2); }
 
-/* Quand on survole une carte non sélectionnée */
-.choice-card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
+.choice-card:hover{ transform: scale(1.03); box-shadow:0 4px 12px rgba(0,0,0,0.15); }
 
-/* Sous-options (vivant / mort) avec apparition douce */
-#vivantOptions,
-#mortOptions {
-  transition: all 0.3s ease;
-  opacity: 0;
-  height: 0;
-  overflow: hidden;
-}
+#vivantOptions, #mortOptions{ display:flex; opacity:0; height:0; overflow:hidden; transition: all 0.3s ease; }
+#vivantOptions.show, #mortOptions.show{ opacity:1; height:auto; }
 
-#vivantOptions.show,
-#mortOptions.show {
-  opacity: 1;
-  height: auto;
+.photo-label{
+  display:flex; flex-direction:column; align-items:center;
+  border:2px dashed #4CAF50; padding:15px; border-radius:10px; cursor:pointer;
 }
+.photo-label span{ font-size:2em; margin-bottom:5px; }
