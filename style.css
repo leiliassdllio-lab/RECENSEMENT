@@ -365,3 +365,14 @@ grid-template-columns:1fr;
   width: 100%;
   font-size: 0.9rem;
 }
+.choice-card {
+  position: relative;
+  z-index: 10;
+}
+  .choice-grid {
+  pointer-events: auto;
+}
+ form, .container {
+  pointer-events: auto;
+}
+}
