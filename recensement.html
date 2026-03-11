@@ -1,1 +1,195 @@
-<!DOCTYPE html> <html lang="fr"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Historique des Recensements</title> <!-- Leaflet & MarkerCluster CSS --> <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" /> <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" /> <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" /> <style> body { margin:0; padding:0; font-family: Arial, sans-serif; background:#f7f7f7; color:#111; } #controls { padding:10px; text-align:center; background:#f7f9f7; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; align-items:center; } select { padding:5px 10px; border-radius:5px; border:1px solid #ccc; } #map { height: 80vh; width: 100%; margin-bottom:10px; } #stats { text-align:center; margin-bottom:10px; font-weight:bold; color:#4CAF50; } </style> </head> <body> <div id="controls"> Région : <select id="regionFilter"> <option value="all">Belgique entière</option> <option value="wallonie">Wallonie</option> <option value="flandre">Flandre</option> </select> Année : <select id="yearFilter"> <option value="all">Toutes</option> </select> </div> <div id="stats">Chargement des recensements...</div> <div id="map"></div> <!-- Leaflet & MarkerCluster JS --> <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script> <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script> <script type="module"> import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js"; import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js"; // --- Config Firebase --- const firebaseConfig = { apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys", authDomain: "herisson-f80ba.firebaseapp.com", projectId: "herisson-f80ba", storageBucket: "herisson-f80ba.firebasestorage.app", messagingSenderId: "142270421417", appId: "1:142270421417:web:cb3abd700fab6731c40cb8" }; const app = initializeApp(firebaseConfig); const db = getFirestore(app); // --- Carte --- const belgiqueBounds = [[49.5, 2.5], [51.6, 6.4]]; const map = L.map('map', { maxBounds: belgiqueBounds, maxBoundsViscosity: 1.0, minZoom: 7, maxZoom: 12 }).setView([50.8467, 4.3525], 8); L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map); // --- Polygones approximatifs des régions --- const wallonieBounds = [[49.5, 4.5],[50.5, 6.4]]; // SW & NE approx const flandreBounds = [[50.5, 2.5],[51.6, 5.0]]; function isInside(lat, lon, bounds) { return lat >= bounds[0][0] && lat <= bounds[1][0] && lon >= bounds[0][1] && lon <= bounds[1][1]; } // --- Marker Cluster --- const markers = L.markerClusterGroup(); map.addLayer(markers); let allRecensements = []; // --- Chargement des recensements --- async function loadRecensements() { const querySnapshot = await getDocs(collection(db, "recensements")); const yearsSet = new Set(); querySnapshot.forEach(doc => { const data = doc.data(); if(data.latitude && data.longitude){ allRecensements.push(data); if(data.date) yearsSet.add(data.date.substring(0,4)); } }); populateYearFilter([...yearsSet].sort((a,b)=>b-a)); displayMarkers(); } // --- Remplir le filtre années --- function populateYearFilter(years) { const yearSelect = document.getElementById('yearFilter'); years.forEach(year => { const option = document.createElement('option'); option.value = year; option.textContent = year; yearSelect.appendChild(option); }); } // --- Affichage des marqueurs --- function displayMarkers() { markers.clearLayers(); const selectedRegion = document.getElementById("regionFilter").value; const selectedYear = document.getElementById("yearFilter").value; const filtered = allRecensements.filter(data => { const regionMatch = selectedRegion === "all" || (selectedRegion === 'wallonie' ? isInside(data.latitude, data.longitude, wallonieBounds) : isInside(data.latitude, data.longitude, flandreBounds)); const yearMatch = selectedYear === "all" || (data.date && data.date.startsWith(selectedYear)); return regionMatch && yearMatch; }); filtered.forEach(data => { const marker = L.circleMarker([data.latitude, data.longitude], { color: '#4CAF50', radius: 7, fillOpacity: 0.8 }); const popupContent = <b>Date :</b> ${data.date || 'N/A'}<br> <b>Observation :</b> ${data.methode || 'N/A'}<br> ${data.notes ? <b>Notes :</b> ${data.notes}<br> : ''} ${data.userName ? <b>Nom :</b> ${data.userName}<br> : ''} ${data.userEmail ? <b>Email :</b> ${data.userEmail} : ''} ; marker.bindPopup(popupContent); markers.addLayer(marker); }); updateStats(filtered); } // --- Statistiques --- function updateStats(filtered) { document.getElementById('stats').textContent = Recensements affichés : ${filtered.length}; } // --- Listeners --- document.getElementById('regionFilter').addEventListener('change', displayMarkers); document.getElementById('yearFilter').addEventListener('change', displayMarkers); // --- Chargement initial --- loadRecensements(); </script> </body> </html>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recense un Hérisson</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<style>
+  body { font-family: 'Arial', sans-serif; background-color: #f7f9f7; margin:0; padding:0; }
+  header, footer { background-color: #4CAF50; color:white; text-align:center; padding:10px 0; }
+  .container { width:90%; max-width:800px; margin:20px auto; background-color:white; border-radius:10px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.2); position: relative; }
+  h2 { text-align:center; color:#4CAF50; margin-bottom:20px; }
+  form p { margin:15px 0 5px; font-weight:bold; }
+  input, select, textarea, button { width:100%; padding:10px; border-radius:5px; border:1px solid #ccc; box-sizing:border-box; }
+  button { background-color:#4CAF50; color:white; font-weight:bold; border:none; cursor:pointer; margin-top:15px; transition: background 0.3s; }
+  button:hover { background-color: #43a047; }
+  #map { height:300px; border-radius:10px; margin-bottom:20px; }
+  .icon-label { display:flex; align-items:center; gap:10px; font-weight:normal; }
+  .icon-label span { font-size:1.5em; }
+  .tree { position:absolute; font-size:2em; opacity:0.4; }
+  .tree1 { top:10px; left:10px; }
+  .tree2 { bottom:10px; right:20px; }
+  .tree3 { top:50px; right:50px; }
+  #preview img { max-width:100%; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2); margin-top:10px; }
+  .faq-container { background-color: #e8f5e9; border-left:5px solid #4CAF50; padding:15px 20px; margin-top:25px; border-radius:8px; }
+  .faq-container h2 { font-size:1.3em; color:#2e7d32; text-align:left; margin-bottom:10px; }
+  .faq-container ul { list-style-type:none; padding-left:0; }
+  .faq-container li { margin-bottom:10px; font-size:1em; }
+  .faq-container li span { margin-right:8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🦔 Recense un Hérisson</h1>
+  <div class="container">
+      <a href="main.html" class="btn">Retour à l'accueil</a>
+    </div>
+</header>
+
+<div class="container">
+  <div class="tree tree1">🌳</div>
+  <div class="tree tree2">🌲</div>
+  <div class="tree tree3">🌳</div>
+
+  <h2>Localisation & Observation</h2>
+  <div id="map"></div>
+
+  <form id="recensementForm" name="recensement-herissons">
+    <p class="icon-label"><span>📍</span> Où avez-vous vu le hérisson ?</p>
+    <input type="text" name="lieu" id="lieu" placeholder="Adresse ou lieu précis" required>
+
+    <p class="icon-label"><span>📅</span> Quand l’avez-vous observé ?</p>
+    <input type="date" name="date" id="date" required>
+
+    <p class="icon-label"><span>🔍</span> Comment l’avez-vous vu ?</p>
+    <select name="methode" required>
+      <option value="">--Sélectionnez--</option>
+      <option value="observatoire">Observation directe</option>
+      <option value="camera">Caméra / piège photo</option>
+      <option value="autre">Autre</option>
+    </select>
+
+    <p class="icon-label"><span>📷</span> Ajouter une image / prendre une photo</p>
+    <label for="photoUpload" style="display:flex; flex-direction:column; align-items:center; border:2px dashed #4CAF50; padding:15px; border-radius:10px; cursor:pointer;">
+      <span style="font-size:2em;">📸</span>
+      <span>Cliquer pour choisir ou prendre une photo</span>
+    </label>
+    <input type="file" id="photoUpload" accept="image/*" capture="environment" style="display:none;">
+    <div id="preview"></div>
+
+    <p class="icon-label"><span>📝</span> Notes supplémentaires</p>
+    <textarea name="notes" placeholder="Ajoutez vos remarques"></textarea>
+
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <div class="faq-container">
+    <h2>💡 Conseils pour observer les hérissons</h2>
+    <ul>
+      <li><span>🦔</span> Observez les hérissons de préférence au crépuscule ou la nuit.</li>
+      <li><span>🔇</span> Évitez de faire du bruit ou d’allumer une lumière forte.</li>
+      <li><span>📷</span> Si vous prenez une photo, utilisez le flash avec précaution.</li>
+      <li><span>🏡</span> Respectez l’habitat naturel et ne dérangez pas les hérissons.</li>
+      <li><span>📝</span> Notez toujours la localisation exacte et la date de votre observation.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  © <span id="year"></span> – Team Hérisson
+</footer>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<!-- 🔹 Firebase + Formulaire -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+// --- Config Firebase ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
+  authDomain: "herisson-f80ba.firebaseapp.com",
+  projectId: "herisson-f80ba",
+  storageBucket: "herisson-f80ba.firebasestorage.app",
+  messagingSenderId: "142270421417",
+  appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
+};
+
+// --- Initialisation Firebase ---
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- Pré-remplir la date ---
+const dateInput = document.getElementById('date');
+const today = new Date();
+dateInput.value = today.toISOString().slice(0,10);
+
+// --- Affichage année dans footer ---
+document.getElementById("year").textContent = today.getFullYear();
+
+// --- Carte et géolocalisation ---
+const map = L.map('map').setView([50.8467, 4.3525], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+
+let marker;
+function updateLieu(lat, lon){ document.getElementById('lieu').value = `Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)}`; }
+
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+    map.setView([lat, lon], 15);
+
+    marker = L.marker([lat, lon], {draggable:true}).addTo(map)
+      .bindPopup("Votre position actuelle. Déplacez le marqueur si nécessaire.").openPopup();
+
+    updateLieu(lat, lon);
+
+    marker.on('dragend', e=>{
+      const p = e.target.getLatLng();
+      updateLieu(p.lat, p.lng);
+    });
+  }, err=>{ alert("Impossible de récupérer votre position : " + err.message); });
+}
+
+// --- Prévisualisation image ---
+const photoInput = document.getElementById('photoUpload');
+const previewDiv = document.getElementById('preview');
+photoInput.addEventListener('change', function(){
+  const file = this.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = e => previewDiv.innerHTML = `<img src="${e.target.result}">`;
+    reader.readAsDataURL(file);
+  }
+});
+
+// --- Soumission formulaire vers Firestore ---
+const form = document.getElementById('recensementForm');
+form.addEventListener('submit', async e=>{
+  e.preventDefault();
+
+  const recensement = {
+    lieu: form.lieu.value,
+    date: form.date.value,
+    methode: form.methode.value,
+    notes: form.notes.value
+  };
+
+  if(marker){
+    const p = marker.getLatLng();
+    recensement.latitude = p.lat;
+    recensement.longitude = p.lng;
+  }
+
+  try {
+    await addDoc(collection(db, "recensements"), recensement);
+    alert("Recensement enregistré dans Firestore !");
+
+    form.reset();
+    previewDiv.innerHTML = "";
+    if(marker) marker.setLatLng(map.getCenter());
+    window.location.href = "confirmation.html";
+  } catch (error) {
+    console.error("Erreur lors de l'enregistrement :", error);
+    alert("Impossible d'enregistrer le recensement. Vérifiez la console.");
+  }
+});
+</script>
+
+</body>
+</html>
