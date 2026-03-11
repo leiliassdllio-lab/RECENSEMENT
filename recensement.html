@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Recense un Hérisson</title>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
 <style>
 body { font-family:'Arial',sans-serif; background:#f7f9f7; margin:0; padding:0; }
 header, footer { background:#4CAF50; color:white; text-align:center; padding:10px 0; }
@@ -33,6 +35,7 @@ button:hover { background:#43a047; }
 .choice-card.selected-sub { border-color:#4CAF50; background:rgba(76,175,80,0.1); }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -43,6 +46,7 @@ button:hover { background:#43a047; }
 </header>
 
 <div class="container">
+
 <div class="tree tree1">🌳</div>
 <div class="tree tree2">🌲</div>
 <div class="tree tree3">🌳</div>
@@ -51,6 +55,7 @@ button:hover { background:#43a047; }
 <div id="map"></div>
 
 <form id="recensementForm">
+
   <p class="icon-label"><span>📍</span> Où avez-vous vu le hérisson ?</p>
   <input type="text" id="lieu" required>
 
@@ -58,36 +63,41 @@ button:hover { background:#43a047; }
   <input type="date" id="date" required>
 
   <p class="icon-label"><span>🦔</span> État du hérisson</p>
+
+  <!-- Choix principal -->
   <div id="etatGrid" class="choice-grid">
-    <div class="choice-card" onclick="selectEtat('vivant',this)">
+    <div class="choice-card" data-etat="vivant">
       <img src="vivant.png"><div>Vivant</div>
     </div>
-    <div class="choice-card" onclick="selectEtat('mort',this)">
+    <div class="choice-card" data-etat="mort">
       <img src="mort.png"><div>Mort</div>
     </div>
   </div>
   <input type="hidden" id="etat">
 
+  <!-- Options si vivant -->
   <div id="vivantOptions" class="choice-grid" style="display:none;">
-    <div class="choice-card" onclick="selectSousEtat('sain',this)">
+    <div class="choice-card" data-sous-etat="sain">
       <img src="images/sain.png"><div>Bonne santé</div>
     </div>
-    <div class="choice-card" onclick="selectSousEtat('blesse',this)">
+    <div class="choice-card" data-sous-etat="blesse">
       <img src="images/blesse.png"><div>Blessé</div>
     </div>
-    <div class="choice-card" onclick="selectSousEtat('malade',this)">
+    <div class="choice-card" data-sous-etat="malade">
       <img src="images/malade.png"><div>Malade</div>
     </div>
   </div>
 
+  <!-- Options si mort -->
   <div id="mortOptions" class="choice-grid" style="display:none;">
-    <div class="choice-card" onclick="selectSousEtat('route',this)">
+    <div class="choice-card" data-sous-etat="route">
       <img src="images/route.png"><div>Sur route</div>
     </div>
-    <div class="choice-card" onclick="selectSousEtat('hors_route',this)">
+    <div class="choice-card" data-sous-etat="hors_route">
       <img src="images/horsroute.png"><div>Hors route</div>
     </div>
   </div>
+
   <input type="hidden" id="sousEtat">
 
   <p class="icon-label"><span>📷</span> Ajouter une image</p>
@@ -108,6 +118,7 @@ button:hover { background:#43a047; }
 <footer>© <span id="year"></span> – Team Hérisson</footer>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
@@ -142,44 +153,87 @@ const today = new Date();
 dateInput.value = today.toISOString().slice(0,10);
 document.getElementById("year").textContent = today.getFullYear();
 
-// Carte et géolocalisation
+// Carte
 const map = L.map('map').setView([50.8467,4.3525],13);
 L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',{ attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
+
 let marker;
-function updateLieu(lat,lon){ document.getElementById('lieu').value=`Lat:${lat.toFixed(5)}, Lon:${lon.toFixed(5)}`; }
+function updateLieu(lat,lon){
+  document.getElementById('lieu').value=`Lat:${lat.toFixed(5)}, Lon:${lon.toFixed(5)}`;
+}
+
 if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(pos=>{
     const lat=pos.coords.latitude, lon=pos.coords.longitude;
     map.setView([lat,lon],15);
     marker=L.marker([lat,lon],{draggable:true}).addTo(map).bindPopup("Votre position actuelle").openPopup();
     updateLieu(lat,lon);
-    marker.on('dragend', e=>{ const p=e.target.getLatLng(); updateLieu(p.lat,p.lng); });
+    marker.on('dragend', e=>{
+      const p=e.target.getLatLng();
+      updateLieu(p.lat,p.lng);
+    });
   }, err=>{ alert("Impossible de récupérer votre position : "+err.message); });
 }
 
-// Sélection état et sous-état
-function selectEtat(val, el){
-  document.getElementById("etat").value = val;
-  document.querySelectorAll("#etatGrid .choice-card").forEach(c => c.classList.remove("selected-main"));
-  el.classList.add("selected-main");
-  document.getElementById("vivantOptions").style.display = "none";
-  document.getElementById("mortOptions").style.display = "none";
-  if(val === "vivant") document.getElementById("vivantOptions").style.display = "flex";
-  if(val === "mort") document.getElementById("mortOptions").style.display = "flex";
-}
+// --- Gestion état / sous-état ---
+const etatInput = document.getElementById("etat");
+const sousEtatInput = document.getElementById("sousEtat");
+const etatGrid = document.getElementById("etatGrid");
+const vivantOptions = document.getElementById("vivantOptions");
+const mortOptions = document.getElementById("mortOptions");
 
-function selectSousEtat(val, el){
-  document.getElementById("sousEtat").value = val;
-  el.parentElement.querySelectorAll(".choice-card").forEach(c => c.classList.remove("selected-sub"));
-  el.classList.add("selected-sub");
-}
+// Sélection Vivant / Mort
+etatGrid.querySelectorAll(".choice-card").forEach(card => {
+  card.addEventListener("click", () => {
+    const val = card.dataset.etat;
+    etatInput.value = val;
+
+    etatGrid.querySelectorAll(".choice-card").forEach(c =>
+      c.classList.remove("selected-main")
+    );
+    card.classList.add("selected-main");
+
+    sousEtatInput.value = "";
+    vivantOptions.style.display = "none";
+    mortOptions.style.display = "none";
+
+    vivantOptions.querySelectorAll(".choice-card").forEach(c =>
+      c.classList.remove("selected-sub")
+    );
+    mortOptions.querySelectorAll(".choice-card").forEach(c =>
+      c.classList.remove("selected-sub")
+    );
+
+    if (val === "vivant") vivantOptions.style.display = "flex";
+    if (val === "mort") mortOptions.style.display = "flex";
+  });
+});
+
+// Sélection sous-état
+[vivantOptions, mortOptions].forEach(group => {
+  group.querySelectorAll(".choice-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const val = card.dataset.sousEtat;
+      sousEtatInput.value = val;
+
+      group.querySelectorAll(".choice-card").forEach(c =>
+        c.classList.remove("selected-sub")
+      );
+      card.classList.add("selected-sub");
+    });
+  });
+});
 
 // Prévisualisation photo
 const photoInput = document.getElementById('photoUpload');
 const previewDiv = document.getElementById('preview');
 photoInput.addEventListener('change', function(){
   const file=this.files[0];
-  if(file){ const reader=new FileReader(); reader.onload=e=>previewDiv.innerHTML=`<img src="${e.target.result}">`; reader.readAsDataURL(file);}
+  if(file){
+    const reader=new FileReader();
+    reader.onload=e=>previewDiv.innerHTML=`<img src="${e.target.result}">`;
+    reader.readAsDataURL(file);
+  }
 });
 
 // Soumission formulaire
@@ -187,6 +241,7 @@ const form=document.getElementById('recensementForm');
 form.addEventListener('submit', async e=>{
   e.preventDefault();
   if(!auth.currentUser) return window.location.href="login.html";
+
   const recensement = {
     uid: auth.currentUser.uid,
     username: localStorage.getItem("username") || "Inconnu",
@@ -196,13 +251,23 @@ form.addEventListener('submit', async e=>{
     etat: document.getElementById("etat").value,
     sousEtat: document.getElementById("sousEtat").value
   };
-  if(marker){ const p=marker.getLatLng(); recensement.latitude=p.lat; recensement.longitude=p.lng; }
+
+  if(marker){
+    const p=marker.getLatLng();
+    recensement.latitude=p.lat;
+    recensement.longitude=p.lng;
+  }
+
   try{
     await addDoc(collection(db,"recensements"), recensement);
-    form.reset(); previewDiv.innerHTML="";
+    form.reset();
+    previewDiv.innerHTML="";
     if(marker) marker.setLatLng(map.getCenter());
     window.location.href="confirmation.html";
-  }catch(err){ console.error(err); alert("Impossible d'enregistrer le recensement."); }
+  }catch(err){
+    console.error(err);
+    alert("Impossible d'enregistrer le recensement.");
+  }
 });
 </script>
 
