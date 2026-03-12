@@ -125,21 +125,19 @@ function displayMarkers() {
   }
 
   // Ajout des marqueurs
-  let markerColor = '#4CAF50'; // par défaut vivant
-  if(data.etat === 'mort') {
-    if(data.sousEtat === 'route') {
-      markerColor = 'red';
-    } else if(data.sousEtat === 'hors route') {
-      markerColor = 'orange';
-    }
+  let color = '#4CAF50'; // vivant par défaut
+
+  if(data.etat === 'mort' && data.sousEtat === 'route'){
+    color = '#FF0000';
+  } else if(data.etat === 'mort' && data.sousEtat === 'hors route'){
+    color = '#FFA500';
   }
-  
-  const marker = L.circleMarker([data.latitude, data.longitude], {
-    color: markerColor,
-    fillColor: markerColor,
-    radius: 7,
-    weight: 1.5,
-    fillOpacity: 0.85
+  const marker = L.circleMarker([data.latitude,data.longitude], {
+    color: color,
+    fillColor: color,
+    radius:7,
+    weight:1.5,
+    fillOpacity:0.85
   });
     
     
