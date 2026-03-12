@@ -102,21 +102,20 @@ h2 {
   }
 }
 
-/* --- Cartes état (agrandies) --- */
-
+/* Cartes état */
 .choice-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 25px; /* plus d'espace */
+  gap: 15px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .choice-card {
-  width: 170px;     /* ancien : 150px */
-  height: 170px;    /* ancien : 150px */
+  width: 150px;
+  height: 150px;
   border: 2px solid #ccc;
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -131,14 +130,9 @@ h2 {
 }
 
 .choice-card img {
-  max-width: 110px;   /* ancien : 80px */
-  max-height: 110px;  /* ancien : 80px */
-  margin-bottom: 12px;
-}
-
-.choice-card div {
-  font-size: 1.2rem; /* texte plus grand */
-  font-weight: bold;
+  max-width: 80px;
+  max-height: 80px;
+  margin-bottom: 10px;
 }
 
 .choice-card.selected-main {
@@ -158,7 +152,4 @@ h2 {
 
 .choice-card {
   cursor: pointer;
-}
-.choice-card {
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
