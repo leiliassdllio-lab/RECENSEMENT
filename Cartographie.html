@@ -125,51 +125,23 @@ lon>=bounds[0][1] &&
 lon<=bounds[1][1];
 
 }
-
-
-
 const markers=L.markerClusterGroup();
-
 map.addLayer(markers);
-
-
-
 let allRecensements=[];
-
-
-
 async function loadRecensements(){
-
 const querySnapshot=await getDocs(collection(db,"recensements"));
-
 querySnapshot.forEach(doc=>{
-
 const data=doc.data();
-
 if(data.latitude && data.longitude){
-
 allRecensements.push(data);
-
 }
-
 });
-
 displayMarkers('all');
-
 }
-
-
-
 function displayMarkers(region){
-
 markers.clearLayers();
-
 let filtered=allRecensements;
-
-
-
 if(region==='wallonie'){
-
 filtered=allRecensements.filter(d=>
 isInside(d.latitude,d.longitude,wallonieBounds));
 
@@ -179,60 +151,37 @@ else if(region==='flandre'){
 
 filtered=allRecensements.filter(d=>
 isInside(d.latitude,d.longitude,flandreBounds));
-
 }
-
-
-
 filtered.forEach(data=>{
-
 const marker=L.circleMarker(
 [data.latitude,data.longitude],
 {
-
 color:'#2e7d32',
 fillColor:'#4CAF50',
 radius:7,
 weight:1.5,
 fillOpacity:0.85
-
 });
-
-
 const popupContent=`
-
 <b>Observation de hérisson</b><br><br>
-
 <b>Date :</b> ${data.date}<br>
-
 <b>Méthode :</b> ${data.methode}<br>
-
+<b>État :</b> ${data.etat || 'N/A'}<br>
+<b>Sous-état :</b> ${data.sousEtat || 'N/A'}<br>
+<b>Utilisateur :</b> ${data.username || 'Inconnu'}<br>
+<b>Email :</b> ${data.email || 'Non renseigné'}<br>
 ${data.notes ? `<b>Notes :</b> ${data.notes}` : ''}
-
 `;
-
 marker.bindPopup(popupContent);
-
 markers.addLayer(marker);
-
 });
-
-
 document.getElementById("stats").innerHTML=
-
 `<b>${filtered.length}</b> observations affichées`;
-
 }
-
-
-
 document.getElementById('regionFilter')
 .addEventListener('change',e=>{
-
 displayMarkers(e.target.value);
-
 });
-
 
 loadRecensements();
 
