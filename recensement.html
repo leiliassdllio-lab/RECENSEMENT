@@ -243,15 +243,17 @@ form.addEventListener('submit', async e=>{
   if(!auth.currentUser) return window.location.href="login.html";
 
   const recensement = {
-    uid: auth.currentUser.uid,
-    username: localStorage.getItem("username") || "Inconnu",
-    lieu: document.getElementById('lieu').value,
-    date: dateInput.value,
-    notes: document.getElementById('notes').value,
-    etat: document.getElementById("etat").value,
-    sousEtat: document.getElementById("sousEtat").value,
-    email: auth.currentUser.email || "Non renseigné"
-  };
+  uid: auth.currentUser.uid,
+  username: localStorage.getItem("username") || "Inconnu",
+  email: auth.currentUser.email || "Non renseigné",
+  lieu: document.getElementById('lieu').value,
+  date: dateInput.value,
+  notes: document.getElementById('notes').value,
+  etat: document.getElementById("etat").value,
+  sousEtat: document.getElementById("sousEtat").value,
+  latitude: marker ? marker.getLatLng().lat : null,
+  longitude: marker ? marker.getLatLng().lng : null
+};
 
   if(marker){
     const p=marker.getLatLng();
