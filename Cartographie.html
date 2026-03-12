@@ -45,6 +45,7 @@ Chaque point correspond à un signalement enregistré.
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
@@ -57,6 +58,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+let currentUserUid = null;
+
+// Observer l'état de connexion
+onAuthStateChanged(auth, user => {
+  currentUserUid = user ? user.uid : null;
+  displayMarkers(); // mettre à jour les marqueurs dès qu'on connaît l'utilisateur
+});
 
 const belgiqueBounds = [[49.5, 2.5], [51.6, 6.4]];
 const wallonieBounds = [[49.5,4.5],[50.5,6.4]];
@@ -109,8 +118,8 @@ function displayMarkers() {
   }
 
   // Filtrer par Mes recensements si coché
-  if(myRecensements && auth.currentUser){
-    filtered = filtered.filter(d => d.uid === auth.currentUser.uid);
+  if(myRecensements && currentUserUid){
+    filtered = filtered.filter(d => d.uid === currentUserUid);
   }
 
   // Ajout des marqueurs
