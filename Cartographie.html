@@ -190,13 +190,6 @@ document.querySelectorAll('input[name="region"], #myRecensements').forEach(el =>
   el.addEventListener('change', displayMarkers);
 });
 
-
-else if(region==='flandre'){
-
-filtered=allRecensements.filter(d=>
-isInside(d.latitude,d.longitude,flandreBounds));
-}
-filtered.forEach(data=>{
 const marker=L.circleMarker(
 [data.latitude,data.longitude],
 {
@@ -219,8 +212,6 @@ ${data.notes ? `<b>Notes :</b> ${data.notes}` : ''}
 marker.bindPopup(popupContent);
 markers.addLayer(marker);
 });
-document.getElementById("stats").innerHTML=
-`<b>${filtered.length}</b> observations affichées`;
 }
 
 
