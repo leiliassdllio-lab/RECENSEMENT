@@ -111,7 +111,18 @@ h2 {
     transform: translateY(0);
   }
 }
+.cards .card img {
+  max-width: 100%;
+  height: auto;
+}
 
+.cards .card h3 {
+  font-size: 1.2rem;
+}
+
+.cards .card p {
+  font-size: 0.9rem;
+}
 /* Cartes état */
 .choice-grid {
   display: flex;
