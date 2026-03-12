@@ -123,7 +123,7 @@ function displayMarkers() {
   if(myRecensements && currentUserUid){
     filtered = filtered.filter(d => d.uid === currentUserUid);
   }
-
+filtered.forEach(data => {
   // Ajout des marqueurs
   let color = '#4CAF50'; // vivant par défaut
 
