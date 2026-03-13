@@ -37,12 +37,39 @@ button:hover { background:#43a047; }
 </head>
 
 <body>
+<div class="container" style="display:flex; justify-content:space-between; align-items:center;">
 
+<a href="cartographie.html">
+<button style="
+background:white;
+color:#333;
+font-weight:bold;
+border:2px solid #ddd;
+padding:10px 18px;
+border-radius:8px;
+cursor:pointer;
+">
+Mes recensements
+</button>
+</a>
+
+<button id="logoutBtn" style="
+background:#d32f2f;
+color:white;
+font-weight:bold;
+border:none;
+padding:8px 14px;
+border-radius:6px;
+cursor:pointer;
+width:auto;
+">
+Se déconnecter
+</button>
+
+</div>
 <header>
 <h1>🦔 Recense un Hérisson</h1>
-<div class="container">
-  <button id="logoutBtn">Se déconnecter</button>
-</div>
+
 </header>
 
 <div class="container">
@@ -99,7 +126,53 @@ button:hover { background:#43a047; }
   </div>
 
   <input type="hidden" id="sousEtat">
+  <p class="icon-label"><span>🌍</span> Type d’environnement</p>
 
+<div id="envGrid" class="choice-grid">
+
+  <div class="choice-card" data-env="route">
+    <img src="images/route.png">
+    <div>Route</div>
+  </div>
+
+  <div class="choice-card" data-env="voie_ferree">
+    <img src="images/rail.png">
+    <div>Voie ferrée</div>
+  </div>
+
+  <div class="choice-card" data-env="urbain">
+    <img src="images/urbain.png">
+    <div>Milieu urbain</div>
+  </div>
+
+  <div class="choice-card" data-env="jardin">
+    <img src="images/jardin.png">
+    <div>Jardin</div>
+  </div>
+
+  <div class="choice-card" data-env="champ">
+    <img src="images/champ.png">
+    <div>Champ / prairie</div>
+  </div>
+
+  <div class="choice-card" data-env="foret">
+    <img src="images/foret.png">
+    <div>Forêt</div>
+  </div>
+
+  <div class="choice-card" data-env="parc">
+    <img src="images/parc.png">
+    <div>Parc</div>
+  </div>
+
+  <div class="choice-card" data-env="haie">
+    <img src="images/haie.png">
+    <div>Haie / bocage</div>
+  </div>
+
+</div>
+
+<input type="hidden" id="environnement">
   <p class="icon-label"><span>📷</span> Ajouter une image</p>
   <label for="photoUpload" style="display:flex; flex-direction:column; align-items:center; border:2px dashed #4CAF50; padding:15px; border-radius:10px; cursor:pointer;">
     <span style="font-size:2em;">📸</span>
@@ -235,7 +308,25 @@ photoInput.addEventListener('change', function(){
     reader.readAsDataURL(file);
   }
 });
+// Sélection environnement
+const envGrid = document.getElementById("envGrid");
+const envInput = document.getElementById("environnement");
 
+envGrid.querySelectorAll(".choice-card").forEach(card => {
+
+  card.addEventListener("click", () => {
+
+    envInput.value = card.dataset.env;
+
+    envGrid.querySelectorAll(".choice-card").forEach(c =>
+      c.classList.remove("selected-sub")
+    );
+
+    card.classList.add("selected-sub");
+
+  });
+
+});
 // Soumission formulaire
 const form=document.getElementById('recensementForm');
 form.addEventListener('submit', async e=>{
@@ -252,7 +343,8 @@ form.addEventListener('submit', async e=>{
   etat: document.getElementById("etat").value,
   sousEtat: document.getElementById("sousEtat").value,
   latitude: marker ? marker.getLatLng().lat : null,
-  longitude: marker ? marker.getLatLng().lng : null
+  longitude: marker ? marker.getLatLng().lng : null,
+  environnement: document.getElementById(environnement").value
 };
 
   if(marker){
