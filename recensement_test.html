@@ -94,10 +94,13 @@ cursor:pointer;
 transition:all 0.3s;
 }
 
+/* Images des cartes remplissent tout le cadre */
 .choice-card img {
-max-width:50px;
-max-height:50px;
-margin-bottom:5px;
+  width: 100%;         /* largeur = largeur du parent */
+  height: 100%;        /* hauteur = hauteur du parent */
+  object-fit: cover;   /* ajuste l'image sans la déformer, recadrage si nécessaire */
+  border-radius: 12px; /* coins arrondis cohérents avec la carte */
+  display: block;      /* supprime l'espace blanc sous l'image */
 }
 
 .choice-card.selected-main {
