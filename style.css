@@ -250,7 +250,14 @@ border-radius:10px;
 margin-bottom:10px;
 }
 
-
+/* Images des cartes remplissent tout le cadre */
+.choice-card img {
+  width: 100%;         /* largeur = largeur du parent */
+  height: 100%;        /* hauteur = hauteur du parent */
+  object-fit: cover;   /* ajuste l'image sans la déformer, recadrage si nécessaire */
+  border-radius: 12px; /* coins arrondis cohérents avec la carte */
+  display: block;      /* supprime l'espace blanc sous l'image */
+}
 /* CONTACT */
 
 #contact a{
