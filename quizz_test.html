@@ -77,7 +77,6 @@ header { background:#4CAF50; padding:15px; text-align:center; color:white; }
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// QUIZZES COMPLETS
 const quizzes = {
   scientifique:[
     {question:"Le hérisson est principalement :", answers:["Herbivore","Carnivore insectivore","Omnivore strict","Granivore"], correct:1},
@@ -113,11 +112,11 @@ const quizzes = {
     {question:"Un hérisson en boule est :", answers:["Fâché","En alerte et défense","Endormi","Malade"], correct:1},
     {question:"Quand le relâcher après soin ?", answers:["Immédiatement dans la nature","Après guérison et conditions sûres","Dans votre jardin","Jamais"], correct:1},
     {question:"Que faire s’il y a plusieurs bébés ?", answers:["Les séparer","Les laisser ensemble","Les nourrir","Les transporter"], correct:1},
-    {question:"Le hérisson et les animaux domestiques ?", answers:["Bien ensemble","Peut être dangereux","Toujours éviter","Peut partager la nourriture"], correct:2},
+    {question:"Le hérisson et les animaux domestiques ?", answers:["Bien ensemble","Peut être danagereux","Toujours éviter","Peut partager la nourriture"], correct:2},
     {question:"Nourriture adaptée ?", answers:["Lait de vache","Croquettes pour chat ou nourriture insectivore","Pain","Riz"], correct:1},
     {question:"Le hérisson dans votre jardin ?", answers:["Le chasser","Laisser librement","Le nourrir à tout prix","Le enfermer"], correct:1},
     {question:"Bébé séparé de sa mère ?", answers:["Le nourrir immédiatement","Contacter un centre spécialisé","Le laisser seul","Le mettre avec un chat"], correct:1},
-    {question:"Hérisson blessé par véhicule ?", answers:["Le ramasser seul","Contacter centre de soins","Le laisser sur place","L’enterrer"], correct:1},
+    {question:"Hérisson blessé par véhicule ?", answers:["Le ramasser seul","Contacter centre de soins","Le laisser sur place","Le enterrer"], correct:1},
     {question:"Si hibernation proche ?", answers:["Le réveiller","Le laisser dormir","Le nourrir","Le déplacer"], correct:1},
     {question:"En cas de pluie forte ?", answers:["L’abriter","Le laisser","Le transporter","Le mettre à l’eau"], correct:0},
     {question:"Si jardin sécurisé ?", answers:["Le nourrir","Laisser libre","Le enfermer","L’attacher"], correct:1},
@@ -173,12 +172,10 @@ const quizzes = {
 let currentQuiz = null;
 let currentQuestion = 0;
 let score = 0;
-let completedQuizzes = JSON.parse(localStorage.getItem("completedQuizzes")) || [];
 
 // SELECTION QUIZ
 function selectQuiz(name){
   currentQuiz = quizzes[name];
   currentQuestion = 0;
   score = 0;
-  document.getElementById("quiz-container").style.display = "block";
- 
+  document.getElementById("quiz-container").style
