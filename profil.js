@@ -5,7 +5,51 @@ const userPhoto = document.getElementById('userPhoto');
 photoInput.addEventListener('change', function(){
   const file = this.files[0];
   if(file){
+    const reader = new FileReader();// Changer la photo localement
+const photoInput = document.getElementById('photoUpload');
+const userPhoto = document.getElementById('userPhoto');
+
+photoInput.addEventListener('change', function(){
+  const file = this.files[0];
+  if(file){
     const reader = new FileReader();
+    reader.onload = function(e){
+      userPhoto.src = e.target.result;
+      // Ici tu peux ajouter l'envoi vers le serveur si besoin
+    }
+    reader.readAsDataURL(file);
+  }
+});
+
+// Données utilisateur simulées
+const userData = {
+  quizCompleted: true,
+  recensements: 7,
+  votedBestPhoto: false
+};
+
+// Gestion des badges dynamiques
+function updateBadges(){
+  if(!userData.quizCompleted){
+    document.getElementById('badge-quiz').classList.add('locked');
+  }
+
+  if(userData.recensements < 1){
+    document.getElementById('badge-1').classList.add('locked');
+  }
+  if(userData.recensements < 5){
+    document.getElementById('badge-5').classList.add('locked');
+  }
+  if(userData.recensements < 10){
+    document.getElementById('badge-10').classList.add('locked');
+  }
+
+  if(!userData.votedBestPhoto){
+    document.getElementById('badge-photo').classList.add('locked');
+  }
+}
+
+updateBadges();
     reader.onload = function(e){
       userPhoto.src = e.target.result;
       // Ici on peut envoyer le fichier sur le serveur si nécessaire
