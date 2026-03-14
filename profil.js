@@ -56,7 +56,26 @@ onAuthStateChanged(auth, async user => {
 
   // Récupérer le nombre de recensements
   const recensementsCount = await getRecensementsCount(user.uid);
+  const badgeRecensements = [
+  {id: 'badge-1', target: 1},
+  {id: 'badge-5', target: 5},
+  {id: 'badge-10', target: 10},
+];
 
+badgeRecensements.forEach(b => {
+  const fill = document.getElementById(`progress-${b.target}`);
+  const text = document.getElementById(`progress-text-${b.target}`);
+  const progress = Math.min(recensementsCount / b.target, 1); // max 100%
+  
+  fill.style.width = (progress * 100) + "%";
+  text.textContent = `${Math.min(recensementsCount, b.target)}/${b.target}`;
+
+  // Verrouiller ou non le badge
+  const badgeEl = document.getElementById(b.id);
+  if(recensementsCount < b.target) {
+    badgeEl.classList.add('locked');
+  }
+});
   // Données supplémentaires depuis ton API (exemple)
   const userData = {
     quizCompleted: true,         // récupérer depuis ton API
