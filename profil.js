@@ -1,8 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { getFirestore, collection, query, where, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-// --- Firebase config ---
+// --- Config Firebase ---
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
   authDomain: "herisson-f80ba.firebaseapp.com",
@@ -23,93 +23,97 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   window.location.href = "login.html";
 });
 
-// --- Changer la photo localement ---
+// --- Changer photo ---
 const photoInput = document.getElementById('photoUpload');
 const userPhoto = document.getElementById('userPhoto');
-
 photoInput.addEventListener('change', function() {
   const file = this.files[0];
   if(file){
     const reader = new FileReader();
     reader.onload = function(e){
       userPhoto.src = e.target.result;
-      // Ici, tu peux envoyer le fichier vers le serveur si tu veux le stocker
     }
     reader.readAsDataURL(file);
   }
 });
 
-// --- Fonction pour compter les recensements ---
+// --- Compter recensements ---
 async function getRecensementsCount(uid) {
   const q = query(collection(db, "recensements"), where("uid", "==", uid));
   const snapshot = await getDocs(q);
   return snapshot.size;
 }
 
-// --- Initialisation des données utilisateur et badges ---
+// --- Charger progression des quizzes ---
+async function loadQuizProgress(uid) {
+  const userRef = doc(db, "users", uid);
+  const userSnap = await getDoc(userRef);
+
+  let quizScores = {};
+  if(userSnap.exists()){
+    quizScores = userSnap.data().quizScores || {}; // ex: {scientifique:20, comportement:15,...}
+  }
+
+  const totalQuizzes = 4;
+  let completed = 0;
+
+  for(const q of ['scientifique','comportement','ecologie','sante']){
+    if(quizScores[q] === 20) completed++;
+  }
+
+  const percent = (completed / totalQuizzes) * 100;
+
+  const quizBadge = document.getElementById('badge-quiz');
+  const quizProgress = document.getElementById('progress-quiz');
+  const quizText = document.getElementById('progress-text-quiz');
+
+  quizProgress.style.width = percent + "%";
+  quizText.textContent = `${completed}/${totalQuizzes}`;
+
+  if(completed === totalQuizzes){
+    quizBadge.classList.remove('locked');
+    quizBadge.dataset.tooltip = "Quiz terminé ! Badge débloqué.";
+  } else {
+    quizBadge.classList.add('locked');
+    quizBadge.dataset.tooltip = "Vous devez terminer tous les quiz pour débloquer ce badge";
+  }
+}
+
+// --- Initialisation badges et profil ---
 onAuthStateChanged(auth, async user => {
   if(!user) return window.location.href = "login.html";
 
-  // Affichage email et username
+  // Afficher username et email
   document.getElementById("userEmail").textContent = user.email || "Non renseigné";
   document.getElementById("username").textContent = localStorage.getItem("username") || "Inconnu";
 
-  // Récupérer le nombre de recensements
+  // Récupérer nombre de recensements
   const recensementsCount = await getRecensementsCount(user.uid);
+
   const badgeRecensements = [
-  {id: 'badge-1', target: 1},
-  {id: 'badge-5', target: 5},
-  {id: 'badge-10', target: 10},
-];
-
-// Après avoir récupéré recensementsCount
-badgeRecensements.forEach(b => {
-  const fill = document.getElementById(`progress-${b.target}`);
-  const text = document.getElementById(`progress-text-${b.target}`);
-  const badgeEl = document.getElementById(b.id);
-
-  const progress = Math.min(recensementsCount / b.target, 1);
-  fill.style.width = (progress * 100) + "%";
-  text.textContent = `${Math.min(recensementsCount, b.target)}/${b.target}`;
-
-  // Badge verrouillé si objectif non atteint
-  if(recensementsCount < b.target) {
-    badgeEl.classList.add('locked');
-    badgeEl.dataset.tooltip = `Vous devez recenser ${b.target} hérissons pour débloquer ce badge`;
-  } else {
-    badgeEl.classList.remove('locked');
-  }
-});
-  // Données supplémentaires depuis ton API (exemple)
-  const userData = {
-    quizCompleted: true,         // récupérer depuis ton API
-    recensements: recensementsCount,
-    votedBestPhoto: false         // récupérer depuis ton API
-  };
-
-  // Gestion badges dynamiques
-  const badges = [
-    {id: 'badge-quiz', condition: userData.quizCompleted},
-    {id: 'badge-1', condition: userData.recensements >= 1},
-    {id: 'badge-5', condition: userData.recensements >= 5},
-    {id: 'badge-10', condition: userData.recensements >= 10},
-    {id: 'badge-photo', condition: userData.votedBestPhoto}
+    {id: 'badge-1', target: 1},
+    {id: 'badge-5', target: 5},
+    {id: 'badge-10', target: 10},
   ];
 
-  badges.forEach(badge => {
-    const el = document.getElementById(badge.id);
-    if(!badge.condition) el.classList.add('locked'); // grisé via CSS
+  badgeRecensements.forEach(b => {
+    const fill = document.getElementById(`progress-${b.target}`);
+    const text = document.getElementById(`progress-text-${b.target}`);
+    const badgeEl = document.getElementById(b.id);
+
+    const progress = Math.min(recensementsCount / b.target, 1);
+    fill.style.width = (progress * 100) + "%";
+    text.textContent = `${Math.min(recensementsCount, b.target)}/${b.target}`;
+
+    if(recensementsCount < b.target){
+      badgeEl.classList.add('locked');
+      badgeEl.dataset.tooltip = `Vous devez recenser ${b.target} hérissons pour débloquer ce badge`;
+    } else {
+      badgeEl.classList.remove('locked');
+    }
   });
-const quizBadge = document.getElementById('badge-quiz');
-const quizProgress = document.getElementById('progress-quiz');
-const quizText = document.getElementById('progress-text-quiz');
-if(userData.quizCompleted){
-  quizBadge.classList.remove('locked');
-  quizProgress.style.width = "100%";
-  quizText.textContent = "Terminé";
-} else {
-  quizBadge.classList.add('locked');
-  quizBadge.dataset.tooltip = "Vous devez terminer le quiz pour débloquer ce badge";
-  quizProgress.style.width = "0%";
-  quizText.textContent = "0/1";
+
+  // Charger progression quiz
+  await loadQuizProgress(user.uid);
+
 });
