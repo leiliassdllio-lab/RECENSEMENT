@@ -178,4 +178,10 @@ function selectQuiz(name){
   currentQuiz = quizzes[name];
   currentQuestion = 0;
   score = 0;
-  document.getElementById("quiz-container").style
+
+  document.getElementById("quiz-container").style.display = "block";
+  document.querySelector(".quiz-cards").style.display = "none";
+
+  loadQuestion();
+  updateProgress();
+}
