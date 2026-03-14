@@ -259,7 +259,7 @@ function updateProgress(){
 }
 
 // FIN QUIZ
-async function finishQuiz(){
+async function updateQuizBadgeProgress() {
 
   document.getElementById("question").textContent="Quiz terminé !";
   document.getElementById("answers").innerHTML="";
@@ -280,25 +280,29 @@ async function finishQuiz(){
       quizScores = userSnap.data().quizScores || {};
   }
 
-  quizScores[currentQuizName] = score;
-
-  let quizCompleted = false;
-
-  if(
-    quizScores.scientifique === 20 &&
-    quizScores.comportement === 20 &&
-    quizScores.ecologie === 20 &&
-    quizScores.sante === 20
-  ){
-      quizCompleted = true;
+  // compter les quizz terminés
+  const totalQuizzes = 4;
+  let completed = 0;
+  for(const q of ['scientifique','comportement','ecologie','sante']){
+      if(quizScores[q] === 20) completed++;
   }
 
-  await setDoc(userRef,{
-      quizScores: quizScores,
-      quizCompleted: quizCompleted
-  },{merge:true});
-  
+  // mettre à jour barre et texte
+  const percent = (completed/totalQuizzes)*100;
+  progressFill.style.width = percent + "%";
+  progressText.textContent = `${completed}/${totalQuizzes}`;
+
+  // badge débloqué si tous terminés
+  if(completed === totalQuizzes){
+      badgesQuiz.classList.remove('locked');
+      badgesQuiz.dataset.tooltip = "Quiz terminé ! Badge débloqué.";
+  } else {
+      badgesQuiz.classList.add('locked');
+      badgesQuiz.dataset.tooltip = `Vous devez terminer tous les quizz pour débloquer ce badge`;
+  }
 }
+
+ 
 window.selectQuiz = selectQuiz;
 window.backToSelection = backToSelection;
 </script>
