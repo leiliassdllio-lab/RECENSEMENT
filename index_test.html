@@ -1,0 +1,223 @@
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hérisson – Projets</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <h1>Participez à la protection du hérisson : cartographions, observons, conservons</h1>
+    <p class="subtitle"> · Science & terrain · </p>
+    <a href="#projets" class="btn">Voir notre projet</a>
+  </div>
+</header>
+
+<main class="container">
+
+<section id="about">
+<h2>Le hérisson d’Europe est désormais classé quasi menacé d’extinction, ce qui rend le suivi participatif essentiel pour mieux comprendre sa répartition et stimuler des actions de protection</h2>
+
+<div class="about-bubbles">
+
+<div class="about-bubble">
+<div class="bubble-icon">🦔</div>
+<h3>Qui sommes-nous ?</h3>
+
+<p class="text-collapse">
+Nous sommes un groupe de 6 étudiants en bachelier de bioingénieurie à l’Université libre de Bruxelles...
+<span class="more-text">
+
+Notre projet consiste à identifier les lacunes de données en Wallonie sur le hérisson d’Europe (Erinaceus europaeus)
+et à proposer et développer des pistes et outils concrets d’amélioration pour renforcer la conservation de l’espèce.
+
+Ce projet nous tient à cœur car, en tant que futures scientifiques, nous pensons qu’il est important de s’intéresser
+à la biodiversité qui nous entoure et d’en prendre soin.
+
+</span>
+</p>
+
+<span class="read-more-link">Lire plus</span>
+</div>
+
+<div class="about-bubble">
+<div class="bubble-icon">🦔</div>
+<h3>Qui sont les hérissons ?</h3>
+
+<p class="text-collapse">
+En Belgique, le hérisson présent est l’Erinaceus europaeus, aussi appelé hérisson d’Europe...
+
+<span class="more-text">
+
+Il s’agit d’un petit mammifère insectivore nocturne, reconnaissable à ses piquants et fréquent
+dans les jardins, parcs et milieux agricoles.
+
+Espèce protégée, il joue un rôle écologique important
+en régulant les populations d’invertébrés.
+
+</span>
+</p>
+
+<span class="read-more-link">Lire plus</span>
+</div>
+
+<div class="about-bubble">
+<div class="bubble-icon">🦔</div>
+<h3>Pourquoi leur population diminue-t-elle ?</h3>
+
+<p class="text-collapse">
+
+Les hérissons sont sur la liste rouge de l’UICN : ils passent de “préoccupation mineure” à “quasi menacé”...
+
+<span class="more-text">
+
+La population d’Erinaceus europaeus diminue principalement à cause de la fragmentation des habitats
+(urbanisation, routes, clôtures imperméables).
+
+La mortalité routière est une cause majeure.
+
+L’usage de pesticides réduit aussi leurs ressources alimentaires.
+
+Les robots tondeuses nocturnes et la perte de sites d’hibernation aggravent également le déclin.
+
+</span>
+</p>
+
+<span class="read-more-link">Lire plus</span>
+</div>
+
+<div class="about-bubble">
+<div class="bubble-icon">🦔</div>
+<h3>Quels sont nos objectifs ?</h3>
+
+<p class="text-collapse">
+
+Nous voudrions sensibiliser un maximum de personnes de tout âge...
+
+<span class="more-text">
+
+et motiver les citoyens à s’intéresser davantage aux hérissons et à leur conservation.
+
+Nous voulons aussi comprendre pourquoi les données sont moins nombreuses en Wallonie qu’en Flandre.
+
+</span>
+</p>
+
+<span class="read-more-link">Lire plus</span>
+</div>
+
+</div>
+</section>
+
+
+<section id="projets">
+
+<h2>Nos Rubriques</h2>
+
+<div class="cards">
+
+<a href="recensement.html" class="card-link">
+<div class="card">
+<img src="recensement.png">
+<h3>Recensement</h3>
+<p>Participez à la collecte des observations de hérissons.</p>
+</div>
+</a>
+
+<a href="quizz.html" class="card-link">
+<div class="card">
+<img src="quizz.png">
+<h3>Quizz</h3>
+<p>Testez vos connaissances sur les hérissons et leur habitat.</p>
+</div>
+</a>
+
+<a href="Cartographie.html" class="card-link">
+<div class="card">
+<img src="Cartographie.png">
+<h3>Cartographie</h3>
+<p>Visualisez les données collectées sur la carte.</p>
+</div>
+</a>
+
+<a href="Conseils.html" class="card-link">
+<div class="card">
+<img src="Conseils.png">
+<h3>Conseils</h3>
+<p>Guide pour observer et protéger les hérissons.</p>
+</div>
+</a>
+
+</div>
+</section>
+
+<section id="contact">
+
+<h2>Contact</h2>
+
+<p>
+📧 <a href="mailto:projet_herisson@email.com">projet_herisson@email.com</a><br>
+💻 GitHub : <a href="https://github.com/xxxxxxxxxxxxx-hub" target="_blank">xxxxxxxxx-hub</a>
+</p>
+
+</section>
+
+</main>
+
+
+<footer>
+<p>© <span id="year"></span> – Team hérisson</p>
+</footer>
+
+
+<button id="topBtn">↑</button>
+
+
+<script>
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+
+document.querySelectorAll('.read-more-link').forEach(link => {
+
+link.addEventListener('click', function(){
+
+const p = this.previousElementSibling;
+
+p.classList.toggle('expanded');
+
+this.textContent =
+p.classList.contains('expanded')
+? "Lire moins"
+: "Lire plus";
+
+});
+
+});
+
+
+const topBtn = document.getElementById("topBtn");
+
+window.onscroll = function(){
+
+if(document.documentElement.scrollTop > 300){
+topBtn.style.display="block";
+}else{
+topBtn.style.display="none";
+}
+
+};
+
+topBtn.onclick=function(){
+window.scrollTo({top:0,behavior:"smooth"});
+};
+
+</script>
+
+</body>
+</html>
+```
