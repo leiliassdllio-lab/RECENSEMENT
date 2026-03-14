@@ -387,12 +387,15 @@ grid-template-columns:1fr;
 .badges-container{
   display:flex;
   flex-wrap:wrap;
-  gap:15px;
-  justify-content:center;
+  gap:20px;
+  justify-content: center;
 }
 
 .badge{
   text-align:center;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
 }
 
 .badge img{
@@ -400,6 +403,7 @@ grid-template-columns:1fr;
   height:70px;
   object-fit:contain;
   border-radius:10px;
+  border: 2px solid #4CAF50;
 }
 
 .badge p{
@@ -412,27 +416,6 @@ grid-template-columns:1fr;
   flex-wrap:wrap;
   gap:20px;
   justify-content:center;
-}
-
-.badge{
-  text-align:center;
-  cursor:pointer;
-  transition:transform 0.3s, box-shadow 0.3s;
-  position:relative;
-}
-
-.badge img{
-  width:70px;
-  height:70px;
-  object-fit:contain;
-  border-radius:10px;
-  border:2px solid #4CAF50;
-}
-
-.badge p{
-  margin-top:5px;
-  font-size:0.9rem;
-  font-weight:bold;
 }
 
 /* Effet au survol */
@@ -449,7 +432,7 @@ grid-template-columns:1fr;
 
 /* Tooltip avec description */
 .badge::after{
-  content: attr(title);
+  content: attr(data-tooltip);
   position:absolute;
   bottom:100%;
   left:50%;
@@ -465,7 +448,7 @@ grid-template-columns:1fr;
   transition:opacity 0.3s;
 }
 
-.badge:hover::after{
+.badge.locked:hover::after{
   opacity:1;
 }
 .locked {
