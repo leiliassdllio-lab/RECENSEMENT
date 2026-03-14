@@ -468,3 +468,7 @@ grid-template-columns:1fr;
 .badge:hover::after{
   opacity:1;
 }
+.locked {
+  opacity: 0.3;
+  filter: grayscale(80%);
+}  
