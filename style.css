@@ -383,128 +383,144 @@ grid-template-columns:1fr;
   color:#4CAF50;
   text-align:center;
 }
-
-.badges-container{
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
-  justify-content: center;
+/* Conteneur des badges */
+.badges-container {
+  display: flex;             /* badges alignés horizontalement */
+  flex-wrap: wrap;           /* passe à la ligne si écran trop petit */
+  gap: 20px;                 /* espace entre les cases */
+  justify-content: center;   /* centrer horizontalement */
 }
 
-.badge{
-  display:flex;
-  flex-direction:column; /* image + barre + texte empilés */
-  align-items:center;
-  justify-content:flex-start;
-  width:120px;  /* largeur fixe de la case */
-  height:150px; /* hauteur fixe de la case */
-  padding:10px;
-  border-radius:12px; /* coins arrondis */
-  background:#f7f9f7;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  text-align:center;
-  position:relative;
+/* Case de chaque badge */
+.badge {
+  display: flex;
+  flex-direction: column;    /* empile image + barre + texte */
+  align-items: center;
+  justify-content: flex-start;
+  width: 120px;              /* largeur fixe de la case */
+  height: 150px;             /* hauteur fixe de la case */
+  padding: 10px;
+  border-radius: 12px;       /* coins arrondis */
+  background: #f7f9f7;       /* fond clair pour la case */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  text-align: center;
+  position: relative;
 }
 
-.badge img{
-  width:70px;
-  height:70px;
-  object-fit:contain;
-  margin-bottom:8px;
-  border-radius:10px;
-  border:2px solid #4CAF50;
+/* Image du badge */
+.badge img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  border: 2px solid #4CAF50;
 }
 
-.badge p{
-  margin-top:5px;
-  font-size:0.9rem;
-  font-weight:bold;
+/* Texte sous l'image */
+.badge p {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
-
-/* Effet au survol */
-.badge:hover{
-  transform:translateY(-5px) scale(1.05);
-  box-shadow:0 6px 15px rgba(0,0,0,0.2);
+/* Barre de progression */
+.badge .progress-bar {
+  width: 80%;               /* légèrement plus petite que la case */
+  height: 8px;
+  background-color: #ddd;
+  border-radius: 4px;
+  overflow: hidden;         /* pour que le fill ne dépasse pas */
+  margin-top: 5px;
 }
 
-/* Badge grisé si non obtenu */
-.badge.locked img{
-  opacity:0.3;
-  filter:grayscale(100%);
-}
-
-/* Tooltip avec description */
-.badge::after{
-  content: attr(data-tooltip);
-  position:absolute;
-  bottom:100%;
-  left:50%;
-  transform:translateX(-50%);
-  background:rgba(0,0,0,0.8);
-  color:white;
-  padding:5px 10px;
-  border-radius:6px;
-  font-size:0.8rem;
-  white-space:nowrap;
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 0.3s;
-}
-
-.badge.locked:hover::after{
-  opacity:1;
-}
-.locked {
-  opacity: 0.3;
-  filter: grayscale(80%);
-}  
-/* Barre de progression sous les badges */
-.badge .progress-bar{
-  width:80%; /* légèrement plus petite que la case */
-  height:8px;
-  background-color:#ddd;
-  border-radius:4px;
-  overflow:hidden;
-  margin-top:5px;
-}
-
+/* Partie remplie de la barre */
 .badge .progress-fill {
   height: 100%;
-  width: 0%;
+  width: 0%;                /* sera mis à jour via JS */
   background-color: #4CAF50;
   transition: width 0.5s ease;
 }
-.badge .progress-text{
-  display:block;
-  font-size:0.75rem;
-  margin-top:2px;
-  text-align:center;
-  color:#333
+
+/* Texte de progression */
+.badge .progress-text {
+  display: block;
+  font-size: 0.75rem;
+  margin-top: 2px;
+  text-align: center;
+  color: #333;
+}
+
+/* Effet hover sur la case entière */
+.badge:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Badge grisé si non obtenu */
+.badge.locked img {
+  opacity: 0.3;
+  filter: grayscale(100%);
+}
+
+/* Tooltip description */
+.badge::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.badge.locked:hover::after {
+  opacity: 1;
+}
+
+/* Classe grisée générale */
+.locked {
+  opacity: 0.3;
+  filter: grayscale(80%);
 }
 
 /* Barre de progression principale du quiz */
-#progress-bar-container {
-  width: 100%;           /* largeur totale de la barre */
-  max-width: 120px;      /* tu peux ajuster selon ton design */
-  height: 10px;          /* hauteur de la barre */
-  background-color: #ddd; 
-  border-radius: 5px;
-  overflow: hidden;
-  margin: 5px auto 0 auto;  /* centré sous le badge */
-}
-
 #progress-quiz {
-  height: 100%;
-  width: 0%;             /* sera mis à jour via JS */
-  background-color: #4CAF50; 
+  width: 80%;               /* correspond à la largeur de la case */
+  height: 8px;
+  background-color: #4CAF50;
   transition: width 0.5s ease;
+  margin-top: 5px;
 }
 
 #progress-text-quiz {
   display: block;
-  text-align: center;
   font-size: 0.75rem;
+  text-align: center;
   margin-top: 2px;
   color: #333;
+}
+
+/* Réduction sur mobile */
+@media (max-width: 480px) {
+  .badge {
+    width: 100px;
+    height: 130px;
+  }
+
+  .badge img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .badge .progress-bar {
+    width: 70%;
+  }
 }
