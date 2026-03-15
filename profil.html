@@ -27,6 +27,7 @@
       <h3>Mes Badges</h3>
       <div class="badges-container">
 
+        <!-- Carré du badge quiz -->
         <div class="badge-box">
           <div class="badge" id="badge-quiz" data-tooltip="Compléter tous les quiz">
             <img src="badge_quiz.png" alt="Badge Quiz">
@@ -37,6 +38,7 @@
           </div>
         </div>
 
+        <!-- Carré du badge 1 recensement -->
         <div class="badge-box">
           <div class="badge" id="badge-1" data-tooltip="Vous devez recenser 1 hérisson pour débloquer ce badge">
             <img src="badge1.png" alt="Badge 1 recensement">
@@ -47,6 +49,7 @@
           </div>
         </div>
 
+        <!-- Carré du badge 5 recensements -->
         <div class="badge-box">
           <div class="badge" id="badge-5" data-tooltip="Vous devez recenser 5 hérissons pour débloquer ce badge">
             <img src="badge5.png" alt="Badge 5 recensements">
@@ -57,6 +60,7 @@
           </div>
         </div>
 
+        <!-- Carré du badge 10 recensements -->
         <div class="badge-box">
           <div class="badge" id="badge-10" data-tooltip="Vous devez recenser 10 hérissons pour débloquer ce badge">
             <img src="badge10.png" alt="Badge 10 recensements">
@@ -67,6 +71,7 @@
           </div>
         </div>
 
+        <!-- Carré du badge meilleure photo -->
         <div class="badge-box">
           <div class="badge" id="badge-photo" data-tooltip="Meilleure photo du mois">
             <img src="badge_photo.png" alt="Meilleure photo">
@@ -96,6 +101,15 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if(logoutBtn){
+      logoutBtn.addEventListener("click", async () => {
+        await signOut(auth);
+        localStorage.removeItem("username");
+        window.location.href = "login.html";
+      });
+    }
 
     const photoInput = document.getElementById('photoUpload');
     const userPhoto = document.getElementById('userPhoto');
@@ -176,11 +190,13 @@
 
     onAuthStateChanged(auth, async user => {
       if(!user) return window.location.href = "login.html";
+
       document.getElementById("userEmail").textContent = user.email || "Non renseigné";
       document.getElementById("username").textContent = localStorage.getItem("username") || "Inconnu";
 
       const recensementsCount = await getRecensementsCount(user.uid);
       updateRecensementBadges(recensementsCount);
+
       await loadQuizProgress(user.uid);
     });
   </script>
