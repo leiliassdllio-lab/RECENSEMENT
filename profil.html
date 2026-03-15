@@ -5,10 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mon Profil – Hérisson</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* --- Général --- */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background: #f7f7f7;
+      color: #111;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 0;
+    }
+
+    h2 {
+      color: #4CAF50;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* BADGES */
+    .badges-container {
+      display: flex; /* Aligne les badges horizontalement */
+      justify-content: space-around; /* Espace entre les badges */
+      flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
+      margin: 20px 0; /* Espace autour du conteneur */
+    }
+
+    .badge-box {
+      background-color: #f0f0f0; /* Couleur d'arrière-plan du badge */
+      border-radius: 15px; /* Bords arrondis */
+      padding: 15px; /* Espace intérieur */
+      width: 100px; /* Largeur fixe du badge */
+      text-align: center; /* Centre le contenu */
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Ombre légère */
+      margin: 10px; /* Espace entre les badges */
+    }
+
+    .badge img {
+      width: 80%; /* Ajuste la taille de l'image */
+      height: auto; /* Conserve le ratio d'aspect */
+    }
+
+    .progress-bar {
+      background-color: #e0e0e0; /* Couleur de fond de la barre de progression */
+      border-radius: 10px; /* Bords arrondis de la barre */
+      height: 10px; /* Hauteur de la barre */
+      margin-top: 10px; /* Espace au-dessus de la barre */
+    }
+
+    .progress-fill {
+      background-color: #76c7c0; /* Couleur de la barre de progression */
+      height: 100%; /* Remplit toute la hauteur de la barre */
+      border-radius: 10px; /* Bords arrondis de la couleur de progression */
+      transition: width 0.3s; /* Animation douce lors du changement de largeur */
+    }
+
+    .progress-text {
+      margin-top: 5px; /* Espace au-dessus du texte de progression */
+      font-size: 12px; /* Taille du texte */
+      color: #555; /* Couleur du texte */
+    }
+
+    /* Autres styles... */
+
+  </style>
 </head>
 <body>
   <main class="container profile-page">
-
     <section class="profile-header">
       <div class="profile-photo">
         <img id="userPhoto" src="avatar_default.png" alt="Photo de profil">
@@ -26,8 +99,7 @@
     <section class="profile-badges">
       <h3>Mes Badges</h3>
       <div class="badges-container">
-
-        <!-- Carré du badge quiz -->
+        <!-- Badge 1 -->
         <div class="badge-box">
           <div class="badge" id="badge-quiz" data-tooltip="Compléter tous les quiz">
             <img src="badge_quiz.png" alt="Badge Quiz">
@@ -38,7 +110,7 @@
           </div>
         </div>
 
-        <!-- Carré du badge 1 recensement -->
+        <!-- Badge 2 -->
         <div class="badge-box">
           <div class="badge" id="badge-1" data-tooltip="Vous devez recenser 1 hérisson pour débloquer ce badge">
             <img src="badge1.png" alt="Badge 1 recensement">
@@ -49,7 +121,7 @@
           </div>
         </div>
 
-        <!-- Carré du badge 5 recensements -->
+        <!-- Badge 3 -->
         <div class="badge-box">
           <div class="badge" id="badge-5" data-tooltip="Vous devez recenser 5 hérissons pour débloquer ce badge">
             <img src="badge5.png" alt="Badge 5 recensements">
@@ -60,7 +132,7 @@
           </div>
         </div>
 
-        <!-- Carré du badge 10 recensements -->
+        <!-- Badge 4 -->
         <div class="badge-box">
           <div class="badge" id="badge-10" data-tooltip="Vous devez recenser 10 hérissons pour débloquer ce badge">
             <img src="badge10.png" alt="Badge 10 recensements">
@@ -71,17 +143,15 @@
           </div>
         </div>
 
-        <!-- Carré du badge meilleure photo -->
+        <!-- Badge 5 -->
         <div class="badge-box">
           <div class="badge" id="badge-photo" data-tooltip="Meilleure photo du mois">
             <img src="badge_photo.png" alt="Meilleure photo">
             <p>Meilleure photo</p>
           </div>
         </div>
-
       </div>
     </section>
-
   </main>
 
   <script type="module">
@@ -103,7 +173,7 @@
     const auth = getAuth(app);
 
     const logoutBtn = document.getElementById("logoutBtn");
-    if(logoutBtn){
+    if (logoutBtn) {
       logoutBtn.addEventListener("click", async () => {
         await signOut(auth);
         localStorage.removeItem("username");
@@ -113,11 +183,11 @@
 
     const photoInput = document.getElementById('photoUpload');
     const userPhoto = document.getElementById('userPhoto');
-    photoInput.addEventListener('change', function() {
+    photoInput.addEventListener('change', function () {
       const file = this.files[0];
-      if(file){
+      if (file) {
         const reader = new FileReader();
-        reader.onload = function(e){
+        reader.onload = function (e) {
           userPhoto.src = e.target.result;
         }
         reader.readAsDataURL(file);
@@ -132,73 +202,12 @@
 
     function updateRecensementBadges(count) {
       const badgeRecensements = [
-        {id: 'badge-1', target: 1},
-        {id: 'badge-5', target: 5},
-        {id: 'badge-10', target: 10},
+        { id: 'badge-1', target: 1 },
+        { id: 'badge-5', target: 5 },
+        { id: 'badge-10', target: 10 },
       ];
 
       badgeRecensements.forEach(b => {
         const fill = document.getElementById(`progress-${b.target}`);
         const text = document.getElementById(`progress-text-${b.target}`);
-        const badgeEl = document.getElementById(b.id);
-
-        const progress = Math.min(count / b.target, 1);
-        fill.style.width = (progress * 100) + "%";
-        text.textContent = `${Math.min(count, b.target)}/${b.target}`;
-
-        if(count < b.target){
-          badgeEl.classList.add('locked');
-          badgeEl.dataset.tooltip = `Vous devez recenser ${b.target} hérissons pour débloquer ce badge`;
-        } else {
-          badgeEl.classList.remove('locked');
-          badgeEl.dataset.tooltip = `Badge débloqué !`;
-        }
-      });
-    }
-
-    async function loadQuizProgress(uid) {
-      const userRef = doc(db, "users", uid);
-      const userSnap = await getDoc(userRef);
-
-      let quizScores = {};
-      if(userSnap.exists()){
-        quizScores = userSnap.data().quizScores || {};
-      }
-
-      const totalQuizzes = 4;
-      let completed = 0;
-      for(const q of ['scientifique','comportement','ecologie','sante']){
-        if(quizScores[q] === 20) completed++;
-      }
-
-      const percent = (completed / totalQuizzes) * 100;
-      const quizBadge = document.getElementById('badge-quiz');
-      const quizProgress = document.getElementById('progress-quiz');
-      const quizText = document.getElementById('progress-text-quiz');
-
-      if(completed === totalQuizzes){
-        quizBadge.classList.remove('locked');
-        quizProgress.style.width = "100%";
-        quizText.textContent = "Terminé";
-      } else {
-        quizBadge.classList.add('locked');
-        quizBadge.dataset.tooltip = "Vous devez terminer tous les quiz pour débloquer ce badge";
-        quizProgress.style.width = (percent) + "%";
-        quizText.textContent = `${completed}/${totalQuizzes}`;
-      }
-    }
-
-    onAuthStateChanged(auth, async user => {
-      if(!user) return window.location.href = "login.html";
-
-      document.getElementById("userEmail").textContent = user.email || "Non renseigné";
-      document.getElementById("username").textContent = localStorage.getItem("username") || "Inconnu";
-
-      const recensementsCount = await getRecensementsCount(user.uid);
-      updateRecensementBadges(recensementsCount);
-
-      await loadQuizProgress(user.uid);
-    });
-  </script>
-</body>
-</html>
+        const badgeEl = document.getElementById
