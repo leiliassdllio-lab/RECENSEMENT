@@ -266,10 +266,9 @@ async function finishQuiz(){
   document.getElementById("feedback").textContent=`Votre score : ${score} / ${currentQuiz.length}`;
   document.getElementById("progress-bar").style.width="100%";
 
-  const user = auth.currentUser;
-  if(!user) return;
+  if(!currentUser) return;
 
-  const userRef = doc(db,"users",user.uid);
+  const userRef = doc(db,"users",currentUser.uid);
   const userSnap = await getDoc(userRef);
 
   let quizScores = {};
