@@ -147,7 +147,6 @@
         <div class="badge-box">
           <div class="badge" id="badge-photo" data-tooltip="Meilleure photo du mois">
             <img src="badge_photo.png" alt="Meilleure photo">
-            <p>Meilleure photo</p>
           </div>
         </div>
       </div>
@@ -211,3 +210,30 @@
         const fill = document.getElementById(`progress-${b.target}`);
         const text = document.getElementById(`progress-text-${b.target}`);
         const badgeEl = document.getElementById
+const progress = Math.min(count / b.target, 1); // Calcule la progression
+    fill.style.width = (progress * 100) + "%"; // Met à jour la largeur de la barre
+    text.textContent = `${Math.min(count, b.target)}/${b.target}`; // Met à jour le texte
+
+    if (count < b.target) {
+      badgeEl.classList.add('locked');
+      badgeEl.dataset.tooltip = `Vous devez recenser ${b.target} hérissons pour débloquer ce badge`;
+    } else {
+      badgeEl.classList.remove('locked');
+      badgeEl.dataset.tooltip = `Badge débloqué !`;
+    }
+  });
+}
+onAuthStateChanged(auth, async (user) => {
+  if (!user) return window.location.href = "login.html";
+
+  // Affiche infos utilisateur
+  document.getElementById("userEmail").textContent = user.email || "Non renseigné";
+  document.getElementById("username").textContent = localStorage.getItem("username") || "Inconnu";
+
+  // Récupère et applique le nombre de recensements aux badges
+  const recensementsCount = await getRecensementsCount(user.uid);
+  updateRecensementBadges(recensementsCount);
+
+  // Si tu as une fonction pour le quiz
+  await loadQuizProgress(user.uid);
+});
