@@ -180,9 +180,7 @@
 	\vspace*{3\baselineskip}
 	\pagenumbering{gobble}
 	\newpage
-	\tableofcontents
-    \newpage
-    \pagenumbering{arabic}
+	\pagenumbering{roman}
 \endgroup}
 
 \makeatother
@@ -212,4 +210,3 @@ contents={%
 % \rhead{Roberto Acquaviva, 2021}
 % \lhead{MECA-H417 - Sustainable Energy}
 % \rfoot{\thepage}
-
