@@ -16,7 +16,8 @@
 %Language
 \RequirePackage{csquotes}
 \RequirePackage[french]{babel}
-\RequirePackage[backend=biber,citestyle=alphabetic,bibstyle=authoryear]{biblatex}
+\RequirePackage[style=apa,backend=biber,sorting=nyt]{biblatex}
+\DeclareLanguageMapping{french}{french-apa}
 
 \RequirePackage{tabularx}
 \RequirePackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
@@ -212,24 +213,3 @@ contents={%
 % \lhead{MECA-H417 - Sustainable Energy}
 % \rfoot{\thepage}
 
-
-%This is used to force the label alphabetic for the citation of biblio
-% begin: excerpt from `alphabetic.bbx'
-\DeclareFieldFormat{labelalphawidth}{\mkbibbrackets{#1}}
- 
-\defbibenvironment{bibliography}
-   {\list
-      {\printtext[labelalphawidth]{%
-         \printfield{prefixnumber}%
-     \printfield{labelalpha}%
-         \printfield{extraalpha}}}
-      {\setlength{\labelwidth}{\labelalphawidth}%
-       \setlength{\leftmargin}{\labelwidth}%
-       \setlength{\labelsep}{\biblabelsep}%
-       \addtolength{\leftmargin}{\labelsep}%
-       \setlength{\itemsep}{\bibitemsep}%
-       \setlength{\parsep}{\bibparsep}}%
-       \renewcommand*{\makelabel}[1]{##1\hss}}
-   {\endlist}
-   {\item}
-% end: excerpt from `alphabetic.bbx'
