@@ -24,6 +24,7 @@
 \RequirePackage{enumitem}
 \RequirePackage{xkeyval}
 \RequirePackage{ifthen}
+\RequirePackage{titlesec}
 
 %%%%package tikz%%%%
 
@@ -35,8 +36,6 @@
 
 %%%%Forme%%%%
 
-%Chapter form
-\RequirePackage[Bjornstrup]{fncychap}
 %Picture package
 \RequirePackage{graphicx}
 \RequirePackage{textcomp}
@@ -79,6 +78,7 @@
 \definecolor{rouge}{rgb}{0.77, 0.12, 0.23}
 \definecolor{vert}{rgb}{0.13, 0.55, 0.13}
 \definecolor{antiquefuchsia}{rgb}{0.57, 0.36, 0.51}
+\definecolor{chaptergray}{gray}{0.35}
 \colorlet{shadecolor}{cyan!30!white}
 \colorlet{framecolor}{blue!50!black}
 \hypersetup{
@@ -92,6 +92,22 @@
 \newcommand{\rouge}[1]{\textcolor{rouge}{#1}}
 \newcommand{\bleu}[1]{\textcolor{bleu}{#1}}
 \newcommand{\verts}[1]{\textcolor{vert}{#1}}
+
+\titleformat{\chapter}[display]
+  {\normalfont}
+  {\raggedright\Large\bfseries\chaptertitlename\ \thechapter}
+  {0.5ex}
+  {\raggedright\LARGE\bfseries}
+  []
+
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont}
+  {}
+  {0pt}
+  {\raggedright\LARGE\bfseries}
+  []
+
+\titlespacing*{\chapter}{0pt}{-4pt}{18pt}
 
 \makeatletter
 
@@ -167,16 +183,6 @@
     \newpage
     \pagenumbering{arabic}
 \endgroup}
-
-% Fix on chapter overful hbox
-\renewcommand{\DOCH}{%
-    \fboxsep=0pt%
-    \colorbox[gray]{.85}{\rule{0pt}{40pt}\parbox[b][40pt][c]{\textwidth}{\hfill}}%
-\kern-\myhi
-    \kern-2.2em\raise12pt%
-    \hbox to 2.2em{\hfil\color[gray]{.5}\CNoV\thechapter\hfil}%
-\\%
-  }
 
 \makeatother
 
