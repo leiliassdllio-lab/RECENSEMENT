@@ -15,11 +15,11 @@
 \RequirePackage[T1]{fontenc}
 %Language
 \RequirePackage{csquotes}
-\RequirePackage[english]{babel}
+\RequirePackage[french]{babel}
 \RequirePackage[backend=biber,citestyle=alphabetic,bibstyle=authoryear]{biblatex}
 
 \RequirePackage{tabularx}
-\RequirePackage[top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\RequirePackage[top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm]{geometry}
 \RequirePackage{hyperref}
 \RequirePackage{enumitem}
 \RequirePackage{xkeyval}
@@ -67,9 +67,10 @@
 %%%%Annexe%%%%
 
 \RequirePackage[toc,page]{appendix}
-\linespread{1.5}
+\linespread{1.25}
 \renewcommand{\appendixtocname}{Annexes}
 \renewcommand{\appendixpagename}{Annexes}
+\renewcommand{\contentsname}{Table des matieres}
 
 %%%%Couleurs%%%%
 
@@ -169,15 +170,11 @@
 
 % Fix on chapter overful hbox
 \renewcommand{\DOCH}{%
-    \settowidth{\py}{\CNoV\thechapter}%
-    \addtolength{\py}{-10pt}%     % Amount of space by which the
-%                                  % number is shifted right
     \fboxsep=0pt%
-    \colorbox[gray]{.85}{\rule{0pt}{40pt}\parbox[b]{\textwidth}{\hfill}}%
+    \colorbox[gray]{.85}{\rule{0pt}{40pt}\parbox[b][40pt][c]{\textwidth}{\hfill}}%
 \kern-\myhi
-    \kern-\py\raise20pt%
-    \hbox{\color[gray]{.5}\CNoV\thechapter}%
-%\kern-\myhi
+    \kern-2.2em\raise12pt%
+    \hbox to 2.2em{\hfil\color[gray]{.5}\CNoV\thechapter\hfil}%
 \\%
   }
 
