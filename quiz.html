@@ -122,8 +122,8 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 // Banque de questions, organisee par theme
 const quizzes = {
-  scientifique:[
-    {question:"Le hérisson est principalement :", answers:["Herbivore","insectivore","strict","Granivore"], correct:1},
+  biologie:[
+    {question:"Le hérisson est principalement :", answers:["Herbivore","insectivore","omnivore","Granivore"], correct:1},
     {question:"Combien de piquants possède un hérisson adulte ?", answers:["500","1500","5000 à 6000","20000"], correct:2},
     {question:"La longévité d’un hérisson sauvage dépasse rarement :", answers:["1 an","2 ans","5 ans","10 ans"], correct:1},
     {question:"Les piquants du hérisson sont composés de :", answers:["Élastine","Kératine","Fer","Cartilage"], correct:1},
@@ -131,23 +131,23 @@ const quizzes = {
     {question:"Quelle est sa principale activité nocturne ?", answers:["Chasser","Dormir","Se laver","Se promener"], correct:0},
     {question:"Un bébé hérisson s'appelle :", answers:["Hérissonneau","Hérissonet","Petit hérisson","Hérissot"], correct:0},
     {question:"Le hérisson a un excellent sens de :", answers:["l'odorat","la vue","du goût","de l'équilibre"], correct:0},
-    {question:"La période de reproduction du hérisson s'étend de :", answers:["Avril à août","décembre à février","toute l'année","janvier à mai"], correct:0},
+    {question:"La période de reproduction du hérisson s'étend de :", answers:["janvier à mai","décembre à février","toute l'année","Avril à août"], correct:3},
     {question:"Le nom latin du hérisson européen est :", answers:["Atelerix albiventris","Erinaceus europaeus","Atelerix algirus","Atelerix europaeus"], correct:1},
     {question:"La famille du hérisson européen est la famille des :", answers:["Érinacéidés","Noctuidés","Muridés","Accipitridés"], correct:0},
-    {question:"Quel est un exemple de prédateur naturel du hérisson ?", answers:["Le blaireau","Le pigeon","Le mouton","La vipère"], correct:0},
-    {question:"Le hérisson contribue à :", answers:["Contrôler les populations d’insectes","Polliniser","l'aération des sols","Désherber"], correct:0},
-    {question:"Le hérisson parcoure :", answers:["Des distances similaires toute l'année","de plus petites distances pendant la saison de la reproduction","de plus grandes distances pendant la saison de la reproduction","2000 km/jour"], correct:2},
+    {question:"Quel est un exemple de prédateur naturel du hérisson ?", answers:["Le mouton","Le pigeon","Le blaireau","La vipère"], correct:2},
+    {question:"Le hérisson contribue à :", answers:["Contrôler les populations d’insectes","Polliniser","Aérer les sols","Désherber"], correct:0},
+    {question:"Le hérisson parcourt :", answers:["Des distances similaires toute l'année","de plus petites distances pendant la saison de la reproduction","de plus grandes distances pendant la saison de la reproduction","2000 km/jour"], correct:2},
     {question:"Le hérisson a un temps de gestation de :", answers:["10 jours","35 jours","3 mois","2 mois"], correct:1},
-    {question:"L'habitat favori du hérisson est :", answers:["La route","Les haies","Les jardins","Les clairières"], correct:1},
+    {question:"L'habitat favori du hérisson est :", answers:["Les haies","La route","Les jardins","Les clairières"], correct:0},
     {question:"Le mécanisme principal de défense du hérisson est :", answers:["De mordre","De se rouler en boule","D'émettre une odeur nauséabomde","De fuir"], correct:1},
-    {question:"Quel est le rôle des piquants des hérissons ?", answers:["Ésthétique","Protection contre les prédateurs","Communication avec les autres hérissons","Régulation de la température corporelle"], correct:1},
-    {question:"Comment appelle-t-on la technique de chasse du hérisson ? ", answers:["Foraing","Embuscade","Parasitisme","Chasse en groupe"], correct:0},
+    {question:"Quel est le rôle des piquants des hérissons ?", answers:["Ésthétique","Régulation de la température corporelle","Communication avec les autres hérissons","Protection contre les prédateurs"], correct:3},
+    {question:"Comment appelle-t-on la technique de chasse du hérisson ? ", answers:["Foraging","Embuscade","Parasitisme","Chasse en groupe"], correct:0},
     {question:"Le hérisson est actif :", answers:["Le matin","L'après-midi","La nuit","En permanence"], correct:2}
   ],
   comportement:[
     {question:"Que devez-vous faire si vous trouvez un hérisson adulte blessé sur la route ?", answers:["Le laisser et continuer votre chemin","Le déposer dans un jardin à proximité","Le transporter au centre de soins","Le nourrir avec du pain et du lait"], correct:2},
-    {question:"Vous trouvez un bébé hérisson seul dans votre jardin. Quelle est la bonne réaction ?", answers:["Le mettre dans votre maison","Le laisser là où il est","Le nourrir avec du lait de vache","Le placer dans l'eau"], correct:1},
-    {question:"Un hérisson mort est trouvé dans le jardin. Que faire ?", answers:["Le jeter à la poubelle","L’enterrer loin des zones fréquentées","Le laisser sur place","Le mettre dans votre jardin comme décoration"], correct:1},
+    {question:"Vous trouvez un bébé hérisson seul dans votre jardin. Quelle est la bonne réaction ?", answers:["Le déplacer dans votre maison","Le laisser là où il est","Lui apporter du lait","Le placer dans l'eau"], correct:1},
+    {question:"Vous trouvez un hérisson mort dans votre jardin. Que faire ?", answers:["Le jeter à la poubelle","L’enterrer loin des zones fréquentées","Le laisser sur place","Le mettre dans votre jardin comme décoration"], correct:1},
     {question:"Quel comportement est normal la nuit ?", answers:["Il reste immobile","Il fouille le sol à la recherche d’insectes","Il aboie","Il reste en boule toute la nuit"], correct:1},
     {question:"Hérisson malade ou faible ?", answers:["Le nourrir avec lait","Le transporter au centre de soins","Le laisser se débrouiller","Le mettre avec vos animaux"], correct:1},
     {question:"Si un hérisson refuse de manger le soir ?", answers:["C’est normal, il se cache","Il est malade","Il est mort","Il est stressé par les chiens"], correct:0},
