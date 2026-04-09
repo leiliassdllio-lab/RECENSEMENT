@@ -37,6 +37,35 @@ button:hover { opacity:0.9; }
 p { font-size:0.9em; margin-top:12px; }
 a { cursor:pointer; color:#4CAF50; text-decoration:none; }
 .error { color:red; margin-top:10px; font-size:0.9em; }
+.legal-link {
+  margin:10px 0 0;
+  color:#4f6454;
+  line-height:1.45;
+}
+.legal-link a { text-decoration:underline; }
+.terms-box {
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#f7fbf5;
+  border:1px solid #d6e5d4;
+  text-align:left;
+}
+.terms-checkbox {
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  color:#33523a;
+  line-height:1.45;
+}
+.terms-checkbox input {
+  width:auto;
+  margin:3px 0 0;
+  flex:0 0 auto;
+}
+.terms-checkbox label {
+  cursor:pointer;
+}
 .hidden { display:none; }
 .back-box { display:flex; justify-content:center; margin:-4px 0 18px; }
 .back-link {
@@ -120,7 +149,14 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
       <input type="password" id="signupPass" placeholder="Mot de passe">
       <button type="button" id="toggleSignupPass" class="toggle-password">Afficher</button>
     </div>
+    <div class="terms-box">
+      <div class="terms-checkbox">
+        <input type="checkbox" id="acceptTerms">
+        <label for="acceptTerms">J'accepte les <a href="cgu.html" target="_blank" rel="noopener noreferrer">conditions generales d'utilisation</a>.</label>
+      </div>
+    </div>
     <button id="createBtn">Créer votre compte</button>
+    <p class="legal-link">Consultez les <a href="cgu.html">conditions d'utilisation et l'information sur les données personnelles</a>.</p>
     <p>Déjà un compte ? <a id="showLogin">Se connecter</a></p>
     <div class="error" id="signupError"></div>
   </div>
@@ -153,12 +189,43 @@ const provider = new GoogleAuthProvider();
 await setPersistence(auth, browserLocalPersistence);
 let isRedirecting = false;
 let isLoadingExistingSession = true;
-const allowedNextPages = new Set([
-  "recensement1.html",
-  "recensement1.html",
-  "profil.html",
-  "boutique.html"
-]);
+
+function normalizeLocalHtmlTarget(value){
+  if(typeof value !== "string") return null;
+  const trimmedValue = value.trim();
+  if(!trimmedValue) return null;
+  if(trimmedValue.includes("://")) return null;
+  if(trimmedValue.startsWith("//") || trimmedValue.startsWith("/") || trimmedValue.startsWith("#")) return null;
+
+  const pathMatch = trimmedValue.match(/^([^?#]+)([?#].*)?$/);
+  if(!pathMatch) return null;
+
+  const pathPart = pathMatch[1];
+  const suffix = pathMatch[2] || "";
+
+  if(pathPart.includes("..")) return null;
+  if(!/^[A-Za-z0-9._/-]+\.html$/i.test(pathPart)) return null;
+  if(pathPart.toLowerCase() === "login.html") return null;
+
+  return `${pathPart}${suffix}`;
+}
+
+function getReferrerTarget(){
+  if(!document.referrer) return null;
+
+  try{
+    const referrerUrl = new URL(document.referrer);
+    if(referrerUrl.origin !== window.location.origin) return null;
+
+    const pathSegments = referrerUrl.pathname.split("/").filter(Boolean);
+    if(!pathSegments.length) return null;
+
+    const pageName = pathSegments[pathSegments.length - 1];
+    return normalizeLocalHtmlTarget(`${pageName}${referrerUrl.search}${referrerUrl.hash}`);
+  }catch{
+    return null;
+  }
+}
 
 function buildUsernameFromUser(user){
   if(user.displayName && user.displayName.trim()) return user.displayName.trim();
@@ -213,15 +280,30 @@ async function syncUserProfile(user, preferredUsername = ""){
 
 function getRedirectTarget(){
   const params = new URLSearchParams(window.location.search);
-  const next = params.get("next");
-  if(next && allowedNextPages.has(next)) return next;
-  return "recensement1.html";
+  const next = normalizeLocalHtmlTarget(params.get("next"));
+  if(next){
+    sessionStorage.setItem("postLoginRedirect", next);
+    return next;
+  }
+
+  const storedTarget = normalizeLocalHtmlTarget(sessionStorage.getItem("postLoginRedirect"));
+  if(storedTarget) return storedTarget;
+
+  const referrerTarget = getReferrerTarget();
+  if(referrerTarget){
+    sessionStorage.setItem("postLoginRedirect", referrerTarget);
+    return referrerTarget;
+  }
+
+  return "index.html";
 }
 
 function redirectToTarget(){
   if(isRedirecting) return;
   isRedirecting = true;
-  window.location.replace(getRedirectTarget());
+  const target = getRedirectTarget();
+  sessionStorage.removeItem("postLoginRedirect");
+  window.location.replace(target);
 }
 
 // --- Références DOM principales ---
@@ -234,6 +316,7 @@ const signupUser = document.getElementById("signupUser");
 const signupEmail = document.getElementById("signupEmail");
 const signupPass = document.getElementById("signupPass");
 const toggleSignupPass = document.getElementById("toggleSignupPass");
+const acceptTerms = document.getElementById("acceptTerms");
 const loginError = document.getElementById("loginError");
 const signupError = document.getElementById("signupError");
 
@@ -341,6 +424,7 @@ createBtn.addEventListener("click", async ()=>{
     const email = signupEmail.value.trim();
     const password = signupPass.value.trim();
     if(!username || !email || !password){ signupError.textContent="Tous les champs sont requis"; return; }
+    if(!acceptTerms.checked){ signupError.textContent="Vous devez accepter les conditions generales d'utilisation."; return; }
 
     const userCredential = await createUserWithEmailAndPassword(auth,email,password);
     try{

@@ -69,6 +69,12 @@ button:hover { background:#43a047; }
 .upload-card:hover { transform:translateY(-2px); border-color:#6d9d6f; background:linear-gradient(180deg,#fefefe 0%,#eef6eb 100%); }
 .upload-icon { font-size:2.2rem; line-height:1; }
 .upload-title { font-weight:bold; }
+.preview-actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:14px; }
+.preview-actions button { margin-top:0; }
+.secondary-button { background:white; color:#33523a; border:1px solid #d6e5d4; box-shadow:none; }
+.secondary-button:hover { background:#f3f7f2; }
+.danger-soft-button { background:#fff3f2; color:#b42318; border:1px solid #f3c7c2; box-shadow:none; }
+.danger-soft-button:hover { background:#fde7e5; }
 .submit-button { padding:14px 20px; border-radius:14px; font-size:1rem; box-shadow:0 12px 22px rgba(76,175,80,0.22); }
 .form-status-message { display:none; margin-top:18px; padding:12px 14px; border-radius:12px; border:1px solid #d6e5d4; background:#f3f8ef; color:#33523a; line-height:1.5; }
 .form-status-message.is-visible { display:block; }
@@ -78,6 +84,8 @@ button:hover { background:#43a047; }
 .photo-analysis-message.is-success { background:#edf8ee; border-color:#b9dec0; color:#1f6f2d; }
 .photo-analysis-message.is-warning { background:#fff7ed; border-color:#f3d3a1; color:#9a4d00; }
 .photo-analysis-message.is-error { background:#fef3f2; border-color:#f3c7c2; color:#b42318; }
+.photo-step-message { display:none; margin-top:12px; padding:10px 12px; border-radius:12px; border:1px solid #d6e5d4; background:#f8fbf6; color:#48604d; line-height:1.5; }
+.photo-step-message.is-visible { display:block; }
 
 @media (max-width: 768px) {
   .container { width:min(100%, calc(100% - 20px)); margin:16px auto; border-radius:18px; padding:18px; }
@@ -299,6 +307,10 @@ class="upload-card">
 <input type="file" id="photoUpload" accept="image/*" capture="environment" style="display:none;">
 
 <div id="preview"></div>
+<div id="previewActions" class="preview-actions" style="display:none;">
+<button type="button" id="removePhotoBtn" class="secondary-button danger-soft-button">Supprimer la photo</button>
+</div>
+<div id="photoStepMessage" class="photo-step-message" aria-live="polite"></div>
 <div id="photoAnalysisMessage" class="photo-analysis-message" aria-live="polite"></div>
 </section>
 
@@ -322,9 +334,6 @@ class="upload-card">
 </footer>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.6.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@3.1.0/dist/mobilenet.min.js"></script>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
@@ -344,6 +353,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 let currentUsername = "";
+const nyckelFunctionId = "hedgehog-species-identifier";
+const nyckelInvokeEndpoint = `https://www.nyckel.com/v1/functions/${nyckelFunctionId}/invoke?labelCount=3`;
 
 function redirectToLogin() {
   localStorage.removeItem("username");
@@ -417,63 +428,168 @@ document.getElementById("logoutBtn").addEventListener("click",async()=>{
 });
 document.getElementById("year").textContent = new Date().getFullYear();
 
-// ==== Chargement du modèle MobileNet pour IA ====
-let model;
-const modelReady = loadModel();
-
-async function loadModel(){
-  try{
-    model = await mobilenet.load();
-    console.log("Modèle IA prêt !");
-    return model;
-  }catch(error){
-    console.error("Impossible de charger le modèle IA.", error);
-    return null;
-  }
-}
-
 function formatPredictions(predictions){
-  const labelTranslations = {
-    "hedgehog": "herisson",
-    "porcupine": "porc-epic",
-    "echidna": "echidne",
-    "mongoose": "mangouste",
-    "meerkat": "suricate",
-    "hamster": "hamster",
-    "guinea pig": "cochon d'Inde"
-  };
-
   return predictions
-    .slice(0, 5)
-    .map(p => {
-      const englishLabel = p.className.toLowerCase();
-      const frenchLabel = labelTranslations[englishLabel] || p.className;
-      return `${frenchLabel} (${Math.round(p.probability * 100)}%)`;
-    })
+    .slice(0, 3)
+    .map(p => `${p.labelName || "Inconnu"} (${Math.round((p.confidence || 0) * 100)}%)`)
     .join(", ");
 }
 
-async function analyzeHedgehog(img){
-  const loadedModel = model || await modelReady;
-  if(!loadedModel){
-    return { detected:false, predictions:[] };
+function buildNyckelConfidence(confidence){
+  if(confidence >= 0.7) return "high";
+  if(confidence >= 0.45) return "medium";
+  return "low";
+}
+
+const acceptedHedgehogLabels = [
+  "erinaceus europaeus",
+  "european hedgehog",
+  "western european hedgehog",
+  "erinaceus roumanicus",
+  "northern white-breasted hedgehog",
+  "atelerix albiventris",
+  "four-toed hedgehog",
+  "african pygmy hedgehog",
+  "atelerix algirus",
+  "algerian hedgehog",
+  "paraechinus aethiopicus",
+  "desert hedgehog",
+  "hemiechinus auritus",
+  "long-eared hedgehog",
+  "hedgehog"
+];
+
+function normalizeSpeciesLabel(label){
+  return String(label || "").trim().toLowerCase();
+}
+
+function isAcceptedHedgehogLabel(label){
+  const normalizedLabel = normalizeSpeciesLabel(label);
+  if(!normalizedLabel) return false;
+  return acceptedHedgehogLabels.some(candidate => normalizedLabel.includes(candidate));
+}
+
+function findAcceptedHedgehogPrediction(predictions){
+  return predictions.find(prediction => isAcceptedHedgehogLabel(prediction?.labelName));
+}
+
+function imageToDataUrl(img){
+  const maxDimension = 1600;
+  const sourceWidth = img.naturalWidth || img.width;
+  const sourceHeight = img.naturalHeight || img.height;
+  const scale = Math.min(1, maxDimension / Math.max(sourceWidth, sourceHeight));
+  const targetWidth = Math.max(1, Math.round(sourceWidth * scale));
+  const targetHeight = Math.max(1, Math.round(sourceHeight * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+
+  const context = canvas.getContext("2d");
+  context.drawImage(img, 0, 0, targetWidth, targetHeight);
+  return canvas.toDataURL("image/jpeg", 0.82);
+}
+
+function getNyckelClientCredentials(){
+  const existingClientId = sessionStorage.getItem("nyckelClientId") || window.NYCKEL_CLIENT_ID || "";
+  const existingClientSecret = sessionStorage.getItem("nyckelClientSecret") || window.NYCKEL_CLIENT_SECRET || "";
+
+  if(existingClientId && existingClientSecret){
+    return {
+      clientId: existingClientId,
+      clientSecret: existingClientSecret
+    };
   }
 
-  const predictions = await loadedModel.classify(img, 10);
-  const hedgehogKeywords = [
-    "hedgehog",
-    "porcupine",
-    "echidna",
-    "mongoose",
-    "meerkat",
-    "hamster",
-    "guinea pig"
-  ];
-  const detected = predictions.some(p =>
-    hedgehogKeywords.some(keyword => p.className.toLowerCase().includes(keyword))
-  );
+  const clientId = window.prompt("Colle ici ton client_id Nyckel :");
+  if(!clientId) return null;
 
-  return { detected, predictions };
+  const clientSecret = window.prompt("Colle ici ton client_secret Nyckel :");
+  if(!clientSecret) return null;
+
+  const credentials = {
+    clientId: clientId.trim(),
+    clientSecret: clientSecret.trim()
+  };
+
+  sessionStorage.setItem("nyckelClientId", credentials.clientId);
+  sessionStorage.setItem("nyckelClientSecret", credentials.clientSecret);
+  return credentials;
+}
+
+async function getNyckelAccessToken(){
+  const storedToken = sessionStorage.getItem("nyckelAccessToken") || "";
+  const storedExpiration = Number(sessionStorage.getItem("nyckelAccessTokenExpiresAt") || 0);
+  const now = Date.now();
+
+  if(storedToken && storedExpiration && now < storedExpiration - 60_000){
+    return storedToken;
+  }
+
+  const credentials = getNyckelClientCredentials();
+  if(!credentials){
+    throw new Error("Identifiants Nyckel manquants");
+  }
+
+  const tokenResponse = await fetch("https://www.nyckel.com/connect/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: credentials.clientId,
+      client_secret: credentials.clientSecret
+    }).toString()
+  });
+
+  const tokenPayload = await tokenResponse.json();
+  if(!tokenResponse.ok || !tokenPayload?.access_token){
+    throw new Error(tokenPayload?.error_description || tokenPayload?.error || "Impossible de generer un access token Nyckel");
+  }
+
+  const accessToken = tokenPayload.access_token;
+  const expiresInSeconds = Number(tokenPayload.expires_in || 3600);
+  sessionStorage.setItem("nyckelAccessToken", accessToken);
+  sessionStorage.setItem("nyckelAccessTokenExpiresAt", String(now + (expiresInSeconds * 1000)));
+  return accessToken;
+}
+
+async function analyzeHedgehog(img){
+  const imageData = imageToDataUrl(img);
+  const accessToken = await getNyckelAccessToken();
+
+  const response = await fetch(nyckelInvokeEndpoint, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ data: imageData })
+  });
+
+  const payload = await response.json();
+  if(!response.ok){
+    throw new Error(payload?.error || "Analyse distante impossible");
+  }
+
+  const predictions = Array.isArray(payload?.labelConfidences) ? payload.labelConfidences : [];
+  const acceptedPrediction = findAcceptedHedgehogPrediction(predictions);
+  const topLabelName = payload?.labelName || "Inconnu";
+  const topConfidence = Number(payload?.confidence || 0);
+  const acceptedConfidence = Number(acceptedPrediction?.confidence || 0);
+  const labelName = acceptedPrediction?.labelName || topLabelName;
+  const confidence = acceptedPrediction ? acceptedConfidence : topConfidence;
+
+  return {
+    detected: Boolean(acceptedPrediction),
+    confidence: buildNyckelConfidence(confidence),
+    labelName,
+    predictions,
+    score: confidence,
+    acceptedPrediction,
+    isAcceptedHedgehog: Boolean(acceptedPrediction)
+  };
 }
 // Date et année
 const dateInput = document.getElementById("date");
@@ -719,7 +835,21 @@ document.addEventListener("DOMContentLoaded", () => {
 // ======== Upload d'image + Validation IA ==========
 const photoInput = document.getElementById("photoUpload");
 const previewDiv = document.getElementById("preview");
+const previewActions = document.getElementById("previewActions");
+const removePhotoBtn = document.getElementById("removePhotoBtn");
+const photoStepMessage = document.getElementById("photoStepMessage");
 const photoAnalysisMessage = document.getElementById("photoAnalysisMessage");
+
+function setPhotoStepMessage(message) {
+  if (!message) {
+    photoStepMessage.textContent = "";
+    photoStepMessage.classList.remove("is-visible");
+    return;
+  }
+
+  photoStepMessage.textContent = message;
+  photoStepMessage.classList.add("is-visible");
+}
 
 function setPhotoAnalysisMessage(message, tone = "") {
   if (!message) {
@@ -737,35 +867,55 @@ function setPhotoAnalysisMessage(message, tone = "") {
   }
 }
 
+function clearSelectedPhoto() {
+  photoInput.value = "";
+  previewDiv.innerHTML = "";
+  previewActions.style.display = "none";
+  setPhotoStepMessage("");
+  setPhotoAnalysisMessage("");
+}
+
+removePhotoBtn.addEventListener("click", clearSelectedPhoto);
+
 photoInput.addEventListener("change", async () => {
   const file = photoInput.files[0];
   if (!file) {
-    setPhotoAnalysisMessage("");
+    clearSelectedPhoto();
     return;
   }
 
   const img = new Image();
   const objectUrl = URL.createObjectURL(file);
+  setPhotoStepMessage("Etape 1/4 : chargement local de l'image");
   setPhotoAnalysisMessage("Analyse de l'image en cours...", "is-warning");
 
   img.onload = async () => {
     try {
       // Affiche l'image dans la div preview
       previewDiv.innerHTML = `<img src="${objectUrl}" alt="Prévisualisation">`;
+      previewActions.style.display = "flex";
 
       // Vérifie si c'est un hérisson
+      setPhotoStepMessage("Etape 2/4 : envoi de l'image a l'IA");
       const analysis = await analyzeHedgehog(img);
+      setPhotoStepMessage("Etape 3/4 : reponse de l'IA recue, analyse en cours");
       const predictionsLabel = formatPredictions(analysis.predictions);
+      const strongestLabel = analysis.labelName || "";
+      setPhotoStepMessage("Etape 4/4 : analyse terminee");
 
-      if (analysis.detected) {
-        console.log("Hérisson détecté ✅");
-        setPhotoAnalysisMessage(`Hérisson détecté sur l'image. Prédictions : ${predictionsLabel}`, "is-success");
+      if (analysis.isAcceptedHedgehog) {
+        console.log("Analyse Nyckel positive");
+        setPhotoAnalysisMessage(`${strongestLabel} a ete detecte (${Math.round(analysis.score * 100)}%). L'image est acceptee comme herisson. Predictions : ${predictionsLabel || strongestLabel}`, "is-success");
+      } else if (analysis.confidence === "medium") {
+        console.warn("Analyse Nyckel incertaine.");
+        setPhotoAnalysisMessage(`Analyse incertaine : ${strongestLabel} (${Math.round(analysis.score * 100)}%). Verifie visuellement l'image avant validation. Predictions : ${predictionsLabel || strongestLabel}`, "is-warning");
       } else {
-        console.warn("Aucun hérisson détecté ⚠️");
-        setPhotoAnalysisMessage(`Aucun hérisson détecté sur l'image. Prédictions les plus proches : ${predictionsLabel || "aucune"}`, "is-warning");
+        console.warn("Analyse Nyckel peu confiante.");
+        setPhotoAnalysisMessage(`Le service n'a pas reconnu l'image avec assez de confiance. Meilleure reponse : ${strongestLabel} (${Math.round(analysis.score * 100)}%). Predictions : ${predictionsLabel || strongestLabel}`, "is-warning");
       }
     } catch (error) {
       console.error("Impossible d'analyser l'image.", error);
+      setPhotoStepMessage("Etape interrompue : erreur pendant l'analyse");
       setPhotoAnalysisMessage("Impossible d'analyser l'image pour le moment.", "is-error");
     } finally {
       URL.revokeObjectURL(objectUrl);
@@ -774,6 +924,7 @@ photoInput.addEventListener("change", async () => {
 
   img.onerror = () => {
     console.error("Impossible de charger l'image sélectionnée.");
+    setPhotoStepMessage("Etape interrompue : image introuvable ou illisible");
     setPhotoAnalysisMessage("Impossible de charger l'image sélectionnée.", "is-error");
     URL.revokeObjectURL(objectUrl);
   };
@@ -806,7 +957,7 @@ form.addEventListener("submit", async e=>{
   try{
     await addDoc(collection(db,"recensements"), recensement);
     form.reset();
-    previewDiv.innerHTML="";
+    clearSelectedPhoto();
     setFormStatus("");
     if(marker) marker.setLatLng([50.8467,4.3525]); // reset marker centre
     window.location.href="confirmation.html";
