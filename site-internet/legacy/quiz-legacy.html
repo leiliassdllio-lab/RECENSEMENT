@@ -76,8 +76,6 @@ header { background:#4CAF50; padding:15px; text-align:center; color:white; }
 
 <script>
 document.getElementById("year").textContent = new Date().getFullYear();
-
-// QUIZZES
 const quizzes = {
   scientifique:[
     {question:"Le hérisson est principalement :", answers:["Herbivore","Carnivore insectivore","Omnivore strict","Granivore"], correct:1},
@@ -167,16 +165,10 @@ const quizzes = {
     {question:"Interactions avec autres animaux ?", answers:["Limiter stress","Toujours ensemble","Laisser faire","Aucun impact"], correct:0},
     {question:"Observation sans toucher ?", answers:["Oui, pour sécurité et stress minimum","Toujours toucher","Jamais observer","Toujours nourrir"], correct:0}
   ]
-  // Les autres catégories seront ajoutées ici comme précédemment
-  // ...
 };
-
-// VARIABLES GLOBALES
 let currentQuiz = null;
 let currentQuestion = 0;
 let score = 0;
-
-// SELECTION QUIZ
 function selectQuiz(name){
   currentQuiz = quizzes[name];
   currentQuestion = 0;
@@ -186,14 +178,10 @@ function selectQuiz(name){
   loadQuestion();
   updateProgress();
 }
-
-// RETOUR
 function backToSelection(){
   document.getElementById("quiz-container").style.display = "none";
   document.querySelector(".quiz-cards").style.display = "flex";
 }
-
-// CHARGER QUESTION
 function loadQuestion(){
   const q = currentQuiz[currentQuestion];
   document.getElementById("question").textContent = `Question ${currentQuestion+1} / ${currentQuiz.length} : ${q.question}`;
@@ -207,8 +195,6 @@ function loadQuestion(){
     answersEl.appendChild(btn);
   });
 }
-
-// REPONSE
 function answerQuestion(selected){
   const q = currentQuiz[currentQuestion];
   const buttons = document.getElementById("answers").children;
@@ -217,7 +203,6 @@ function answerQuestion(selected){
     else if(i===selected) buttons[i].classList.add("wrong");
   }
   if(selected===q.correct) score++;
-  // mise à jour score bar
   const quizName = Object.keys(quizzes).find(k=>quizzes[k]===currentQuiz);
   const bar = document.getElementById("score-bar-"+quizName);
   bar.style.width = ((score/currentQuiz.length)*100) + "%";
@@ -228,14 +213,10 @@ function answerQuestion(selected){
     updateProgress();
   },1000);
 }
-
-// PROGRESSION
 function updateProgress(){
   const percent = (currentQuestion/currentQuiz.length)*100;
   document.getElementById("progress-bar").style.width = percent+"%";
 }
-
-// FIN QUIZ
 function finishQuiz(){
   document.getElementById("question").textContent="Quiz terminé !";
   document.getElementById("answers").innerHTML="";

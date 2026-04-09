@@ -93,8 +93,6 @@ body { margin:0; font-family: Arial, sans-serif; background: linear-gradient(135
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-
-// --- Config Firebase ---
 const firebaseConfig = {
   apiKey:"AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
   authDomain:"herisson-f80ba.firebaseapp.com",
@@ -111,8 +109,6 @@ let coins = 0;
 let owned = {};
 let equipped = {};
 let userRef;
-
-// --- Gestion utilisateur ---
 onAuthStateChanged(auth, async user => {
   if (!user) {
     window.location.replace("login.html?next=boutique.html");
@@ -123,7 +119,6 @@ onAuthStateChanged(auth, async user => {
   const userSnap = await getDoc(userRef);
 
   if (!userSnap.exists()) {
-    // Création user avec 50 coins et aucun objet débloqué
     await setDoc(userRef, { uid:user.uid, username:user.displayName||"Inconnu", coins:50, ownedItems:[], equipped:{} });
     coins = 50;
     owned = {};
@@ -140,8 +135,6 @@ onAuthStateChanged(auth, async user => {
   loadEquipped();
   initOwnedUI();
 });
-
-// --- Fonction boutique ---
 function openTab(evt, tabName){
     document.querySelectorAll('.items').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
@@ -189,8 +182,6 @@ function saveToFirebase(){
   const ownedItems = Object.keys(owned).filter(id=>owned[id]);
   updateDoc(userRef, { coins, ownedItems, equipped });
 }
-
-// --- Preview ---
 let previewBackup = {};
 function preview(type,src){
   const id = (type==='base')?'base':type;
@@ -200,9 +191,6 @@ function preview(type,src){
 function resetPreview(){
   for(let k in previewBackup) document.getElementById(k).src = previewBackup[k];
 }
-
-// --- Bonus coins après recensement ---
-// Exemple : appeler cette fonction après soumission du recensement
 export async function addRecensementBonus(amount=50){
   if(!userRef) return;
   coins += amount;

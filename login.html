@@ -82,8 +82,6 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
 </style>
 </head>
 <body class="site-page">
-
-<!-- Bandeau commun de la page de connexion -->
 <header class="site-header">
   <div class="site-header-inner">
   <h1>Connexion</h1>
@@ -98,7 +96,6 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
   <div id="loginContext" class="context-box hidden">
     Vous êtes bien sur le site les 6 pics. Avant de nous aider à recenser, veuillez vous connecter ou créer un compte.
   </div>
-  <!-- Bloc de connexion classique email / mot de passe -->
   <div id="loginDiv">
     <input type="text" id="loginUser" placeholder="Nom d’utilisateur / Email">
     <div class="password-row">
@@ -110,8 +107,6 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
     <p>Pas encore de compte ? <a id="showSignup">Créer un compte</a></p>
     <div class="error" id="loginError"></div>
   </div>
-
-  <!-- Bloc de création de compte -->
   <div id="signupDiv" class="hidden">
     <h1>Créer un compte</h1>
     <input type="text" id="signupUser" placeholder="Nom d’utilisateur">
@@ -130,12 +125,9 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
 </main>
 
 <script type="module">
-// Authentification Firebase + stockage du profil minimal utilisateur
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, query, where, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-// --- Firebase config ---
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
   authDomain: "herisson-f80ba.firebaseapp.com",
@@ -144,8 +136,6 @@ const firebaseConfig = {
   messagingSenderId: "142270421417",
   appId: "1:142270421417:web:cb3abd700fab6731c40cb8"
 };
-
-// --- Initialisation ---
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -185,8 +175,6 @@ async function getUserProfile(user){
 
   return getUserProfileByEmail(user.email);
 }
-
-// Recherche du profil utilisateur par email pour garder un username cohérent sur le site
 async function getUserProfileByEmail(email){
   const q = query(collection(db,"users"), where("email","==",email));
   const snapshot = await getDocs(q);
@@ -223,8 +211,6 @@ function redirectToTarget(){
   isRedirecting = true;
   window.location.replace(getRedirectTarget());
 }
-
-// --- Références DOM principales ---
 const loginDiv = document.getElementById("loginDiv");
 const signupDiv = document.getElementById("signupDiv");
 const loginUser = document.getElementById("loginUser");
@@ -253,8 +239,6 @@ function setButtonsDisabled(disabled){
 if(getRedirectTarget() === "recensement1.html"){
   loginContext.classList.remove("hidden");
 }
-
-// --- Bascule entre connexion et création de compte ---
 showSignup.addEventListener("click", ()=>{ loginDiv.classList.add("hidden"); signupDiv.classList.remove("hidden"); });
 showLogin.addEventListener("click", ()=>{ signupDiv.classList.add("hidden"); loginDiv.classList.remove("hidden"); });
 
@@ -288,16 +272,12 @@ if(auth.currentUser){
   isLoadingExistingSession = false;
   setButtonsDisabled(false);
 }
-
-// --- Permettre la connexion via username ou email ---
 async function getEmailFromUsername(username){
   const q = query(collection(db,"users"), where("username","==",username));
   const snapshot = await getDocs(q);
   if(!snapshot.empty) return snapshot.docs[0].data().email;
   return null;
 }
-
-// --- Connexion email/password ---
 loginBtn.addEventListener("click", async ()=>{
   if(isLoadingExistingSession) return;
   loginError.textContent="";
@@ -315,8 +295,6 @@ loginBtn.addEventListener("click", async ()=>{
     redirectToTarget();
   }catch(e){ loginError.textContent=e.message; }
 });
-
-// --- Connexion Google avec création / mise à jour du profil Firestore ---
 googleBtn.addEventListener("click", async ()=>{
   if(isLoadingExistingSession) return;
   loginError.textContent="";
@@ -331,8 +309,6 @@ googleBtn.addEventListener("click", async ()=>{
     redirectToTarget();
   }catch(e){ loginError.textContent=e.message; }
 });
-
-// --- Création d'un compte local dans Firebase Auth + profil dans Firestore ---
 createBtn.addEventListener("click", async ()=>{
   if(isLoadingExistingSession) return;
   signupError.textContent="";

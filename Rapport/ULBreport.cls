@@ -1,19 +1,10 @@
-%%%% Template for ULB report %%%%
-	  % By Boris Coquelet %
-	  
-%Dans le cadre du poste aide à la réussite au Bureau des étudiants de Polytechnique%
-%2019
-% Version 1.0
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{ULBreport}
 \LoadClass[a4paper,11pt]{report}
 
-%%%%Structure%%%%
-
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
-%Language
 \RequirePackage{csquotes}
 \RequirePackage[french]{babel}
 \RequirePackage[style=apa,backend=biber,sorting=nyt]{biblatex}
@@ -27,17 +18,11 @@
 \RequirePackage{ifthen}
 \RequirePackage{titlesec}
 
-%%%%package tikz%%%%
-
 \RequirePackage{tikz}
 \usetikzlibrary{mindmap}
 \RequirePackage{chemfig}
 \RequirePackage{pgfplots}
 \pgfplotsset{compat=newest}
-
-%%%%Forme%%%%
-
-%Picture package
 \RequirePackage{graphicx}
 \RequirePackage{textcomp}
 \RequirePackage{eurosym}
@@ -52,8 +37,6 @@
 \RequirePackage{fourier}
 \RequirePackage[pages=some]{background}
 
-%%%%Math%%%%
-
 \RequirePackage{mathtools}
 \RequirePackage{amsmath}
 \RequirePackage{amsfonts}
@@ -64,15 +47,11 @@
 \RequirePackage[makeroom]{cancel}
 \RequirePackage{esint}
 
-%%%%Annexe%%%%
-
 \RequirePackage[toc,page]{appendix}
 \linespread{1.25}
 \renewcommand{\appendixtocname}{Annexes}
 \renewcommand{\appendixpagename}{Annexes}
 \renewcommand{\contentsname}{Table des matieres}
-
-%%%%Couleurs%%%%
 
 \definecolor{apricot}{rgb}{0.98, 0.81, 0.69}
 \definecolor{bleu}{rgb}{0.19, 0.55, 0.91}
@@ -87,8 +66,6 @@
     allcolors=black,
     pdfborder={0 0 0}
 }
-
-%%%%Custom command%%%%
 
 \newcommand{\rouge}[1]{\textcolor{rouge}{#1}}
 \newcommand{\bleu}[1]{\textcolor{bleu}{#1}}
@@ -111,8 +88,6 @@
 \titlespacing*{\chapter}{0pt}{-4pt}{18pt}
 
 \makeatletter
-
-%Keys for title page
 \define@cmdkey [PRE] {fam} {title}{}
 \define@cmdkey [PRE] {fam} {studies}{}
 \define@cmdkey [PRE] {fam} {course}{}
@@ -121,7 +96,6 @@
 \define@cmdkey [PRE] {fam} {date}{}
 \define@cmdkey [PRE] {fam} {logo}{}
 \define@cmdkey [PRE] {fam} {manyAuthor}[1]{}
-%Set default value for the keys (used if not specified)
 \presetkeys         [PRE] {fam} {title=titre,
 								 studies=,
 								 course=,
@@ -143,13 +117,10 @@
   \pgfkeysalso{/tikz/shading=newaxis}
   }
 }
-
-% Title command
 \newcommand*{\titleULB}[1]{\setkeys[PRE]{fam}{#1}
 
 	\begingroup
 	\BgThispage
-	% Replace logo with nothing if not specified
 	\ifthenelse{\equal{\cmdPRE@fam@logo}{7}}{}{\begin{center}\includegraphics[height=2.2cm,width=20cm,keepaspectratio]{\cmdPRE@fam@logo}\\\end{center}}
 		{\cmdPRE@fam@studies}
 	\begin{center}
@@ -184,14 +155,10 @@
 \endgroup}
 
 \makeatother
-
-%Boxed environement
 \newenvironment{frshaded*}{%
 	\def\FrameCommand{\fboxrule=\FrameRule\fboxsep=\FrameSep \fcolorbox{framecolor}{shadecolor}}%
 	\MakeFramed {\advance\hsize-\width \FrameRestore}}%
 {\endMakeFramed}
-
-%Command to put the seal of ULB in Background of the first page
 \newcommand{\sceau}[1]{\backgroundsetup{
 scale=1,
 color=black,
@@ -202,11 +169,3 @@ contents={%
   \includegraphics[height=20cm,width=20cm,keepaspectratio]{#1}
   }%
 }}
-
-% %Add small heading in the left corner of the page.
-% \usepackage{fancyhdr}
-% \pagestyle{fancy}
-% \fancyhf{}
-% \rhead{Roberto Acquaviva, 2021}
-% \lhead{MECA-H417 - Sustainable Energy}
-% \rfoot{\thepage}

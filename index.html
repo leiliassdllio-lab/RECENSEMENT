@@ -7,8 +7,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<!-- Hero d'accueil avec video de fond et appel a l'action principal -->
 <header class="hero">
 
   <video autoplay muted loop playsinline class="hero-video">
@@ -24,14 +22,10 @@
 </header>
 
 <main class="container">
-
-<!-- Section de presentation du projet et du contexte scientifique -->
 <section id="about">
 <h2>Le hérisson d’Europe est désormais classé quasi menacé d’extinction, ce qui rend le suivi participatif essentiel pour mieux comprendre sa répartition et stimuler des actions de protection</h2>
 
 <div class="about-bubbles">
-  
-  <!-- Carte de presentation de l'equipe -->
   <div class="about-bubble">
   <div class="bubble-icon">🦔</div>
   <h3>Qui sommes-nous ?</h3>
@@ -51,8 +45,6 @@
   
   <span class="read-more-link">Lire plus</span>
   </div>
-  
-  <!-- Carte de presentation de l'espece -->
   <div class="about-bubble">
   <div class="bubble-icon">🦔</div>
   <h3>Qui sont les hérissons ?</h3>
@@ -73,8 +65,6 @@
   
   <span class="read-more-link">Lire plus</span>
   </div>
-  
-  <!-- Carte qui explique les menaces qui pesent sur l'espece -->
   <div class="about-bubble">
   <div class="bubble-icon">🦔</div>
   <h3>Pourquoi leur population diminue-t-elle ?</h3>
@@ -99,8 +89,6 @@
   
   <span class="read-more-link">Lire plus</span>
   </div>
-  
-  <!-- Carte qui resume les objectifs du projet -->
   <div class="about-bubble">
   <div class="bubble-icon">🦔</div>
   <h3>Quels sont nos objectifs ?</h3>
@@ -123,16 +111,11 @@
   
   </div>
 </section>
-
-
-<!-- Section de navigation vers les pages principales du site -->
 <section id="projets">
 
 <h2>Nos Rubriques</h2>
 
 <div class="cards">
-
-<!-- Carte principale : action la plus importante du site -->
 <a href="recensement1.html" class="card-link card-featured">
 <div class="card">
 <div class="card-media">
@@ -146,8 +129,6 @@
 </div>
 </div>
 </a>
-
-<!-- Carte de consultation de la carte globale -->
 <a href="Cartographie.html" class="card-link card-map">
 <div class="card">
 <img src="site-internet/assets/images/cards/cartographie.png" alt="Cartographie">
@@ -157,8 +138,6 @@
 </div>
 </div>
 </a>
-
-<!-- Carte de quiz pedagogique -->
 <a href="quiz.html" class="card-link card-quiz">
 <div class="card">
 <img src="site-internet/assets/images/cards/quiz.png" alt="Quiz">
@@ -168,8 +147,6 @@
 </div>
 </div>
 </a>
-
-<!-- Carte de conseils pratiques -->
 <a href="conseils.html" class="card-link card-advice">
 <div class="card">
 <img src="site-internet/assets/images/cards/conseils.png" alt="Conseils">
@@ -179,8 +156,6 @@
 </div>
 </div>
 </a>
-
-<!-- Carte d'acces au profil utilisateur -->
 <a href="profil.html" class="card-link card-profile">
 <div class="card">
 <img src="site-internet/assets/images/cards/profil.png" alt="Mon profil">
@@ -190,8 +165,6 @@
 </div>
 </div>
 </a>
-
-  <!--boutique et customisation du herisson -->
 <a href="login.html?next=En_meintenance.html" class="card-link card-map">
 <div class="card">
 <img src="site-internet/assets/images/cards/boutique.png" alt="Boutique">
@@ -204,8 +177,6 @@
 
 </div>
 </section>
-
-<!-- Section de contact du projet -->
 <section id="contact">
 
 <h2>Contact</h2>
@@ -218,26 +189,15 @@
 </section>
 
 </main>
-
-
-<!-- Pied de page simple avec l'annee dynamique -->
 <footer>
 <p>© <span id="year"></span> – LES SIX PICS</p>
 <p class="footer-license">Code du site sous <a href="LICENCE">licence MIT</a>.</p>
 </footer>
-
-
-<!-- Bouton flottant pour remonter rapidement en haut de page -->
 <button id="topBtn">↑</button>
 
 
 <script>
-
-// Met a jour automatiquement l'annee du footer
 document.getElementById("year").textContent = new Date().getFullYear();
-
-
-// Gere l'ouverture et la fermeture du texte long dans les bulles "Lire plus"
 document.querySelectorAll('.read-more-link').forEach(link => {
 
 link.addEventListener('click', function(){
@@ -257,8 +217,6 @@ p.classList.contains('expanded')
 
 
 const topBtn = document.getElementById("topBtn");
-
-// Affiche le bouton de retour en haut uniquement apres un peu de scroll
 window.onscroll = function(){
 
 if(document.documentElement.scrollTop > 300){
@@ -268,8 +226,6 @@ topBtn.style.display="none";
 }
 
 };
-
-// Remonte en haut de page avec un scroll fluide
 topBtn.onclick=function(){
 window.scrollTo({top:0,behavior:"smooth"});
 };

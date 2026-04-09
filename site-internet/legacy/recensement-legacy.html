@@ -27,7 +27,7 @@ button:hover { background:#43a047; }
 #logoutBtn { background:#d32f2f; margin-bottom:20px; }
 #logoutBtn:hover { background:#b71c1c; }
 
-/* Cartes état */
+
 .choice-grid { display: flex; flex-wrap: wrap; gap:15px; justify-content: center; margin-top:10px; }
 .choice-card { width:100px; height:100px; border:2px solid #ccc; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:all 0.3s; }
 .choice-card img { max-width:50px; max-height:50px; margin-bottom:5px; }
@@ -63,8 +63,6 @@ button:hover { background:#43a047; }
   <input type="date" id="date" required>
 
   <p class="icon-label"><span>🦔</span> État du hérisson</p>
-
-  <!-- Choix principal -->
   <div id="etatGrid" class="choice-grid">
     <div class="choice-card" data-etat="vivant">
       <img src="assets/images/observations/vivant.png"><div>Vivant</div>
@@ -74,8 +72,6 @@ button:hover { background:#43a047; }
     </div>
   </div>
   <input type="hidden" id="etat">
-
-  <!-- Options si vivant -->
   <div id="vivantOptions" class="choice-grid" style="display:none;">
     <div class="choice-card" data-sous-etat="sain">
       <img src="assets/images/observations/bonne-sante.png"><div>Bonne santé</div>
@@ -87,8 +83,6 @@ button:hover { background:#43a047; }
       <img src="assets/images/observations/malade.png"><div>Malade</div>
     </div>
   </div>
-
-  <!-- Options si mort -->
   <div id="mortOptions" class="choice-grid" style="display:none;">
     <div class="choice-card" data-sous-etat="route">
       <img src="assets/images/environment/route.png"><div>Sur route</div>
@@ -136,24 +130,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-
-// Redirection si non connecté
 onAuthStateChanged(auth,user=>{ if(!user) window.location.href="login.html"; });
-
-// Déconnexion
 document.getElementById("logoutBtn").addEventListener("click", async ()=>{
   await signOut(auth);
   localStorage.removeItem("username");
   window.location.href="login.html";
 });
-
-// Date automatique
 const dateInput = document.getElementById('date');
 const today = new Date();
 dateInput.value = today.toISOString().slice(0,10);
 document.getElementById("year").textContent = today.getFullYear();
-
-// Carte
 const map = L.map('map').setView([50.8467,4.3525],13);
 L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',{ attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
 
@@ -174,15 +160,11 @@ if(navigator.geolocation){
     });
   }, err=>{ alert("Impossible de récupérer votre position : "+err.message); });
 }
-
-// --- Gestion état / sous-état ---
 const etatInput = document.getElementById("etat");
 const sousEtatInput = document.getElementById("sousEtat");
 const etatGrid = document.getElementById("etatGrid");
 const vivantOptions = document.getElementById("vivantOptions");
 const mortOptions = document.getElementById("mortOptions");
-
-// Sélection Vivant / Mort
 etatGrid.querySelectorAll(".choice-card").forEach(card => {
   card.addEventListener("click", () => {
     const val = card.dataset.etat;
@@ -208,8 +190,6 @@ etatGrid.querySelectorAll(".choice-card").forEach(card => {
     if (val === "mort") mortOptions.style.display = "flex";
   });
 });
-
-// Sélection sous-état
 [vivantOptions, mortOptions].forEach(group => {
   group.querySelectorAll(".choice-card").forEach(card => {
     card.addEventListener("click", () => {
@@ -223,8 +203,6 @@ etatGrid.querySelectorAll(".choice-card").forEach(card => {
     });
   });
 });
-
-// Prévisualisation photo
 const photoInput = document.getElementById('photoUpload');
 const previewDiv = document.getElementById('preview');
 photoInput.addEventListener('change', function(){
@@ -235,8 +213,6 @@ photoInput.addEventListener('change', function(){
     reader.readAsDataURL(file);
   }
 });
-
-// Soumission formulaire
 const form=document.getElementById('recensementForm');
 form.addEventListener('submit', async e=>{
   e.preventDefault();

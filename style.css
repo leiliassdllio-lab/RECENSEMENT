@@ -1,9 +1,9 @@
-/* Navigation globale et comportement de scroll */
+
 html{
 scroll-behavior:smooth;
 }
 
-/* --- Général --- */
+
 
 body{
 font-family:Arial,sans-serif;
@@ -28,7 +28,7 @@ margin-bottom:20px;
 }
 
 
-/* Hero d'accueil avec video et appel a l'action */
+
 
 .hero{
   position:relative;
@@ -38,7 +38,7 @@ margin-bottom:20px;
   align-items:center;
   text-align:center;
   height:100vh;
-  overflow:hidden; /* important pour que la vidéo ne déborde pas */
+  overflow:hidden; 
 }
 
 .hero-video{
@@ -48,7 +48,7 @@ margin-bottom:20px;
   width:100%;
   height:100%;
   object-fit:cover;
-  z-index:0; /* derrière le texte */
+  z-index:0; 
 }
 
 .hero::before{
@@ -58,7 +58,7 @@ margin-bottom:20px;
   left:0;
   width:100%;
   height:100%;
-  background:rgba(0,0,0,0.4); /* filtre sombre pour lisibilité */
+  background:rgba(0,0,0,0.4); 
   z-index:1;
 }
 
@@ -129,7 +129,7 @@ margin-bottom:20px;
   to{opacity:1;transform:translateY(0)}
 }
 
-/* Section de presentation du projet sur la page d'accueil */
+
 
 .about-bubbles{
 display:grid;
@@ -159,7 +159,7 @@ margin-bottom:10px;
 }
 
 
-/* Mecanisme "Lire plus" des bulles de presentation */
+
 
 .text-collapse .more-text{
 display:none;
@@ -181,7 +181,7 @@ margin-top:5px;
 text-decoration:underline;
 }
 
-/* Page d'accueil : carte de navigation vers les differentes rubriques */
+
 
 .map-page{
 max-width:1100px;
@@ -250,7 +250,7 @@ font-weight:bold;
 color:#333;
 text-align:center;
 }
-/* CARDS */
+
 
 .cards{
 display:grid;
@@ -376,15 +376,15 @@ font-weight:bold;
 box-shadow:0 10px 22px rgba(76,175,80,0.2);
 }
 
-/* Images des cartes remplissent tout le cadre */
+
 .choice-card img {
-  width: 100%;         /* largeur = largeur du parent */
-  height: 100%;        /* hauteur = hauteur du parent */
-  object-fit: cover;   /* ajuste l'image sans la déformer, recadrage si nécessaire */
-  border-radius: 12px; /* coins arrondis cohérents avec la carte */
-  display: block;      /* supprime l'espace blanc sous l'image */
+  width: 100%;         
+  height: 100%;        
+  object-fit: cover;   
+  border-radius: 12px; 
+  display: block;      
 }
-/* CONTACT */
+
 
 #contact a{
 color:#4CAF50;
@@ -396,7 +396,7 @@ text-decoration:underline;
 }
 
 
-/* FOOTER */
+
 
 footer{
 text-align:center;
@@ -422,7 +422,7 @@ text-decoration-thickness:2px;
 }
 
 
-/* BOUTON HAUT */
+
 
 #topBtn{
 position:fixed;
@@ -439,7 +439,7 @@ display:none;
 }
 
 
-/* MOBILE */
+
 
 @media (max-width:768px){
 
@@ -563,17 +563,17 @@ grid-template-columns:1fr;
   color:#4CAF50;
   text-align:center;
 }
-/* Tooltip container */
+
 .badge {
   position: relative;
   cursor: pointer;
 }
 
-/* Tooltip text */
+
 .badge::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: 120%; /* au-dessus du badge */
+  bottom: 120%; 
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0,0,0,0.75);
@@ -588,7 +588,7 @@ grid-template-columns:1fr;
   z-index: 10;
 }
 
-/* Flèche du tooltip */
+
 .badge::before {
   content: '';
   position: absolute;
@@ -602,7 +602,7 @@ grid-template-columns:1fr;
   transition: opacity 0.3s;
 }
 
-/* Affiche tooltip au survol */
+
 .badge:hover::after,
 .badge:hover::before {
   opacity: 1;
@@ -643,7 +643,7 @@ font-size:1.7rem;
 }
 }
 
-/* SHARED PAGE SYSTEM */
+
 
 :root{
   --site-bg:#f2f7f1;
@@ -836,7 +836,7 @@ font-size:1.7rem;
   }
 }
 .field-error {
-    border: 2px solid #b42318 !important; /* rouge vif */
+    border: 2px solid #b42318 !important; 
     background-color: #ffecec;
 }
 

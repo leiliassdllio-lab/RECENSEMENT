@@ -801,8 +801,6 @@ text-overflow:clip;
 </head>
 
 <body class="site-page">
-
-<!-- En-tete commun de la page cartographie -->
 <header class="site-header">
 <div class="site-header-inner">
 <h1>Cartographie des observations de hérissons</h1>
@@ -812,7 +810,6 @@ text-overflow:clip;
 
 <div class="map-page">
 <section class="map-hero">
-<!-- Intro et contexte de la page -->
 <div class="page-kicker">Observations citoyennes</div>
 <h2 class="page-title">Cartographie des signalements</h2>
 <p class="map-description">
@@ -822,7 +819,6 @@ Chaque point correspond à un signalement enregistré, avec une vue complémenta
 </section>
 
 <section class="overview-grid">
-  <!-- Cartes de synthese qui resumment le volume de donnees affiche -->
   <div class="overview-card">
     <span class="overview-value" id="overviewTotal">0</span>
     <span class="overview-label">Observations totales</span>
@@ -838,7 +834,6 @@ Chaque point correspond à un signalement enregistré, avec une vue complémenta
 </section>
 
 <section class="filters-panel">
-  <!-- Filtres utilises a la fois pour la carte et pour la liste des recensements -->
   <h2 class="filters-title">Filtres d’affichage</h2>
   <div id="controls" class="filters-grid">
     <div class="filter-group filter-group-selection">
@@ -869,7 +864,6 @@ Chaque point correspond à un signalement enregistré, avec une vue complémenta
 </section>
 
 <section class="map-shell">
-  <!-- Bloc principal de la carte avec sa legende integree -->
   <div class="map-shell-head">
     <div>
       <h2>Carte interactive</h2>
@@ -896,7 +890,6 @@ Chaque point correspond à un signalement enregistré, avec une vue complémenta
 <div id="stats"></div>
 
 <section class="recensements-panel">
-  <!-- Liste textuelle des recensements actuellement visibles sur la carte -->
   <div class="recensements-panel-head">
     <h2>Tous les recensements affichés</h2>
     <button id="toggleExportOptionsBtn" class="export-btn" type="button">Options d’export CSV</button>
@@ -943,7 +936,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebas
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
-/* ✅ CORRIGÉ */
+
 const firebaseConfig = {
   apiKey: "AIzaSyDxCMszTckBP5Zmiaxmo74aVNHiIhUYvys",
   authDomain: "herisson-f80ba.firebaseapp.com",
@@ -1003,7 +996,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',{
 const markers = L.markerClusterGroup();
 map.addLayer(markers);
 
-/* ---------- UTILITAIRES ---------- */
+
 
 function escapeHtml(value){
   return String(value ?? "")
@@ -1204,7 +1197,7 @@ function matchesStatusFilter(data, status){
   return data.etat === status;
 }
 
-/* ---------- POPUP ---------- */
+
 
 function buildPopupContent(data){
   return `
@@ -1218,7 +1211,7 @@ function buildPopupContent(data){
   `;
 }
 
-/* ---------- FOCUS CARTE ---------- */
+
 function focusOnMarker(id){
   focusedRecensementId = id;
   displayMarkers();
@@ -1243,7 +1236,7 @@ function updateMapFocusBar(item){
   bar.classList.add("is-visible");
 }
 
-/* ---------- LISTE ---------- */
+
 
 function renderRecensementsList(items){
   const container = document.getElementById("recensementsList");
@@ -1292,8 +1285,6 @@ function renderRecensementsList(items){
       </article>
     `;
   }).join("");
-
-  // 🔥 action bouton
   document.querySelectorAll(".focus-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       focusOnMarker(btn.dataset.id);
@@ -1301,7 +1292,7 @@ function renderRecensementsList(items){
   });
 }
 
-/* ---------- FIREBASE ---------- */
+
 
 async function loadRecensements(){
   const querySnapshot = await getDocs(collection(db,"recensements"));
@@ -1317,7 +1308,7 @@ async function loadRecensements(){
   displayMarkers();
 }
 
-/* ---------- AFFICHAGE ---------- */
+
 
 function displayMarkers(){
   markers.clearLayers();
@@ -1348,11 +1339,7 @@ function displayMarkers(){
     marker.bindPopup(buildPopupContent(data), {
       autoPan: false
     });
-
-    // 🔥 stockage
     markersMap.set(data.id, marker);
-
-    // 🔥 clic marker = centrage
     marker.on("click", ()=>{
       map.setView([data.latitude,data.longitude], 12);
     });
@@ -1381,7 +1368,7 @@ function displayMarkers(){
   }
 }
 
-/* ---------- EVENTS ---------- */
+
 
 document.querySelectorAll('input[name="region"], #myRecensements')
 .forEach(el => el.addEventListener('change', displayMarkers));

@@ -519,8 +519,6 @@ grid-template-columns:1fr;
 </head>
 
 <body class="site-page">
-
-<!-- En-tete commun du profil -->
 <header class="site-header">
 <div class="site-header-inner">
 <h1>Mon Profil</h1>
@@ -531,7 +529,6 @@ grid-template-columns:1fr;
 <main class="container">
 <div class="profile-shell">
 <section class="hero-panel">
-<!-- Carte principale du profil : identite, actions et statistiques -->
 <div class="hero-intro">
 <div class="page-kicker">Espace personnel</div>
 <h2 class="page-title">Ton profil hérisson</h2>
@@ -612,8 +609,6 @@ grid-template-columns:1fr;
 <div class="history-empty">Chargement de tes recensements...</div>
 </div>
 </section>
-
-<!-- Zone de suivi des badges et de leur progression -->
 <section class="badges-panel">
 <div class="badges-heading">
 <h3>Mes badges</h3>
@@ -672,8 +667,6 @@ grid-template-columns:1fr;
 </footer>
 
 <script type="module">
-
-// Initialisation Firebase pour lire le profil, les scores de quiz et les recensements
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import{getFirestore,collection,query,where,getDocs,doc,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -943,8 +936,6 @@ container.innerHTML=items.map(item=>{
   `;
 }).join("");
 }
-
-// Met a jour les badges lies au nombre de recensements
 function updateRecensementBadges(count){
 
 const badges=[1,5,10,50,100];
@@ -971,8 +962,6 @@ badge.classList.add("locked");
 document.getElementById("stat-recensements").textContent=count;
 return unlocked;
 }
-
-// Charge la progression des quiz enregistree dans le document utilisateur
 async function loadQuizProgress(uid){
 const ref=doc(db,"users",uid);
 const snap=await getDoc(ref);
@@ -1003,8 +992,6 @@ return completed;
 
 onAuthStateChanged(auth,async user=>{
 if(!user){window.location.replace("login.html?next=profil.html");return;}
-
-// Alimente l'interface du profil a partir des donnees utilisateur
 document.getElementById("year").textContent=new Date().getFullYear();
 document.getElementById("userEmail").textContent=user.email;
 const profile=await resolveUserProfile(user);

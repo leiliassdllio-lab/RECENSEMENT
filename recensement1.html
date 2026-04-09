@@ -16,7 +16,6 @@ document.documentElement.classList.add("auth-locked");
 </script>
 
 <style>
-/* === Garde exactement ton CSS précédent === */
 html.auth-locked body { visibility:hidden; }
 html.auth-ready body { visibility:visible; }
 body { font-family:'Arial',sans-serif; background:linear-gradient(180deg,#eef6eb 0%,#f7f9f7 180px,#f4f7f3 100%); margin:0; padding:0; color:#203224; }
@@ -56,7 +55,6 @@ button:hover { background:#43a047; }
 #logoutBtn:hover { background:#b71c1c; }
 .nav-link { display:inline-block; background:white; color:#33523a; font-weight:bold; border:1px solid #d6e5d4; padding:10px 18px; border-radius:12px; text-decoration:none; }
 .nav-link:hover { background:#f3f7f2; }
-/* === Cartes & choix === */
 .choice-grid { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-top:10px; }
 .choice-card { width:108px; height:108px; border:2px solid #d6dfd3; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:all 0.25s; background:white; overflow:hidden; box-shadow:0 8px 18px rgba(64,95,69,0.06); }
 .choice-card img { width:100%; height:100%; object-fit:cover; border-radius:14px; display:block; }
@@ -117,8 +115,6 @@ button:hover { background:#43a047; }
 </head>
 
 <body class="site-page">
-
-<!-- En-tete commun de la page de recensement -->
 <header class="site-header">
 <div class="site-header-inner">
 <h1>🦔 As-tu vu un Hérisson?</h1>
@@ -127,8 +123,6 @@ button:hover { background:#43a047; }
 </header>
 
 <div class="container top-actions">
-
-<!-- Raccourcis lies au compte et a l'historique utilisateur -->
 <div class="left-actions">
 <a href="Cartographie.html" class="nav-link">Mes recensements</a>
 </div>
@@ -155,8 +149,6 @@ Se déconnecter
 </div>
 
 <form id="recensementForm">
-
-<!-- Bloc de localisation : carte + adresse + coordonnees liees -->
 <section class="form-section">
 <p class="section-label"><span>📍</span> Où avez-vous vu le hérisson ?</p>
 <div class="location-panel">
@@ -191,8 +183,6 @@ Se déconnecter
 </div>
 </div>
 </section>
-
-<!-- Bloc de selection de l'etat du herisson -->
 <section class="form-section">
 <p class="section-label"><span>🦔</span> État du hérisson</p>
 
@@ -240,8 +230,6 @@ Se déconnecter
 
 <input type="hidden" id="sousEtat">
 </section>
-
-<!-- Bloc de selection de l'environnement observe -->
 <section class="form-section">
 <p class="section-label"><span>🌍</span> Dans quel type de milieu avez-vous trouvé le hérisson ?</p>
 <p class="field-help">Choisissez l’environnement qui décrit le mieux l’endroit où le hérisson a été observé.</p>
@@ -284,8 +272,6 @@ Se déconnecter
 
 <input type="hidden" id="environnement">
 </section>
-
-<!-- Bloc d'ajout d'une image illustrative -->
 <section class="form-section">
 <p class="section-label"><span>📷</span> Ajouter une image</p>
 
@@ -301,8 +287,6 @@ class="upload-card">
 <div id="preview"></div>
 <div id="photoAnalysisMessage" class="photo-analysis-message" aria-live="polite"></div>
 </section>
-
-<!-- Bloc libre pour les remarques complementaires -->
 <section class="form-section">
 <p class="section-label"><span>📝</span> Notes supplémentaires</p>
 
@@ -416,8 +400,6 @@ document.getElementById("logoutBtn").addEventListener("click",async()=>{
   redirectToLogin();
 });
 document.getElementById("year").textContent = new Date().getFullYear();
-
-// ==== Chargement du modèle MobileNet pour IA ====
 let model;
 const modelReady = loadModel();
 
@@ -475,13 +457,10 @@ async function analyzeHedgehog(img){
 
   return { detected, predictions };
 }
-// Date et année
 const dateInput = document.getElementById("date");
 const today = new Date();
 dateInput.value = today.toISOString().slice(0, 10);
 document.getElementById("year").textContent = today.getFullYear();
-
-// ======== Carte Leaflet ===========
 const map = L.map("map").setView([50.8467, 4.3525], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
@@ -588,8 +567,6 @@ map.on("click", e => {
   setLieuStatus("Point placé sur la carte. Clique sur \"Proposer une adresse\" pour compléter l'adresse.");
   setFormStatus("");
 });
-
-// ======== Sélections (état, sous-état, environnement) ==========
 const formStatusMessage = document.getElementById("formStatusMessage");
 
 function setFormStatus(message, isError = false) {
@@ -639,8 +616,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const vivantOptions = document.getElementById("vivantOptions");
   const mortOptions = document.getElementById("mortOptions");
   const envGrid = document.getElementById("envGrid");
-
-  // Etats principaux
   etatGrid.querySelectorAll(".choice-card").forEach(card => {
     card.addEventListener("click", () => {
       const val = card.dataset.etat;
@@ -670,8 +645,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setFormStatus("");
     });
   });
-
-  // Sous-états
   [vivantOptions, mortOptions].forEach(group => {
     group.querySelectorAll(".choice-card").forEach(card => {
       card.addEventListener("click", () => {
@@ -693,8 +666,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   });
-
-  // Environnement
   envGrid.querySelectorAll(".choice-card").forEach(card => {
     card.addEventListener("click", () => {
       const isSelected = card.classList.contains("selected-sub");
@@ -715,8 +686,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-
-// ======== Upload d'image + Validation IA ==========
 const photoInput = document.getElementById("photoUpload");
 const previewDiv = document.getElementById("preview");
 const photoAnalysisMessage = document.getElementById("photoAnalysisMessage");
@@ -750,10 +719,7 @@ photoInput.addEventListener("change", async () => {
 
   img.onload = async () => {
     try {
-      // Affiche l'image dans la div preview
       previewDiv.innerHTML = `<img src="${objectUrl}" alt="Prévisualisation">`;
-
-      // Vérifie si c'est un hérisson
       const analysis = await analyzeHedgehog(img);
       const predictionsLabel = formatPredictions(analysis.predictions);
 
@@ -780,7 +746,6 @@ photoInput.addEventListener("change", async () => {
 
   img.src = objectUrl;
 });
-// ======== Soumission du formulaire ==========
 const form=document.getElementById("recensementForm");
 form.addEventListener("submit", async e=>{
   e.preventDefault();
