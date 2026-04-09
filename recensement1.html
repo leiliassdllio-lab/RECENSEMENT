@@ -454,34 +454,14 @@ function imageToDataUrl(img){
   context.drawImage(img, 0, 0, targetWidth, targetHeight);
   return canvas.toDataURL("image/jpeg", 0.82);
 }
-
+const NYCKEL_CLIENT_ID = "iyoxg82hzk4c4f2rp9gtdquchbhobatl";
+const NYCKEL_CLIENT_SECRET = "cfr9zs54cizkf77wl2vwarir3bg4rd5prizpnsrx4chvqawa4k38ewalx05nc0cz";
 function getNyckelClientCredentials(){
-  const existingClientId = sessionStorage.getItem("nyckelClientId") || window.iyoxg82hzk4c4f2rp9gtdquchbhobatl || "";
-  const existingClientSecret = sessionStorage.getItem("nyckelClientSecret") || window.NYCKEL_CLIENT_SECRET || "";
-
-  if(existingClientId && existingClientSecret){
-    return {
-      clientId: existingClientId,
-      clientSecret: existingClientSecret
-    };
-  }
-
-  const clientId = window.prompt("Colle ici ton client_id Nyckel :");
-  if(!clientId) return null;
-
-  const clientSecret = window.prompt("Colle ici ton client_secret Nyckel :");
-  if(!clientSecret) return null;
-
-  const credentials = {
-    clientId: clientId.trim(),
-    clientSecret: clientSecret.trim()
+  return {
+    clientId: NYCKEL_CLIENT_ID,
+    clientSecret: NYCKEL_CLIENT_SECRET
   };
-
-  sessionStorage.setItem("nyckelClientId", credentials.clientId);
-  sessionStorage.setItem("nyckelClientSecret", credentials.clientSecret);
-  return credentials;
 }
-
 async function getNyckelAccessToken(){
   const storedToken = sessionStorage.getItem("nyckelAccessToken") || "";
   const storedExpiration = Number(sessionStorage.getItem("nyckelAccessTokenExpiresAt") || 0);
@@ -676,7 +656,7 @@ map.on("click", e => {
   setFormStatus("");
 });
 
-// ======== Sélections (état, sous-état, environnement) ==========
+
 const formStatusMessage = document.getElementById("formStatusMessage");
 
 function setFormStatus(message, isError = false) {
