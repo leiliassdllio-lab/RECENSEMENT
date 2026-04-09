@@ -84,8 +84,6 @@ button:hover { background:#43a047; }
 .photo-analysis-message.is-success { background:#edf8ee; border-color:#b9dec0; color:#1f6f2d; }
 .photo-analysis-message.is-warning { background:#fff7ed; border-color:#f3d3a1; color:#9a4d00; }
 .photo-analysis-message.is-error { background:#fef3f2; border-color:#f3c7c2; color:#b42318; }
-.photo-step-message { display:none; margin-top:12px; padding:10px 12px; border-radius:12px; border:1px solid #d6e5d4; background:#f8fbf6; color:#48604d; line-height:1.5; }
-.photo-step-message.is-visible { display:block; }
 
 @media (max-width: 768px) {
   .container { width:min(100%, calc(100% - 20px)); margin:16px auto; border-radius:18px; padding:18px; }
@@ -310,7 +308,6 @@ class="upload-card">
 <div id="previewActions" class="preview-actions" style="display:none;">
 <button type="button" id="removePhotoBtn" class="secondary-button danger-soft-button">Supprimer la photo</button>
 </div>
-<div id="photoStepMessage" class="photo-step-message" aria-live="polite"></div>
 <div id="photoAnalysisMessage" class="photo-analysis-message" aria-live="polite"></div>
 </section>
 
@@ -441,38 +438,6 @@ function buildNyckelConfidence(confidence){
   return "low";
 }
 
-const acceptedHedgehogLabels = [
-  "erinaceus europaeus",
-  "european hedgehog",
-  "western european hedgehog",
-  "erinaceus roumanicus",
-  "northern white-breasted hedgehog",
-  "atelerix albiventris",
-  "four-toed hedgehog",
-  "african pygmy hedgehog",
-  "atelerix algirus",
-  "algerian hedgehog",
-  "paraechinus aethiopicus",
-  "desert hedgehog",
-  "hemiechinus auritus",
-  "long-eared hedgehog",
-  "hedgehog"
-];
-
-function normalizeSpeciesLabel(label){
-  return String(label || "").trim().toLowerCase();
-}
-
-function isAcceptedHedgehogLabel(label){
-  const normalizedLabel = normalizeSpeciesLabel(label);
-  if(!normalizedLabel) return false;
-  return acceptedHedgehogLabels.some(candidate => normalizedLabel.includes(candidate));
-}
-
-function findAcceptedHedgehogPrediction(predictions){
-  return predictions.find(prediction => isAcceptedHedgehogLabel(prediction?.labelName));
-}
-
 function imageToDataUrl(img){
   const maxDimension = 1600;
   const sourceWidth = img.naturalWidth || img.width;
@@ -491,7 +456,7 @@ function imageToDataUrl(img){
 }
 
 function getNyckelClientCredentials(){
-  const existingClientId = sessionStorage.getItem("nyckelClientId") || window.NYCKEL_CLIENT_ID || "";
+  const existingClientId = sessionStorage.getItem("nyckelClientId") || window.iyoxg82hzk4c4f2rp9gtdquchbhobatl || "";
   const existingClientSecret = sessionStorage.getItem("nyckelClientSecret") || window.NYCKEL_CLIENT_SECRET || "";
 
   if(existingClientId && existingClientSecret){
@@ -554,7 +519,20 @@ async function getNyckelAccessToken(){
   sessionStorage.setItem("nyckelAccessTokenExpiresAt", String(now + (expiresInSeconds * 1000)));
   return accessToken;
 }
-
+const HEDGEHOG_LABELS = new Set([
+  "Atelerix Albiventris",
+  "Atelerix Algirus",
+  "Atelerix Frontalis",
+  "Atelerix Sclateri",
+  "Erinaceus Concolor",
+  "Erinaceus Europaeus",
+  "Hemiechinus Auritus",
+  "Hemiechinus Collaris",
+  "Mesechinus Dauuricus",
+  "Mesechinus Hughi",
+  "Paraechinus Aethiopicus",
+  "Paraechinus Hypomelas"
+]);
 async function analyzeHedgehog(img){
   const imageData = imageToDataUrl(img);
   const accessToken = await getNyckelAccessToken();
@@ -573,23 +551,16 @@ async function analyzeHedgehog(img){
     throw new Error(payload?.error || "Analyse distante impossible");
   }
 
-  const predictions = Array.isArray(payload?.labelConfidences) ? payload.labelConfidences : [];
-  const acceptedPrediction = findAcceptedHedgehogPrediction(predictions);
-  const topLabelName = payload?.labelName || "Inconnu";
-  const topConfidence = Number(payload?.confidence || 0);
-  const acceptedConfidence = Number(acceptedPrediction?.confidence || 0);
-  const labelName = acceptedPrediction?.labelName || topLabelName;
-  const confidence = acceptedPrediction ? acceptedConfidence : topConfidence;
-
+  const confidence = Number(payload?.confidence || 0);
+  const isHedgehog = HEDGEHOG_LABELS.has(payload?.labelName);
   return {
-    detected: Boolean(acceptedPrediction),
+    detected: isHedgehog,
     confidence: buildNyckelConfidence(confidence),
-    labelName,
-    predictions,
-    score: confidence,
-    acceptedPrediction,
-    isAcceptedHedgehog: Boolean(acceptedPrediction)
+    labelName: payload?.labelName || "Inconnu",
+    predictions: Array.isArray(payload?.labelConfidences) ? payload.labelConfidences : [],
+    score: confidence
   };
+  
 }
 // Date et année
 const dateInput = document.getElementById("date");
@@ -837,19 +808,7 @@ const photoInput = document.getElementById("photoUpload");
 const previewDiv = document.getElementById("preview");
 const previewActions = document.getElementById("previewActions");
 const removePhotoBtn = document.getElementById("removePhotoBtn");
-const photoStepMessage = document.getElementById("photoStepMessage");
 const photoAnalysisMessage = document.getElementById("photoAnalysisMessage");
-
-function setPhotoStepMessage(message) {
-  if (!message) {
-    photoStepMessage.textContent = "";
-    photoStepMessage.classList.remove("is-visible");
-    return;
-  }
-
-  photoStepMessage.textContent = message;
-  photoStepMessage.classList.add("is-visible");
-}
 
 function setPhotoAnalysisMessage(message, tone = "") {
   if (!message) {
@@ -871,7 +830,6 @@ function clearSelectedPhoto() {
   photoInput.value = "";
   previewDiv.innerHTML = "";
   previewActions.style.display = "none";
-  setPhotoStepMessage("");
   setPhotoAnalysisMessage("");
 }
 
@@ -886,7 +844,6 @@ photoInput.addEventListener("change", async () => {
 
   const img = new Image();
   const objectUrl = URL.createObjectURL(file);
-  setPhotoStepMessage("Etape 1/4 : chargement local de l'image");
   setPhotoAnalysisMessage("Analyse de l'image en cours...", "is-warning");
 
   img.onload = async () => {
@@ -896,16 +853,13 @@ photoInput.addEventListener("change", async () => {
       previewActions.style.display = "flex";
 
       // Vérifie si c'est un hérisson
-      setPhotoStepMessage("Etape 2/4 : envoi de l'image a l'IA");
       const analysis = await analyzeHedgehog(img);
-      setPhotoStepMessage("Etape 3/4 : reponse de l'IA recue, analyse en cours");
       const predictionsLabel = formatPredictions(analysis.predictions);
       const strongestLabel = analysis.labelName || "";
-      setPhotoStepMessage("Etape 4/4 : analyse terminee");
 
-      if (analysis.isAcceptedHedgehog) {
+      if (analysis.confidence === "high") {
         console.log("Analyse Nyckel positive");
-        setPhotoAnalysisMessage(`${strongestLabel} a ete detecte (${Math.round(analysis.score * 100)}%). L'image est acceptee comme herisson. Predictions : ${predictionsLabel || strongestLabel}`, "is-success");
+        setPhotoAnalysisMessage(`Analyse positive : ${strongestLabel} (${Math.round(analysis.score * 100)}%). Predictions : ${predictionsLabel || strongestLabel}`, "is-success");
       } else if (analysis.confidence === "medium") {
         console.warn("Analyse Nyckel incertaine.");
         setPhotoAnalysisMessage(`Analyse incertaine : ${strongestLabel} (${Math.round(analysis.score * 100)}%). Verifie visuellement l'image avant validation. Predictions : ${predictionsLabel || strongestLabel}`, "is-warning");
@@ -915,7 +869,6 @@ photoInput.addEventListener("change", async () => {
       }
     } catch (error) {
       console.error("Impossible d'analyser l'image.", error);
-      setPhotoStepMessage("Etape interrompue : erreur pendant l'analyse");
       setPhotoAnalysisMessage("Impossible d'analyser l'image pour le moment.", "is-error");
     } finally {
       URL.revokeObjectURL(objectUrl);
@@ -924,7 +877,6 @@ photoInput.addEventListener("change", async () => {
 
   img.onerror = () => {
     console.error("Impossible de charger l'image sélectionnée.");
-    setPhotoStepMessage("Etape interrompue : image introuvable ou illisible");
     setPhotoAnalysisMessage("Impossible de charger l'image sélectionnée.", "is-error");
     URL.revokeObjectURL(objectUrl);
   };
