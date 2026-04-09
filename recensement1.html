@@ -531,15 +531,27 @@ async function analyzeHedgehog(img){
     throw new Error(payload?.error || "Analyse distante impossible");
   }
 
-  const confidence = Number(payload?.confidence || 0);
-  const isHedgehog = HEDGEHOG_LABELS.has(payload?.labelName);
-  return {
-    detected: isHedgehog,
-    confidence: buildNyckelConfidence(confidence),
-    labelName: payload?.labelName || "Inconnu",
-    predictions: Array.isArray(payload?.labelConfidences) ? payload.labelConfidences : [],
-    score: confidence
-  };
+const confidence = Number(payload?.confidence || 0);
+let status;
+  
+if (confidence > 0.5) {
+  status = "validé";
+} else if (confidence >= 0.4) {
+  status = "incertitude";
+} else {
+  status = "refusé";
+}
+
+const isHedgehog = HEDGEHOG_LABELS.has(payload?.labelName);
+
+return {
+  detected: isHedgehog,
+  confidence: buildNyckelConfidence(confidence),
+  status: status,
+  labelName: payload?.labelName || "Inconnu",
+  predictions: Array.isArray(payload?.labelConfidences) ? payload.labelConfidences : [],
+  score: confidence
+};
   
 }
 // Date et année
