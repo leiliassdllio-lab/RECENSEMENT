@@ -134,7 +134,7 @@ const quizzes = {
     {question:"Quel est l'habitat préféré des hérissons ?", answers:["Les routes","Les haies","Les clairières","Les montagnes enneigées"], correct:1},
     {question:"Le réchauffement climatique influence :", answers:["La reproduction du hérisson ","L'hibernation du hérisson","La morphologie du hérisson","La reproduction et l'hibernation du hérisson"], correct:3},
     {question:"La fragmentation des habitats :", answers:["Entraine l'augmentation des ressources alimentaires","Entraine la diminution des ressources alimentaires","Facilite leur déplacement","N'a aucune conséquence"], correct:1},
-    {question:"De quoi l'urbanisation n'est pas une cause ? :", answers:["La fragmentation des habitats","La hausse de la mortalité routière","L'augmentation des populations de hérisson","La perturbation des cycles biologiques du hérisson], correct:2},
+    {question:"De quoi l'urbanisation n'est pas une cause ? :", answers:["La fragmentation des habitats","La hausse de la mortalité routière","L'augmentation des populations de hérisson","La perturbation des cycles biologiques du hérisson"], correct:2},
     {question:"Parmi ces propositions, laquelle n'est pas une cause de l'utilisation des pesticides ? :", answers:["Une réduction des ressources alimentaires","Des perturbations hormonales","Un changement de couleur des pics du hérisson","Des perturbations dans la reproduction"], correct:2},
     {question:"Les hérissons sont une espèce protégée par la loi :", answers:["Dans tous les pays du monde","Dans la majorité des pays européens","Seulement en Afrique et en Asie","Dans aucun pays"], correct:1},
     {question:"Quelle association s'occupe des hérissons ? ", answers:["La croix rouge","La croix bleue","Les CREAVES","Les trois propositions sont justes"], correct:2},
@@ -180,6 +180,10 @@ let currentQuestion = 0;
 let score = 0;
 let currentQuizName = "";
 function selectQuiz(name){
+  if(!quizzes[name]){
+    console.error(`Quiz introuvable: ${name}`);
+    return;
+  }
 
   currentQuizName = name;
   currentQuiz = quizzes[name];
