@@ -285,6 +285,7 @@ Se déconnecter
 <p class="section-label"><span>📷</span> Ajouter une image</p>
 
 <label for="photoUpload"
+id="photoUploadCard"
 class="upload-card">
 <span class="upload-icon">📸</span>
 <span class="upload-title">Choisir ou prendre une photo</span>
@@ -833,6 +834,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 const photoInput = document.getElementById("photoUpload");
+const photoUploadCard = document.getElementById("photoUploadCard");
 const previewDiv = document.getElementById("preview");
 const previewActions = document.getElementById("previewActions");
 const removePhotoBtn = document.getElementById("removePhotoBtn");
@@ -856,6 +858,7 @@ function setPhotoAnalysisMessage(message, tone = "") {
 
 function clearSelectedPhoto() {
   photoInput.value = "";
+  photoUploadCard.style.display = "flex";
   previewDiv.innerHTML = "";
   previewDiv.classList.remove("is-success", "is-error");
   previewActions.style.display = "none";
@@ -877,6 +880,7 @@ photoInput.addEventListener("change", async () => {
 
   img.onload = async () => {
     try {
+      photoUploadCard.style.display = "none";
       previewDiv.innerHTML = `<img src="${objectUrl}" alt="Prévisualisation">`;
       previewDiv.classList.remove("is-success", "is-error");
       previewActions.style.display = "flex";
