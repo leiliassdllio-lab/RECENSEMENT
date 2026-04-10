@@ -542,7 +542,39 @@ const dateInput = document.getElementById("date");
 const today = new Date();
 dateInput.value = today.toISOString().slice(0, 10);
 document.getElementById("year").textContent = today.getFullYear();
-const map = L.map("map").setView([50.8467, 4.3525], 13);
+const DEFAULT_MAP_CENTER = [50.8467, 4.3525];
+const DEFAULT_MAP_ZOOM = 13;
+const USER_MAP_ZOOM = 15;
+
+function getCurrentUserMapView() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) {
+      resolve({ center: DEFAULT_MAP_CENTER, zoom: DEFAULT_MAP_ZOOM, usedGeolocation: false });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        resolve({
+          center: [pos.coords.latitude, pos.coords.longitude],
+          zoom: USER_MAP_ZOOM,
+          usedGeolocation: true
+        });
+      },
+      () => {
+        resolve({ center: DEFAULT_MAP_CENTER, zoom: DEFAULT_MAP_ZOOM, usedGeolocation: false });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 6000,
+        maximumAge: 300000
+      }
+    );
+  });
+}
+
+const initialMapView = await getCurrentUserMapView();
+const map = L.map("map").setView(initialMapView.center, initialMapView.zoom);
 L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
     subdomains: ['a','b','c']
@@ -554,9 +586,24 @@ const coordonneesInput = document.getElementById("coordonnees");
 const lieuStatus = document.getElementById("lieuStatus");
 const suggestAddressBtn = document.getElementById("suggestAddressBtn");
 
+if (initialMapView.usedGeolocation) {
+  lieuStatus.textContent = "Carte centrée sur votre position actuelle. Place ensuite le point exact du recensement.";
+}
+
 function setLieuStatus(message, isError = false) {
   lieuStatus.textContent = message;
   lieuStatus.style.color = isError ? "#b42318" : "#5a6f5e";
+}
+
+async function centerMapOnUserLocation() {
+  const userMapView = await getCurrentUserMapView();
+  if (!userMapView.usedGeolocation) {
+    return;
+  }
+
+  map.invalidateSize();
+  map.setView(userMapView.center, USER_MAP_ZOOM, { animate: false });
+  setLieuStatus("Carte centrée sur votre position actuelle. Place ensuite le point exact du recensement.");
 }
 
 function formatAddress(data) {
@@ -633,20 +680,21 @@ async function suggestAddressFromMarker() {
 
 suggestAddressBtn.addEventListener("click", suggestAddressFromMarker);
 
-if (navigator.geolocation) {
-  navigator.geolocation.getCurrentPosition(pos => {
-    const lat = pos.coords.latitude;
-    const lon = pos.coords.longitude;
-    map.setView([lat, lon], 15);
-    placeMarker(lat, lon, "Votre position actuelle");
-  });
-}
-
 map.on("click", e => {
   const { lat, lng } = e.latlng;
   placeMarker(lat, lng, "Point sélectionné sur la carte");
   setLieuStatus("Point placé sur la carte. Clique sur \"Proposer une adresse\" pour compléter l'adresse.");
   setFormStatus("");
+});
+
+requestAnimationFrame(() => {
+  map.invalidateSize();
+  centerMapOnUserLocation();
+});
+
+window.addEventListener("load", () => {
+  map.invalidateSize();
+  centerMapOnUserLocation();
 });
 const formStatusMessage = document.getElementById("formStatusMessage");
 
