@@ -75,6 +75,7 @@ footer { text-align:center; padding:15px; background:#4CAF50; color:white; }
     </div>
   </div>
   <div id="quiz-container">
+    <p id="quiz-title"></p>
     <div id="progress-container"><div id="progress-bar"></div></div>
     <h2 id="question"></h2>
     <div id="answers"></div>
@@ -115,7 +116,9 @@ document.getElementById("year").textContent = new Date().getFullYear();
 
 // Banque de questions embarquée côté client.
 const quizzes = {
-  scientifique:[
+  scientifique:{
+    title:"Biologie du hérisson",
+    questions:[
     {question:"Le hérisson est principalement :", answers:["Herbivore","insectivore","omnivore","Granivore"], correct:1},
     {question:"Combien de piquants possède un hérisson adulte ?", answers:["500","1500","5000 à 6000","20000"], correct:2},
     {question:"La longévité d’un hérisson sauvage dépasse rarement :", answers:["1 an","2 ans","5 ans","10 ans"], correct:1},
@@ -136,8 +139,10 @@ const quizzes = {
     {question:"Quel est le rôle des piquants des hérissons ?", answers:["Ésthétique","Régulation de la température corporelle","Communication avec les autres hérissons","Protection contre les prédateurs"], correct:3},
     {question:"Comment appelle-t-on la technique de chasse du hérisson ? ", answers:["Foraging","Embuscade","Parasitisme","Chasse en groupe"], correct:0},
     {question:"Le hérisson est actif :", answers:["Le matin","L'après-midi","La nuit","En permanence"], correct:2}
-  ],
-   ecologie:[
+  ]},
+  ecologie:{
+    title:"Déclin et conservation",
+    questions:[
     {question:"Quel est l'habitat préféré des hérissons ?", answers:["Les routes","Les haies","Les clairières","Les montagnes enneigées"], correct:1},
     {question:"Le réchauffement climatique influence :", answers:["La reproduction du hérisson ","L'hibernation du hérisson","La morphologie du hérisson","La reproduction et l'hibernation du hérisson"], correct:3},
     {question:"La fragmentation des habitats :", answers:["Entraine l'augmentation des ressources alimentaires","Entraine la diminution des ressources alimentaires","Facilite leur déplacement","N'a aucune conséquence"], correct:1},
@@ -158,8 +163,10 @@ const quizzes = {
     {question:"La connectivité des habitats permet :", answers:["Un déplacement sécurisé pour les hérissons","L'isolement des hérissons","La réduction des ressources alimentaires","Le déclin des populations de hérisson"], correct:0},
     {question:"De quel pays le hérisson est-il devenu une espèce emblématique ? ", answers:["France","Royaume-Uni","Irlande","Italie"], correct:1},
     {question:"Quel est l'impact de la mortalité routière sur les populations de hérisson ? ", answers:["Elle contribue faiblement au déclin du hérisson","Elle contribue fortement à l'augmentation des populations de hérisson","Elle contribue fortement au déclin du hérisson ","Elle contribue faiblement à l'augmentation des populations de hérisson"], correct:2}
-  ],
-  sante:[
+  ]},
+  sante:{
+    title:"Soins",
+    questions:[
     {question:"Les hérissons peuvent être porteurs de parasites ?", answers:["Oui, puces et tiques","Non","Seulement virus","Seulement bactéries"], correct:0},
     {question:"Ils peuvent souffrir de maladies respiratoires ?", answers:["Oui","Non","Seulement froid","Jamais"], correct:0},
     {question:"Il est dangereux de leur donner du lait de vache ?", answers:["Oui, cause diarrhée","Non","Ils adorent","Aucune conséquence"], correct:0},
@@ -180,27 +187,31 @@ const quizzes = {
     {question:"Les hibernations perturbées peuvent causer :", answers:["Mort ou stress","Rien","Plus d’appétit","Augmentation reproduction"], correct:0},
     {question:"Interactions avec autres animaux ?", answers:["Limiter stress","Toujours ensemble","Laisser faire","Aucun impact"], correct:0},
     {question:"Observation sans toucher ?", answers:["Oui, pour sécurité et stress minimum","Toujours toucher","Jamais observer","Toujours nourrir"], correct:0}
-  ]
+  ]}
 };
 let currentQuiz = null;
 let currentQuestion = 0;
 let score = 0;
 let currentQuizName = "";
+let currentQuizTitle = "";
 // Lance un thème de quiz et bascule l'UI en mode questionnaire.
 function selectQuiz(name){
-  if(!quizzes[name]){
+  const selectedQuiz = quizzes[name];
+  if(!selectedQuiz){
     console.error(`Quiz introuvable: ${name}`);
     return;
   }
 
   currentQuizName = name;
-  currentQuiz = quizzes[name];
+  currentQuizTitle = selectedQuiz.title;
+  currentQuiz = selectedQuiz.questions;
 
   currentQuestion = 0;
   score = 0;
 
   document.getElementById("quiz-container").style.display = "block";
   document.querySelector(".quiz-cards").style.display = "none";
+  document.getElementById("quiz-title").textContent = `Quiz : ${currentQuizTitle}`;
 
   loadQuestion();
   updateProgress();
@@ -209,6 +220,7 @@ function selectQuiz(name){
 function backToSelection(){
   document.getElementById("quiz-container").style.display = "none";
   document.querySelector(".quiz-cards").style.display = "flex";
+  document.getElementById("quiz-title").textContent = "";
 }
 // Rend la question courante et ses réponses cliquables.
 function loadQuestion(){
@@ -233,8 +245,7 @@ function answerQuestion(selected){
     else if(i===selected) buttons[i].classList.add("wrong");
   }
   if(selected===q.correct) score++;
-  const quizName = Object.keys(quizzes).find(k=>quizzes[k]===currentQuiz);
-  const bar = document.getElementById("score-bar-"+quizName);
+  const bar = document.getElementById("score-bar-"+currentQuizName);
   bar.style.width = ((score/currentQuiz.length)*100) + "%";
   setTimeout(()=>{
     currentQuestion++;
@@ -251,7 +262,7 @@ function updateProgress(){
 // Sauvegarde le score obtenu pour le thème courant.
 async function finishQuiz(){
 
-  document.getElementById("question").textContent="Quiz terminé !";
+  document.getElementById("question").textContent=`Quiz ${currentQuizTitle} terminé !`;
   document.getElementById("answers").innerHTML="";
   document.getElementById("feedback").textContent=`Votre score : ${score} / ${currentQuiz.length}`;
   document.getElementById("progress-bar").style.width="100%";
