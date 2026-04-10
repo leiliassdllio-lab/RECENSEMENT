@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGU et Donnees Personnelles - Herisson</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .legal-layout{
+      display:grid;
+      gap:22px;
+    }
+
+    .legal-card{
+      background:#fcfdfb;
+      border:1px solid #dfeadc;
+      border-radius:20px;
+      padding:22px;
+      box-shadow:0 10px 24px rgba(48,84,56,0.08);
+    }
+
+    .legal-card h2{
+      margin-top:0;
+      margin-bottom:12px;
+      text-align:left;
+      color:#234b2c;
+    }
+
+    .legal-card p,
+    .legal-card li{
+      color:#304335;
+    }
+
+    .legal-card ul{
+      margin:0;
+      padding-left:20px;
+    }
+
+    .legal-note{
+      border-left:5px solid #4CAF50;
+      background:#f3f8f1;
+    }
+
+    .legal-meta{
+      display:grid;
+      gap:8px;
+      color:#4b6250;
+      font-size:0.98rem;
+    }
+
+    .legal-pill{
+      display:inline-flex;
+      align-items:center;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#e8f3e6;
+      color:#2f7a39;
+      font-weight:bold;
+      width:max-content;
+    }
+
+    .contact-list{
+      display:grid;
+      gap:10px;
+    }
+
+    .contact-item{
+      padding:12px 14px;
+      border-radius:14px;
+      background:#f6faf4;
+      border:1px solid #dfeadc;
+    }
+  </style>
+</head>
+<body class="site-page">
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <h1>Conditions d'utilisation et donnees personnelles</h1>
+    <p>Regles d'usage du site, information sur la geolocalisation exacte et transparence sur l'usage de Firebase.</p>
+    <div class="back-box"><a href="index.html" class="back-link">Retour a l'accueil</a></div>
+  </div>
+</header>
+
+<main class="site-main legal-layout">
+  <section class="site-panel legal-card legal-note">
+    <div class="legal-pill">Derniere mise a jour : 9 avril 2026</div>
+    <div class="legal-meta">
+      <p>Cette page combine des conditions generales d'utilisation et une information essentielle sur le traitement des donnees personnelles du projet Herisson.</p>
+      <p>Elle doit encore etre completee avec l'identite legale exacte de l'editeur du site, son adresse postale et son adresse de contact officielle avant mise en production definitive.</p>
+    </div>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>1. Objet du service</h2>
+    <p>Le site Les6pics.be permet aux utilisateurs de creer un compte, de se connecter, d'encoder des observations, de consulter leurs recensements et d'afficher des observations sur une cartographie. Le service vise la sensibilisation, l'organisation des donnees de terrain et le soutien a un projet de protection de la biodiversite.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>2. Acceptation et acces</h2>
+    <p>L'utilisation du site implique le respect des presentes conditions. Certaines fonctionnalites, notamment l'enregistrement de recensements et l'acces au profil, necessitent la creation d'un compte. L'utilisateur s'engage a fournir des informations exactes, a proteger ses identifiants et a ne pas utiliser le service de maniere frauduleuse, illicite ou contraire a la protection de la faune.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>3. Donnees collectees</h2>
+    <ul>
+      <li>Donnees de compte : pseudonyme, adresse e-mail, identifiant utilisateur Firebase et, le cas echeant, informations issues de la connexion Google.</li>
+      <li>Mot de passe : le mot de passe n'est pas stocke en clair dans le code du site ; il est traite par Firebase Authentication pour l'authentification.</li>
+      <li>Donnees de recensement : date d'observation, lieu saisi, notes, etat de l'animal, sous-etat, environnement, pseudonyme associe au compte, adresse e-mail associee au compte dans la base, ainsi que latitude et longitude exactes.</li>
+      <li>Donnees techniques : session de connexion, donnees minimales de navigation utiles au fonctionnement du site et certaines donnees stockees localement dans le navigateur, par exemple le pseudonyme conserve dans le stockage local.</li>
+    </ul>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>4. Geolocalisation exacte</h2>
+    <p>Le site peut demander l'autorisation du navigateur pour recuperer la position exacte de l'utilisateur. Lorsque cette autorisation est accordee, la latitude et la longitude peuvent etre utilisees pour pre-remplir ou positionner une observation sur la carte.</p>
+    <p>En envoyant un recensement, l'utilisateur comprend que des coordonnees precises peuvent etre enregistrees avec l'observation et utilisees pour l'affichage cartographique, l'analyse, l'export de donnees et le suivi scientifique ou associatif du projet.</p>
+    <p>Si l'utilisateur ne souhaite pas transmettre sa position exacte, il ne doit pas autoriser la geolocalisation du navigateur et doit s'abstenir de soumettre une observation contenant des coordonnees precises.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>5. Finalites et bases juridiques</h2>
+    <ul>
+      <li>Creation du compte, connexion et gestion du profil : execution du service demande par l'utilisateur.</li>
+      <li>Collecte des observations et association a un compte : execution du service demande par l'utilisateur.</li>
+      <li>Utilisation de la geolocalisation exacte : consentement de l'utilisateur, notamment par l'autorisation donnee au navigateur et la soumission volontaire du recensement.</li>
+      <li>Securite, prevention des abus, journalisation minimale et maintenance : interet legitime du responsable du traitement a proteger le site et l'integrite des donnees.</li>
+      <li>Production de statistiques ou de resultats de projet : interet legitime, avec privilege donne a l'anonymisation ou a l'agregation lorsque cela est possible.</li>
+    </ul>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>6. Firebase et hebergement des donnees</h2>
+    <p>Le site utilise les services Firebase de Google pour l'authentification et le stockage d'une partie des donnees. En pratique, l'adresse e-mail du compte est enregistree dans Firebase Authentication et egalement dans la base Firestore du projet pour le fonctionnement du profil et des recensements.</p>
+    <p>Le mot de passe est gere par Firebase Authentication et n'est pas conserve en clair dans les pages du site. Les observations et donnees de profil peuvent etre stockees dans Firestore avec les autres informations necessaires au fonctionnement du service.</p>
+    <p>Des prestataires techniques intervenant pour l'hebergement, la securite ou l'exploitation peuvent donc traiter certaines donnees pour le compte du projet, dans les limites necessaires au fonctionnement du service.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>7. Visibilite des observations et destinataires</h2>
+    <p>Selon les fonctionnalites du site, certaines donnees d'observation peuvent etre affichees sur la cartographie ou dans des listes, notamment le lieu, la date, l'etat de l'observation, l'environnement et les coordonnees geographiques exactes. Des fonctions d'export peuvent egalement rendre certaines colonnes exportables.</p>
+    <p>Les administrateurs ou responsables du projet peuvent acceder aux donnees necessaires a la gestion du site. L'adresse e-mail et les donnees d'authentification ne sont pas destinees a etre affichees publiquement comme element principal du service, sauf necessite technique ou legale.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>8. Duree de conservation</h2>
+    <p>Les donnees de compte sont conservees pendant la duree d'existence du compte et, en principe, pendant un maximum de 24 mois apres la derniere activite ou la demande de suppression, sous reserve des sauvegardes techniques et des obligations legales applicables.</p>
+    <p>Les recensements peuvent etre conserves tant qu'ils sont utiles au projet, a la cartographie, au suivi scientifique ou a la production de statistiques. Lorsque cela est possible et pertinent, certaines donnees peuvent etre anonymisees ou agregees pour etre conservees plus longtemps sans identification directe de l'utilisateur.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>9. Droits des utilisateurs</h2>
+    <p>Conformement au RGPD et au droit belge applicable, chaque utilisateur peut demander l'acces a ses donnees, leur rectification, leur effacement, la limitation du traitement, la portabilite lorsqu'elle est applicable, ainsi que le retrait du consentement pour les traitements fondes sur celui-ci. L'utilisateur peut egalement introduire une reclamation aupres de l'Autorite de protection des donnees en Belgique.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>10. Regles de comportement</h2>
+    <ul>
+      <li>Ne pas transmettre de contenu faux, diffamatoire, illicite ou portant atteinte aux droits de tiers.</li>
+      <li>Ne pas utiliser le site pour perturber le service, contourner la securite ou collecter massivement des donnees sans autorisation.</li>
+      <li>Ne pas publier d'informations personnelles sur des tiers sans base legale ni autorisation adequate.</li>
+      <li>Respecter la faune, la legislation applicable et les recommandations de prudence diffusees sur le site.</li>
+    </ul>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>11. Propriete intellectuelle et licence sur les contributions</h2>
+    <p>La structure du site, ses textes, son habillage graphique et ses contenus propres restent proteges par les droits applicables. L'utilisateur reste responsable des informations qu'il soumet. En transmettant un recensement, il autorise le projet a utiliser, reproduire, afficher et organiser cette contribution dans la mesure necessaire au fonctionnement du site, a la cartographie, a l'analyse et a la valorisation non trompeuse du projet.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>12. Securite et responsabilite</h2>
+    <p>Le responsable du site met en place des mesures raisonnables pour proteger le service et les donnees, mais aucun systeme n'offre une securite absolue. Le service est fourni selon une logique de meilleur effort. Le site peut etre modifie, suspendu ou interrompu pour maintenance, correction ou evolution.</p>
+    <p>Le responsable du site ne garantit pas l'absence totale d'erreurs, de pertes de disponibilite ou d'utilisation ininterrompue. L'utilisateur demeure responsable de la pertinence des informations qu'il encode et de l'usage qu'il fait des donnees accessibles via la plateforme.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <h2>13. Droit applicable</h2>
+    <p>Les presentes conditions sont regies par le droit belge, sans prejudice des regles imperatives plus favorables applicables au consommateur ou a la personne concernee. En cas de litige, les parties chercheront d'abord une solution amiable. A defaut, les juridictions competentes seront celles designees par les regles belges et europeennes applicables.</p>
+  </section>
+
+  <section class="site-panel legal-card">
+    <div class="contact-list">
+      <div class="contact-item"><strong>Editeur / responsable du traitement :</strong> Les6Pics </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  © <span id="year"></span> - Les6Pics
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
