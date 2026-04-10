@@ -783,12 +783,6 @@ localStorage.removeItem("username");
 window.location.replace("login.html?next=profil.html");
 });
 
-async function getRecensementsCount(uid){
-const q=query(collection(db,"recensements"),where("uid","==",uid));
-const snapshot=await getDocs(q);
-return snapshot.size;
-}
-
 async function getUserRecensements(uid){
 const q=query(collection(db,"recensements"),where("uid","==",uid));
 const snapshot=await getDocs(q);
@@ -999,12 +993,15 @@ document.getElementById("username").textContent=profile.username;
 document.getElementById("userBirthDate").textContent=formatBirthDate(profile.birthDate);
 document.getElementById("userAge").textContent=getAgeLabel(profile.birthDate);
 
-const count=await getRecensementsCount(user.uid);
+const [recensements, completedQuiz]=await Promise.all([
+  getUserRecensements(user.uid),
+  loadQuizProgress(user.uid)
+]);
+
+const count=recensements.length;
 let unlockedBadges=updateRecensementBadges(count);
-const recensements=await getUserRecensements(user.uid);
 renderRecensementsHistory(recensements);
-const completedQuiz=await loadQuizProgress(user.uid);
-if(completedQuiz===4) unlockedBadges++;
+if(completedQuiz===3) unlockedBadges++;
 document.getElementById("stat-badges").textContent=unlockedBadges;
 });
 
