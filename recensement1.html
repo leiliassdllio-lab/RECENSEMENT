@@ -50,7 +50,10 @@ input:focus, select:focus, textarea:focus { outline:none; border-color:#77a96c; 
 button { background:#4CAF50; color:white; font-weight:bold; border:none; cursor:pointer; margin-top:18px; transition:0.3s; }
 button:hover { background:#43a047; }
 #map { height:340px; border-radius:16px; margin-bottom:0; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(79,122,88,0.08); }
-#preview img { max-width:100%; border-radius:14px; box-shadow:0 10px 24px rgba(41,73,49,0.16); margin-top:12px; }
+#preview { display:flex; justify-content:center; margin-top:12px; }
+#preview img { display:block; max-width:100%; border-radius:14px; box-shadow:0 10px 24px rgba(41,73,49,0.16); border:3px solid transparent; transition:border-color 0.2s ease, box-shadow 0.2s ease; }
+#preview.is-success img { border-color:#4CAF50; box-shadow:0 0 0 4px rgba(76,175,80,0.18), 0 10px 24px rgba(41,73,49,0.16); }
+#preview.is-error img { border-color:#d32f2f; box-shadow:0 0 0 4px rgba(211,47,47,0.16), 0 10px 24px rgba(41,73,49,0.16); }
 #logoutBtn { background:#d32f2f; width:auto; padding:10px 16px; border-radius:12px; margin-top:0; align-self:center; }
 #logoutBtn:hover { background:#b71c1c; }
 .nav-link { display:inline-block; background:white; color:#33523a; font-weight:bold; border:1px solid #d6e5d4; padding:10px 18px; border-radius:12px; text-decoration:none; }
@@ -414,6 +417,20 @@ function formatPredictions(predictions){
     .slice(0, 3)
     .map(p => `${p.labelName || "Inconnu"} (${Math.round((p.confidence || 0) * 100)}%)`)
     .join(", ");
+}
+
+function isErinaceusAboveThreshold(analysis, threshold = 0.5){
+  const topLabel = analysis?.labelName || "";
+  const topScore = Number(analysis?.score || 0);
+  if(topLabel.startsWith("Erinaceus") && topScore > threshold){
+    return true;
+  }
+
+  return Array.isArray(analysis?.predictions) && analysis.predictions.some(prediction => {
+    const label = prediction?.labelName || "";
+    const confidence = Number(prediction?.confidence || 0);
+    return label.startsWith("Erinaceus") && confidence > threshold;
+  });
 }
 
 function buildNyckelConfidence(confidence){
@@ -840,6 +857,7 @@ function setPhotoAnalysisMessage(message, tone = "") {
 function clearSelectedPhoto() {
   photoInput.value = "";
   previewDiv.innerHTML = "";
+  previewDiv.classList.remove("is-success", "is-error");
   previewActions.style.display = "none";
   setPhotoAnalysisMessage("");
 }
@@ -860,19 +878,24 @@ photoInput.addEventListener("change", async () => {
   img.onload = async () => {
     try {
       previewDiv.innerHTML = `<img src="${objectUrl}" alt="Prévisualisation">`;
+      previewDiv.classList.remove("is-success", "is-error");
       previewActions.style.display = "flex";
       const analysis = await analyzeHedgehog(img);
       const predictionsLabel = formatPredictions(analysis.predictions);
       const strongestLabel = analysis.labelName || "";
+      const highlightAsHedgehog = isErinaceusAboveThreshold(analysis);
 
-      if (analysis.confidence === "high") {
+      if (highlightAsHedgehog) {
         console.log("Analyse Nyckel positive");
+        previewDiv.classList.add("is-success");
         setPhotoAnalysisMessage(`Analyse positive : ${strongestLabel} (${Math.round(analysis.score * 100)}%). Predictions : ${predictionsLabel || strongestLabel}`, "is-success");
       } else if (analysis.confidence === "medium") {
         console.warn("Analyse Nyckel incertaine.");
+        previewDiv.classList.add("is-error");
         setPhotoAnalysisMessage(`Analyse incertaine : ${strongestLabel} (${Math.round(analysis.score * 100)}%). Verifie visuellement l'image avant validation. Predictions : ${predictionsLabel || strongestLabel}`, "is-warning");
       } else {
         console.warn("Analyse Nyckel peu confiante.");
+        previewDiv.classList.add("is-error");
         setPhotoAnalysisMessage(`Le service n'a pas reconnu l'image avec assez de confiance. Meilleure reponse : ${strongestLabel} (${Math.round(analysis.score * 100)}%). Predictions : ${predictionsLabel || strongestLabel}`, "is-warning");
       }
     } catch (error) {
