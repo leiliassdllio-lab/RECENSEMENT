@@ -584,7 +584,7 @@ grid-template-columns:1fr;
 <span class="stat-label">Recensements</span>
 </div>
 <div class="stat-box">
-<span class="stat-value" id="stat-quiz">0/4</span>
+<span class="stat-value" id="stat-quiz">0/3</span>
 <span class="stat-label">Quiz validés</span>
 </div>
 <div class="stat-box">
@@ -616,10 +616,10 @@ grid-template-columns:1fr;
 </div>
 <div class="badges-container">
 
-<div class="site-internet/badge-box"><div class="badge" id="badge-quiz" data-tooltip="Réussis les 4 quiz pour débloquer ce badge.">
+<div class="site-internet/badge-box"><div class="badge" id="badge-quiz" data-tooltip="Réussis les 3 quiz pour débloquer ce badge.">
 <img src="site-internet/assets/images/badges/badge-quiz.png">
 <div class="progress-bar"><div class="progress-fill" id="progress-quiz"></div></div>
-<span class="progress-text" id="progress-text-quiz">0/4</span>
+<span class="progress-text" id="progress-text-quiz">0/3</span>
 </div></div>
 
 <div class="badge-box"><div class="badge" id="badge-1" data-tooltip="Réalise ton premier recensement.">
@@ -966,14 +966,14 @@ async function loadQuizProgress(uid){
 const ref=doc(db,"users",uid);
 const snap=await getDoc(ref);
 if(!snap.exists()){
-document.getElementById("stat-quiz").textContent="0/4";
+document.getElementById("stat-quiz").textContent="0/3";
 return 0;
 }
 
 const scores=snap.data().quizScores||{};
 let completed=0;
 
-const quizzes = ["scientifique","comportement","ecologie","sante"];
+const quizzes = ["scientifique","ecologie","sante"];
 
 quizzes.forEach(q=>{
   if(scores[q] >= 20) completed++;
@@ -981,8 +981,8 @@ quizzes.forEach(q=>{
 
 const percent=(completed/quizzes.length)*100;
 document.getElementById("progress-quiz").style.width=percent+"%";
-document.getElementById("progress-text-quiz").textContent=completed+"/4";
-document.getElementById("stat-quiz").textContent=completed+"/4";
+document.getElementById("progress-text-quiz").textContent=completed+"/3";
+document.getElementById("stat-quiz").textContent=completed+"/3";
 
 if(completed===quizzes.length)document.getElementById("badge-quiz").classList.remove("locked");
 else document.getElementById("badge-quiz").classList.add("locked");
