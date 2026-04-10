@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="fr">
 <head>
+  <!-- Page de conseils pratiques : contenu statique, sans dépendance Firebase. -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hérisson – Conseils</title>
   <link rel="stylesheet" href="style.css">
   <style>
+    /* Styles spécifiques à cette page pour présenter les conseils sous forme de cartes simples. */
     section {
       margin-bottom: 40px;
     }
@@ -43,6 +45,7 @@
   </style>
 </head>
 <body class="site-page">
+  <!-- En-tête standard du site avec navigation retour. -->
   <header class="site-header">
     <div class="site-header-inner">
       <h1>🦔 Conseils pour observer et protéger les hérissons</h1>
@@ -52,6 +55,7 @@
   </header>
 
   <main class="site-main site-panel">
+    <!-- Série de sections pédagogiques classées par situation d'usage. -->
     <section>
       <h2>Préparer votre jardin 🏡</h2>
       <div class="advice-card">
@@ -117,6 +121,7 @@
   </footer>
 
   <script>
+    // Synchronise l'année affichée dans le footer avec la date courante.
     document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- Page de quiz : choix d'un thème, déroulé question par question, sauvegarde du score. -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quiz Hérisson – Team hérisson</title>
 <link rel="stylesheet" href="style.css">
 <style>
+/* Styles locaux du parcours de quiz. */
 body { min-height:100vh; display:flex; flex-direction:column; }
 .site-header { padding-bottom:24px; }
 .back-box { display:flex; justify-content:center; margin-top:14px; }
@@ -40,6 +42,7 @@ footer { text-align:center; padding:15px; background:#4CAF50; color:white; }
 </style>
 </head>
 <body class="site-page">
+<!-- En-tête standard et retour à l'accueil. -->
 <header class="site-header">
   <div class="site-header-inner">
   <h1>Quiz Hérisson 🦔🌿</h1>
@@ -48,6 +51,7 @@ footer { text-align:center; padding:15px; background:#4CAF50; color:white; }
   </div>
 </header>
 
+<!-- Sélecteur des quiz puis conteneur du quiz en cours. -->
 <div class="container">
   <p class="quiz-intro">Choisis un theme pour lancer un quiz et tester tes connaissances sur les herissons.</p>
   <div class="quiz-cards">
@@ -84,6 +88,7 @@ footer { text-align:center; padding:15px; background:#4CAF50; color:white; }
   <p class="footer-license">Code du site sous <a href="LICENCE">licence MIT</a>.</p>
 </footer>
 <script type="module">
+// Le score est sauvegardé par thème dans le document utilisateur Firestore.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -107,6 +112,8 @@ onAuthStateChanged(auth, user => {
 });
 
 document.getElementById("year").textContent = new Date().getFullYear();
+
+// Banque de questions embarquée côté client.
 const quizzes = {
   scientifique:[
     {question:"Le hérisson est principalement :", answers:["Herbivore","insectivore","omnivore","Granivore"], correct:1},
@@ -179,6 +186,7 @@ let currentQuiz = null;
 let currentQuestion = 0;
 let score = 0;
 let currentQuizName = "";
+// Lance un thème de quiz et bascule l'UI en mode questionnaire.
 function selectQuiz(name){
   if(!quizzes[name]){
     console.error(`Quiz introuvable: ${name}`);
@@ -197,10 +205,12 @@ function selectQuiz(name){
   loadQuestion();
   updateProgress();
 }
+// Retour à l'écran de sélection des thèmes.
 function backToSelection(){
   document.getElementById("quiz-container").style.display = "none";
   document.querySelector(".quiz-cards").style.display = "flex";
 }
+// Rend la question courante et ses réponses cliquables.
 function loadQuestion(){
   const q = currentQuiz[currentQuestion];
   document.getElementById("question").textContent = `Question ${currentQuestion+1} / ${currentQuiz.length} : ${q.question}`;
@@ -214,6 +224,7 @@ function loadQuestion(){
     answersEl.appendChild(btn);
   });
 }
+// Gère la réponse sélectionnée, le feedback visuel et la transition vers la suite.
 function answerQuestion(selected){
   const q = currentQuiz[currentQuestion];
   const buttons = document.getElementById("answers").children;
@@ -232,10 +243,12 @@ function answerQuestion(selected){
     updateProgress();
   },1000);
 }
+// Met à jour la barre de progression globale du quiz en cours.
 function updateProgress(){
   const percent = (currentQuestion/currentQuiz.length)*100;
   document.getElementById("progress-bar").style.width = percent+"%";
 }
+// Sauvegarde le score obtenu pour le thème courant.
 async function finishQuiz(){
 
   document.getElementById("question").textContent="Quiz terminé !";

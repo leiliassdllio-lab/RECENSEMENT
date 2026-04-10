@@ -931,6 +931,8 @@ Chaque point correspond à un signalement enregistré, avec une vue complémenta
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 <script type="module">
+// Page de cartographie :
+// charge les recensements, affiche les marqueurs filtrables et propose l'export CSV.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
@@ -956,6 +958,7 @@ let markersMap = new Map(); // 🔥 liaison ID → marker
 let focusedRecensementId = null;
 let currentFilteredRecensements = [];
 
+// Colonnes disponibles pour l'export CSV côté utilisateur.
 const CSV_COLUMNS = [
   { key:"username", label:"Nom d'utilisateur", essential:false },
   { key:"lieu", label:"Lieu", essential:true },
@@ -974,6 +977,7 @@ onAuthStateChanged(auth, user => {
   displayMarkers();
 });
 
+// Bornes géographiques utilisées pour les filtres de région et pour contenir la carte.
 const belgiqueBounds = [[49.5, 2.5], [51.6, 6.4]];
 const wallonieBounds = [[49.5,4.5],[50.5,6.4]];
 const flandreBounds = [[50.5,2.5],[51.6,5.0]];
@@ -996,8 +1000,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',{
 const markers = L.markerClusterGroup();
 map.addLayer(markers);
 
-
-
+// Helpers de formatage texte / dates / CSV.
 function escapeHtml(value){
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -1084,6 +1087,7 @@ function buildCsv(records, columns, delimiter){
   return [header, ...rows].join("\n") + "\n";
 }
 
+// Interface de configuration de l'export CSV.
 function renderExportColumnOptions(){
   const container = document.getElementById("exportColumnsList");
 
@@ -1182,6 +1186,7 @@ function exportCurrentSelectionToCsv(){
   URL.revokeObjectURL(url);
 }
 
+// Détermine le statut d'une observation pour la couleur et le badge affichés.
 function getStatusInfo(data){
   if(data.etat === 'mort' && data.sousEtat === 'route'){
     return { label:'Mort sur route', className:'badge-mort-route', color:'#FF0000' };
@@ -1212,6 +1217,7 @@ function buildPopupContent(data){
 }
 
 
+// Gestion du focus sur une observation unique dans la liste et sur la carte.
 function focusOnMarker(id){
   focusedRecensementId = id;
   displayMarkers();
@@ -1238,6 +1244,7 @@ function updateMapFocusBar(item){
 
 
 
+// Rend la liste latérale des recensements correspondant aux filtres actifs.
 function renderRecensementsList(items){
   const container = document.getElementById("recensementsList");
 
@@ -1294,6 +1301,7 @@ function renderRecensementsList(items){
 
 
 
+// Chargement initial des données depuis Firestore.
 async function loadRecensements(){
   const querySnapshot = await getDocs(collection(db,"recensements"));
 
@@ -1310,6 +1318,7 @@ async function loadRecensements(){
 
 
 
+// Recalcule entièrement la carte et la liste à partir de l'état courant des filtres.
 function displayMarkers(){
   markers.clearLayers();
   markersMap.clear();
@@ -1370,6 +1379,7 @@ function displayMarkers(){
 
 
 
+// Wiring des contrôles d'interface.
 document.querySelectorAll('input[name="region"], #myRecensements')
 .forEach(el => el.addEventListener('change', displayMarkers));
 

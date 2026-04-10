@@ -320,6 +320,8 @@ class="upload-card">
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script type="module">
+// Page coeur du projet :
+// authentification, saisie d'une observation, géolocalisation, photo et enregistrement Firestore.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, collection, addDoc, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -341,6 +343,7 @@ let currentUsername = "";
 const nyckelFunctionId = "hedgehog-species-identifier";
 const nyckelInvokeEndpoint = `https://www.nyckel.com/v1/functions/${nyckelFunctionId}/invoke?labelCount=3`;
 
+// Redirige vers la connexion si l'utilisateur n'est pas authentifié.
 function redirectToLogin() {
   localStorage.removeItem("username");
   const usernameBadge = document.getElementById("usernameBadge");
@@ -356,6 +359,7 @@ function unlockProtectedPage() {
   document.documentElement.classList.add("auth-ready");
 }
 
+// Résolution du pseudo à afficher dans l'interface et à stocker avec les recensements.
 function buildUsernameFromUser(user) {
   if (user.displayName && user.displayName.trim()) return user.displayName.trim();
   if (user.email) return user.email.split("@")[0];
@@ -401,6 +405,7 @@ async function applyAuthenticatedUi(user) {
   unlockProtectedPage();
 }
 
+// Protection de la page au niveau session.
 onAuthStateChanged(auth,user=>{
   if(!user){ redirectToLogin(); return; }
   applyAuthenticatedUi(user);
@@ -413,6 +418,7 @@ document.getElementById("logoutBtn").addEventListener("click",async()=>{
 });
 document.getElementById("year").textContent = new Date().getFullYear();
 
+// Helpers d'affichage des résultats d'analyse photo.
 function formatPredictions(predictions){
   return predictions
     .slice(0, 3)
@@ -440,6 +446,7 @@ function buildNyckelConfidence(confidence){
   return "low";
 }
 
+// Prépare une image navigateur en data URL compressée pour l'envoi vers le classifieur.
 function imageToDataUrl(img){
   const maxDimension = 1600;
   const sourceWidth = img.naturalWidth || img.width;
@@ -458,6 +465,7 @@ function imageToDataUrl(img){
 }
 const NYCKEL_CLIENT_ID = "iyoxg82hzk4c4f2rp9gtdquchbhobatl";
 const NYCKEL_CLIENT_SECRET = "cfr9zs54cizkf77wl2vwarir3bg4rd5prizpnsrx4chvqawa4k38ewalx05nc0cz";
+// Gestion du token Nyckel côté client avec cache en sessionStorage.
 function getNyckelClientCredentials(){
   return {
     clientId: NYCKEL_CLIENT_ID,
@@ -515,6 +523,7 @@ const HEDGEHOG_LABELS = new Set([
   "Paraechinus Aethiopicus",
   "Paraechinus Hypomelas"
 ]);
+// Analyse l'image sélectionnée et renvoie un résumé adapté au front.
 async function analyzeHedgehog(img){
   const imageData = imageToDataUrl(img);
   const accessToken = await getNyckelAccessToken();
@@ -565,6 +574,7 @@ const DEFAULT_MAP_ZOOM = 13;
 const USER_MAP_ZOOM = 15;
 const INITIAL_MAP_STATUS_MESSAGE = "Carte centrée sur votre position actuelle. Place ensuite le point exact du recensement.";
 
+// Résout une seule fois la vue initiale de la carte à partir de la géolocalisation navigateur.
 const currentUserMapViewPromise = new Promise(resolve => {
   if (!navigator.geolocation) {
     resolve({ center: DEFAULT_MAP_CENTER, zoom: DEFAULT_MAP_ZOOM, usedGeolocation: false });
@@ -594,6 +604,7 @@ async function getCurrentUserMapView() {
   return currentUserMapViewPromise;
 }
 
+// Initialisation de la carte Leaflet et des contrôles de localisation.
 const initialMapView = await currentUserMapViewPromise;
 const map = L.map("map").setView(initialMapView.center, initialMapView.zoom);
 L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -616,6 +627,7 @@ function setLieuStatus(message, isError = false) {
   lieuStatus.style.color = isError ? "#b42318" : "#5a6f5e";
 }
 
+// Recentre explicitement la carte sur la position du navigateur sans créer de marqueur.
 async function centerMapOnUserLocation() {
   const userMapView = await getCurrentUserMapView();
   if (!userMapView.usedGeolocation) {
@@ -627,6 +639,7 @@ async function centerMapOnUserLocation() {
   setLieuStatus(INITIAL_MAP_STATUS_MESSAGE);
 }
 
+// Helpers de conversion et d'affichage du lieu choisi.
 function formatAddress(data) {
   const parts = [];
   const road = [data.house_number, data.road].filter(Boolean).join(" ").trim();
@@ -699,6 +712,7 @@ async function suggestAddressFromMarker() {
   }
 }
 
+// Interaction principale carte -> formulaire.
 suggestAddressBtn.addEventListener("click", suggestAddressFromMarker);
 
 map.on("click", e => {
@@ -719,6 +733,7 @@ window.addEventListener("load", () => {
 });
 const formStatusMessage = document.getElementById("formStatusMessage");
 
+// Messages d'état du formulaire et validation minimale avant envoi.
 function setFormStatus(message, isError = false) {
   if (!message) {
     formStatusMessage.textContent = "";
@@ -757,6 +772,7 @@ function validateRecensementForm() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Synchronise les cartes de choix visuelles avec les champs cachés réellement soumis.
 
   const etatInput = document.getElementById("etat");
   const sousEtatInput = document.getElementById("sousEtat");
@@ -836,6 +852,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
+// Gestion de la photo : aperçu, analyse Nyckel et feedback visuel.
 const photoInput = document.getElementById("photoUpload");
 const photoUploadCard = document.getElementById("photoUploadCard");
 const previewDiv = document.getElementById("preview");
@@ -921,6 +938,7 @@ photoInput.addEventListener("change", async () => {
 
   img.src = objectUrl;
 });
+// Soumission finale du recensement vers Firestore.
 const form=document.getElementById("recensementForm");
 form.addEventListener("submit", async e=>{
   e.preventDefault();

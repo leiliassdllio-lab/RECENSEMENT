@@ -161,6 +161,8 @@ a { cursor:pointer; color:#4CAF50; text-decoration:none; }
 </main>
 
 <script type="module">
+// Page d'authentification centrale du site.
+// Elle gère la connexion, l'inscription et la redirection vers la page demandée.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, query, where, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
@@ -180,6 +182,7 @@ await setPersistence(auth, browserLocalPersistence);
 let isRedirecting = false;
 let isLoadingExistingSession = true;
 
+// Sécurise les redirections internes en n'acceptant qu'un chemin HTML local.
 function normalizeLocalHtmlTarget(value){
   if(typeof value !== "string") return null;
   const trimmedValue = value.trim();
@@ -217,6 +220,7 @@ function getReferrerTarget(){
   }
 }
 
+// Helpers de profil utilisés juste après l'authentification pour garder un pseudo cohérent partout.
 function buildUsernameFromUser(user){
   if(user.displayName && user.displayName.trim()) return user.displayName.trim();
   if(user.email) return user.email.split("@")[0];
@@ -266,6 +270,8 @@ async function syncUserProfile(user, preferredUsername = ""){
   return username;
 }
 
+// La page de login peut être appelée depuis plusieurs entrées du site.
+// Cette logique choisit une destination sûre après authentification.
 function getRedirectTarget(){
   const params = new URLSearchParams(window.location.search);
   const next = normalizeLocalHtmlTarget(params.get("next"));
@@ -293,6 +299,7 @@ function redirectToTarget(){
   sessionStorage.removeItem("postLoginRedirect");
   window.location.replace(target);
 }
+// Références DOM du formulaire de connexion / création de compte.
 const loginDiv = document.getElementById("loginDiv");
 const signupDiv = document.getElementById("signupDiv");
 const loginUser = document.getElementById("loginUser");
@@ -319,6 +326,7 @@ function setButtonsDisabled(disabled){
   createBtn.disabled = disabled;
 }
 
+// Si l'utilisateur arrive ici pour accéder au recensement, on affiche un contexte plus explicite.
 if(getRedirectTarget() === "recensement1.html"){
   loginContext.classList.remove("hidden");
 }
@@ -339,6 +347,7 @@ toggleSignupPass.addEventListener("click", ()=>{
 
 setButtonsDisabled(true);
 
+// Si une session existe déjà, on évite de réafficher inutilement le formulaire.
 if(typeof auth.authStateReady === "function"){
   await auth.authStateReady();
 }
@@ -355,12 +364,14 @@ if(auth.currentUser){
   isLoadingExistingSession = false;
   setButtonsDisabled(false);
 }
+// Permet la connexion avec un pseudo en retrouvant l'email correspondant dans Firestore.
 async function getEmailFromUsername(username){
   const q = query(collection(db,"users"), where("username","==",username));
   const snapshot = await getDocs(q);
   if(!snapshot.empty) return snapshot.docs[0].data().email;
   return null;
 }
+// Handlers des trois parcours d'entrée : email/pseudo, Google et création de compte.
 loginBtn.addEventListener("click", async ()=>{
   if(isLoadingExistingSession) return;
   loginError.textContent="";

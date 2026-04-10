@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- Page de mise à jour du profil utilisateur : pseudo et date de naissance. -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Modifier Mon Compte – Hérisson</title>
 <link rel="stylesheet" href="style.css">
 <style>
+/* Styles locaux de la fiche d'édition du compte. */
 body{
 margin:0;
 background:linear-gradient(180deg,#eef6eb 0%,#f7f9f7 180px,#f4f7f3 100%);
@@ -148,6 +150,7 @@ grid-template-columns:1fr;
 </head>
 <body class="site-page">
 
+<!-- En-tête de navigation vers le profil. -->
 <header class="site-header">
 <div class="site-header-inner">
 <h1>Modifier Mon Compte</h1>
@@ -155,6 +158,7 @@ grid-template-columns:1fr;
 </div>
 </header>
 
+<!-- Formulaire d'édition du compte. -->
 <main class="container">
 <section class="panel">
 <div class="intro">
@@ -194,6 +198,7 @@ grid-template-columns:1fr;
 </footer>
 
 <script type="module">
+// Cette page modifie le document utilisateur stocké dans Firestore.
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import{getFirestore,doc,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -221,6 +226,7 @@ const saveAccountBtn=document.getElementById("saveAccountBtn");
 
 document.getElementById("year").textContent=new Date().getFullYear();
 
+// Helpers de lecture / écriture du profil local et distant.
 function buildUsernameFromUser(user){
 if(user.displayName && user.displayName.trim()) return user.displayName.trim();
 if(user.email) return user.email.split("@")[0];
@@ -259,6 +265,7 @@ if(!userSnap.exists()) return "";
 return userSnap.data().birthDate || "";
 }
 
+// Au chargement, on protège la page et on hydrate le formulaire depuis Firebase.
 onAuthStateChanged(auth,async user=>{
 if(!user){
 window.location.replace("login.html?next=modifier-compte.html");
@@ -271,6 +278,7 @@ usernameInput.value=await resolveUsername(user);
 birthDateInput.value=await getBirthDate(user);
 });
 
+// Enregistre les modifications demandées par l'utilisateur.
 accountForm.addEventListener("submit",async event=>{
 event.preventDefault();
 

@@ -1,4 +1,5 @@
-
+/* Feuille de style globale partagée par l'ensemble du site public. */
+/* Les pages complexes peuvent ajouter des styles locaux, mais cette base gère la charte commune. */
 html{
 scroll-behavior:smooth;
 }
@@ -30,6 +31,7 @@ margin-bottom:20px;
 
 
 
+/* Hero vidéo de la page d'accueil. */
 .hero{
   position:relative;
   color:white;
@@ -252,6 +254,7 @@ text-align:center;
 }
 
 
+/* Grille des grandes rubriques affichées sur la page d'accueil. */
 .cards{
 display:grid;
 grid-template-columns:repeat(4,minmax(0,1fr));
@@ -441,6 +444,7 @@ display:none;
 
 
 
+/* Ajustements responsives généraux pour tablette. */
 @media (max-width:768px){
 
 .container{
@@ -610,6 +614,7 @@ grid-template-columns:1fr;
 
 }
 
+/* Ajustements responsives généraux pour mobile. */
 @media (max-width:560px){
 .hero .container{
 padding:16px;

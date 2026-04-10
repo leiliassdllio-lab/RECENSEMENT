@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <!-- Page d'accueil du site : point d'entrée vers le recensement, la cartographie et les contenus pédagogiques. -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hérisson – Projets</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- Hero principal avec vidéo de fond et appel à l'action vers le formulaire de recensement. -->
 <header class="hero">
 
   <video autoplay muted loop playsinline class="hero-video">
@@ -22,6 +24,7 @@
 </header>
 
 <main class="container">
+<!-- Bloc éditorial de présentation du projet et du contexte scientifique. -->
 <section id="about">
 <h2>Le hérisson d’Europe est désormais classé quasi menacé d’extinction, ce qui rend le suivi participatif essentiel pour mieux comprendre sa répartition et stimuler des actions de protection</h2>
 
@@ -111,6 +114,7 @@
   
   </div>
 </section>
+<!-- Grille de navigation vers les grandes rubriques du site. -->
 <section id="projets">
 
 <h2>Nos Rubriques</h2>
@@ -177,6 +181,7 @@
 
 </div>
 </section>
+<!-- Coordonnées de contact du projet. -->
 <section id="contact">
 
 <h2>Contact</h2>
@@ -197,7 +202,10 @@
 
 
 <script>
+// Année de pied de page générée côté client pour éviter une mise à jour manuelle.
 document.getElementById("year").textContent = new Date().getFullYear();
+
+// Gestion des paragraphes "Lire plus / Lire moins" dans les bulles de présentation.
 document.querySelectorAll('.read-more-link').forEach(link => {
 
 link.addEventListener('click', function(){
@@ -216,6 +224,7 @@ p.classList.contains('expanded')
 });
 
 
+// Bouton flottant de retour en haut de page affiché uniquement après un certain scroll.
 const topBtn = document.getElementById("topBtn");
 window.onscroll = function(){
 

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+<!-- Prototype de boutique / personnalisation du hérisson utilisateur. -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Boutique Hérisson</title>
 
 <style>
+/* Layout en deux colonnes : aperçu du personnage à gauche, catalogue à droite. */
 body { margin:0; font-family: Arial, sans-serif; background: linear-gradient(135deg,#0f172a,#1e293b); color:white; display:flex; height:100vh; }
 #header { position:absolute; top:10px; left:20px; font-size:20px; background:rgba(0,0,0,0.4); padding:8px 15px; border-radius:10px; z-index:10; }
 #character { width:50%; display:flex; justify-content:center; align-items:center; position:relative; }
@@ -51,14 +53,17 @@ body { margin:0; font-family: Arial, sans-serif; background: linear-gradient(135
 </head>
 <body>
 
+<!-- Compteur visible des coins du joueur. -->
 <div id="header">💰 Coins: <span id="coins">0</span></div>
 
+<!-- Empilement des différentes couches visuelles du hérisson. -->
 <div id="character">
   <img id="base" class="layer" src="https://i.imgur.com/8QfQZ6F.png">
   <img id="pants" class="layer">
   <img id="accessory" class="layer">
 </div>
 
+<!-- Catalogue par catégories. -->
 <div id="shop">
 <div class="tabs">
   <div class="tab active" onclick="openTab(event,'skins')">Skins</div>
@@ -90,6 +95,7 @@ body { margin:0; font-family: Arial, sans-serif; background: linear-gradient(135
 </div>
 
 <script type="module">
+// Le prototype de boutique persiste l'inventaire et l'équipement dans Firestore.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -109,6 +115,7 @@ let coins = 0;
 let owned = {};
 let equipped = {};
 let userRef;
+// Charge ou initialise l'état boutique du joueur connecté.
 onAuthStateChanged(auth, async user => {
   if (!user) {
     window.location.replace("login.html?next=boutique.html");
@@ -135,6 +142,7 @@ onAuthStateChanged(auth, async user => {
   loadEquipped();
   initOwnedUI();
 });
+// Navigation visuelle entre catégories.
 function openTab(evt, tabName){
     document.querySelectorAll('.items').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
@@ -142,6 +150,7 @@ function openTab(evt, tabName){
     evt.currentTarget.classList.add('active'); // ici on utilise l'événement
 }
 
+// Achat ou équipement d'un item.
 function handleItem(type, src, price, el){
   const id = el.dataset.id;
   if(!owned[id]){
@@ -156,6 +165,7 @@ function handleItem(type, src, price, el){
   initOwnedUI();
 }
 
+// Helpers d'affichage et de persistance de l'inventaire.
 function applyEquip(type, src){
   document.getElementById(type==='skin'?'base':type).src = src;
 }
@@ -182,6 +192,7 @@ function saveToFirebase(){
   const ownedItems = Object.keys(owned).filter(id=>owned[id]);
   updateDoc(userRef, { coins, ownedItems, equipped });
 }
+// Prévisualisation temporaire au survol avant achat.
 let previewBackup = {};
 function preview(type,src){
   const id = (type==='base')?'base':type;

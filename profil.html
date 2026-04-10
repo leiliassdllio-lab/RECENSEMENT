@@ -667,6 +667,8 @@ grid-template-columns:1fr;
 </footer>
 
 <script type="module">
+// Page profil utilisateur :
+// affichage du compte, badges, progression quiz et historique des recensements.
 import{initializeApp}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import{getFirestore,collection,query,where,getDocs,doc,getDoc,setDoc}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -684,6 +686,7 @@ const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 const auth=getAuth(app);
 
+// Helpers de résolution du profil utilisateur.
 function buildUsernameFromUser(user){
 if(user.displayName && user.displayName.trim()) return user.displayName.trim();
 if(user.email) return user.email.split("@")[0];
@@ -764,6 +767,7 @@ if(age<0) return "Age inconnu";
 return `${age} ans`;
 }
 
+// Gestion locale de l'aperçu de photo de profil.
 const photoInput=document.getElementById("photoUpload");
 const userPhoto=document.getElementById("userPhoto");
 const logoutBtn=document.getElementById("logoutBtn");
@@ -783,6 +787,7 @@ localStorage.removeItem("username");
 window.location.replace("login.html?next=profil.html");
 });
 
+// Charge l'historique des recensements de l'utilisateur connecté.
 async function getUserRecensements(uid){
 const q=query(collection(db,"recensements"),where("uid","==",uid));
 const snapshot=await getDocs(q);
@@ -801,6 +806,7 @@ return snapshot.docs
   });
 }
 
+// Helpers de formatage pour l'affichage humain des observations.
 function formatObservationDate(value){
 if(!value) return "Date non renseignée";
 const date=new Date(`${value}T00:00:00`);
@@ -885,6 +891,7 @@ if(!latValue || !lonValue){
 return `<span>${latValue}</span><span>${lonValue}</span>`;
 }
 
+// Rend la liste historique complète sur la page profil.
 function renderRecensementsHistory(items){
 const container=document.getElementById("recensementsHistory");
 
@@ -930,6 +937,7 @@ container.innerHTML=items.map(item=>{
   `;
 }).join("");
 }
+// Met à jour l'état visuel des badges basés sur le nombre de recensements.
 function updateRecensementBadges(count){
 
 const badges=[1,5,10,50,100];
@@ -956,6 +964,7 @@ badge.classList.add("locked");
 document.getElementById("stat-recensements").textContent=count;
 return unlocked;
 }
+// Calcule la progression quiz à partir des scores stockés dans Firestore.
 async function loadQuizProgress(uid){
 const ref=doc(db,"users",uid);
 const snap=await getDoc(ref);
@@ -984,6 +993,7 @@ else document.getElementById("badge-quiz").classList.add("locked");
 return completed;
 }
 
+// Point d'entrée principal de la page profil après authentification.
 onAuthStateChanged(auth,async user=>{
 if(!user){window.location.replace("login.html?next=profil.html");return;}
 document.getElementById("year").textContent=new Date().getFullYear();
