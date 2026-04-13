@@ -771,9 +771,8 @@ function validateRecensementForm() {
   return true;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function initializeChoiceControls() {
   // Synchronise les cartes de choix visuelles avec les champs cachés réellement soumis.
-
   const etatInput = document.getElementById("etat");
   const sousEtatInput = document.getElementById("sousEtat");
   const envInput = document.getElementById("environnement");
@@ -850,8 +849,13 @@ document.addEventListener("DOMContentLoaded", () => {
       setFormStatus("");
     });
   });
+}
 
-});
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeChoiceControls, { once: true });
+} else {
+  initializeChoiceControls();
+}
 // Gestion de la photo : aperçu, analyse Nyckel et feedback visuel.
 const photoInput = document.getElementById("photoUpload");
 const photoUploadCard = document.getElementById("photoUploadCard");
